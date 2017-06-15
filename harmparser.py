@@ -57,17 +57,18 @@ def parseHarmExpr(harmexpr):
 		# So far, only inversions for triad or seventh chords are accepted
 		inversions = r'[b-d]?'
 		p = re.compile(r'''
-			(									# Match the entire string or fail
+			^(									# Match the entire string or fail
 			(?P<root>{})						# Get the root
 			(?P<attribute>{})					# Get diminished or augmented
 			(?P<intervals>{})					# Get added intervals
 			(?P<inversion>{})					# Get inversion
 			(\[(?P<alternative>([^\]*])+)\])?	# Parse a possible alternative expression
-			)									# /Match the entire string or fail
+			)$									# /Match the entire string or fail
 			'''.format(roots, chordAttribute, intervals, inversions), re.VERBOSE)
 		m = p.match(harmexpr)
 		if m:			
 			harmdict = m.groupdict()
+			harmdict['implied'] = False
 			if 'alternative' in harmdict:
 				if harmdict['alternative'] is not None:
 					# An additional parsing needed, the alternative harmony									
@@ -83,14 +84,24 @@ def parseHarmExpr(harmexpr):
 		harmdict = parseHarmExpr(expr)
 		harmdict['implied'] = True
 	return harmdict
+
+def parseHarm(harm):
+	# Separate possible secondary functions
+	exprs = harm.split('/')
+	functions = []
+	for harmexpr in exprs:
+		harmdict = parseHarmExpr(harmexpr)
+		if not harmdict:
+			print 'Invalid **harm expression: {}'.format(harmexpr)
+		else:
+			functions.append(harmdict)
+	pp.pprint(functions)
+
+
 	
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parses an expression in **harm syntax and describes its content')
-    parser.add_argument('harmexpr', metavar='harm_expression', help='Specify a harm expression to be parsed')
+    parser.add_argument('harm', metavar='harm_expression', help='Specify a **harm expression to be parsed')
     args = parser.parse_args()
-    harmdict = parseHarmExpr(args.harmexpr)
-    if not harmdict:
-    	print 'Invalid **harm expression'
-    else:
-    	pp.pprint(harmdict)
+    harmdict = parseHarm(args.harm)
