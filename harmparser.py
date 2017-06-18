@@ -103,7 +103,7 @@ class HarmParser:
             m = self.parse(impexpr)
             if m:
                 m['implied'] = True
-            return [m]
+            return m
         else:
             # Normal expression
             m = self.harmp.match(harmexpr)
