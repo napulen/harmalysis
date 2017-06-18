@@ -21,8 +21,26 @@ import re
 import argparse
 import pprint as pp
 
+relationships = {
+'C': {
+'I':'C',
+'II':'D',
+'III':'E',
+'IV':'F',
+'V':'G',
+'VI':'A',
+'VII':'B'
+}
+}
+
 class HarmDefs:
     ''' Regular expression definitions for the HarmParser class '''
+
+    # Detect lowered or raised root (-|lowered, #|raised)
+    accidental = r'''
+    (?P<accidental>          # Named group _accidental
+    [#-]?)
+    '''
 
     # The degree or special chord, i.e., I, V, Neapolitan, German augmented sixth, etc.
     roots = r'''
@@ -45,13 +63,13 @@ class HarmDefs:
     AA\d+|                  # Double-augmented intervals
     DD\d+)                  # Double-diminished intervals
     *)                      # Not a limit on how many intervals can be added
-    '''                   
+    '''
 
     # Detect inversions (b|First inversion, c|Second inversion, d|Third inversion)
     inversion = r'''
     (?P<inversion>          # Named group _inversions_
     [b-d]?)                 # Only third inversions possible so far
-    '''              
+    '''
 
     # Detect implied harmony between parentheses, e.g., (I), (V), (viio/ii), etc.
     implied = r'''
@@ -71,25 +89,25 @@ class HarmDefs:
     ([^\[^\]])+)            # Match at least one time for any expression inside brackets
     \]                      # Close brackets
     )?                      # If no alternative expression, then no brackets should appear at all
-    '''                   
+    '''
 
     # Detect secondary functions, e.g., V/V, V/iv/ii, viioD7/iv/v, etc.
     secondary = r'''
-    (/                      # Slash implies a secondary function 
+    (/                      # Slash implies a secondary function
     (?P<secondary>          # Named group _secondary_
     ([\s\S])+)              # Get all the expression after the slash symbol
     )?                      # If no secondary function, then the slash symbol should not appear
-    '''                   
+    '''
     # The definition for a harm expr
-    harmexpr = r'^('+roots+attribute+intervals+inversion+alternative+secondary+r')$'
-    
+    harmexpr = r'^('+accidental+roots+attribute+intervals+inversion+alternative+secondary+r')$'
+
 
 class HarmParser:
     '''Parses an expression in **harm syntax'''
-    
+
     defs = HarmDefs()
 
-    def __init__(self):        
+    def __init__(self):
         self.harmp = re.compile(HarmParser.defs.harmexpr, re.VERBOSE)
         self.impliedp = re.compile(HarmParser.defs.implied, re.VERBOSE)
 
@@ -98,7 +116,7 @@ class HarmParser:
         i = self.impliedp.match(harmexpr)
         if i:
             # This is implied harmony
-            impexpr = i.groupdict()['implied_harmony']     
+            impexpr = i.groupdict()['implied_harmony']
             # Call the function again over the inner expression
             m = self.parse(impexpr)
             if m:
