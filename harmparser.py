@@ -21,18 +21,6 @@ import re
 import argparse
 import pprint as pp
 
-relationships = {
-'C': {
-'I':'C',
-'II':'D',
-'III':'E',
-'IV':'F',
-'V':'G',
-'VI':'A',
-'VII':'B'
-}
-}
-
 class HarmDefs:
     ''' Regular expression definitions for the HarmParser class '''
 
