@@ -58,7 +58,7 @@ class HarmDefs:
     ^(                      # Match for entire string or fail
     \(                      # Open parenthesis
     (?P<implied_harmony>    # Group the expression
-    ([\s\S])+               # At least one expression
+    ([^\(^\)])+             # At least one expression
     )                       # /Group the expression
     \)                      # Closing parenthesis
     )$                      # /Match for entire string or fail
@@ -68,7 +68,7 @@ class HarmDefs:
     alternative = r'''
     (\[                     # Open brackets
     (?P<alternative>        # Named group _alternative_
-    ([\s\S])+)              # Match at least one time for any expression inside brackets
+    ([^\[^\]])+)            # Match at least one time for any expression inside brackets
     \]                      # Close brackets
     )?                      # If no alternative expression, then no brackets should appear at all
     '''                   
@@ -76,7 +76,7 @@ class HarmDefs:
     # Detect secondary functions, e.g., V/V, V/iv/ii, viioD7/iv/v, etc.
     secondary = r'''
     (/                      # Slash implies a secondary function 
-    (?P<secondary>           # Named group _secondary_
+    (?P<secondary>          # Named group _secondary_
     ([\s\S])+)              # Get all the expression after the slash symbol
     )?                      # If no secondary function, then the slash symbol should not appear
     '''                   
@@ -85,10 +85,14 @@ class HarmDefs:
     
 
 class HarmParser:
+    '''Parses an expression in **harm syntax'''
+    
     defs = HarmDefs()
+
     def __init__(self):        
         self.harmp = re.compile(HarmParser.defs.harmexpr, re.VERBOSE)
         self.impliedp = re.compile(HarmParser.defs.implied, re.VERBOSE)
+
     def parse(self, harmexpr):
         # Check for implied harmony
         i = self.impliedp.match(harmexpr)
@@ -99,7 +103,7 @@ class HarmParser:
             m = self.parse(impexpr)
             if m:
                 m['implied'] = True
-            return m
+            return [m]
         else:
             # Normal expression
             m = self.harmp.match(harmexpr)
@@ -125,4 +129,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     hp = HarmParser()
     x = hp.parse(args.harm)
-    return x
+    print x
