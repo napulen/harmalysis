@@ -27,7 +27,7 @@ class HarmDefs:
     # Detect lowered or raised root (-|lowered, #|raised)
     accidental = r'''
     (?P<accidental>          # Named group _accidental
-    [#-]?)
+    [#-]{0,2})
     '''
 
     # The degree or special chord, i.e., I, V, Neapolitan, German augmented sixth, etc.
