@@ -21,6 +21,152 @@ import re
 import argparse
 import pprint as pp
 
+tpc = {
+(0,10): 'C--',
+(0,11): 'C-',
+(0,0): 'C',
+(0,1): 'C#',
+(0,2): 'C##',
+(1,0): 'D--',
+(1,1): 'D-',
+(1,2): 'D',
+(1,3): 'D#',
+(1,4): 'D##',
+(2,2): 'E--',
+(2,3): 'E-',
+(2,4): 'E',
+(2,5): 'E#',
+(2,6): 'E##',
+(3,3): 'F--',
+(3,4): 'F-',
+(3,5): 'F',
+(3,6): 'F#',
+(3,7): 'F##',
+(4,5): 'G--',
+(4,6): 'G-',
+(4,7): 'G',
+(4,8): 'G#',
+(4,9): 'G##',
+(5,7): 'A--',
+(5,8): 'A-',
+(5,9): 'A',
+(5,10): 'A#',
+(5,11): 'A##',
+(6,9): 'B--',
+(6,10): 'B-',
+(6,11): 'B',
+(6,0): 'B#',
+(6,1): 'B##'
+}
+
+tpcr = {
+'C--': (0,10),
+'C-': (0,11),
+'C': (0,0),
+'C#': (0,1),
+'C##': (0,2),
+'D--': (1,0),
+'D-': (1,1),
+'D': (1,2),
+'D#': (1,3),
+'D##': (1,4),
+'E--': (2,2),
+'E-': (2,3),
+'E': (2,4),
+'E#': (2,5),
+'E##': (2,6),
+'F--': (3,3),
+'F-': (3,4),
+'F': (3,5),
+'F#': (3,6),
+'F##': (3,7),
+'G--': (4,5),
+'G-': (4,6),
+'G': (4,7),
+'G#': (4,8),
+'G##': (4,9),
+'A--': (5,7),
+'A-': (5,8),
+'A': (5,9),
+'A#': (5,10),
+'A##': (5,11),
+'B--': (6,9),
+'B-': (6,10),
+'B': (6,11),
+'B#': (6,0),
+'B##': (6,1)
+}
+
+class HarmKey:
+    ''' Holds operations for diatonic keys '''
+    def __init__(self, key='C'):
+        self.setKey(key)
+
+    def setKey(self, key):
+        self.tonic = key
+        self.mode = self.getMode()
+        self.tpc = tpcr[self.tonic.upper()]
+        self.d = self.tpc[0]
+        self.p = self.tpc[1]
+        self.computeDegrees()
+        self.scale = [self.i, self.ii, self.iii, self.iv, self.v, self.vi, self.vii]
+
+    def getMode(self):
+        # Only check the first character
+        c = self.tonic[0]
+        if c.islower():
+            mode = 'minor'
+        elif c.isupper():
+            mode = 'major'
+        return mode
+
+    def label2tpc(label):
+        return tpcr[label]
+
+    def computeDegrees(self):
+        # I
+        self.i = tpc[self.tpc]
+        # II
+        iid = (self.d+1)%7
+        # Same for major and minor
+        iip = (self.p+2)%12
+        ii = (iid,iip)
+        self.ii = tpc[ii]
+        # III
+        iiid = (self.d+2)%7
+        if self.mode == 'major':
+            iiip = (self.p+4)%12
+        else:
+            iiip = (self.p+3)%12
+        iii = (iiid,iiip)
+        self.iii = tpc[iii]
+        # IV
+        ivd = (self.d+3)%7
+        # Same for major and minor
+        ivp = (self.p+5)%12
+        iv = (ivd,ivp)
+        self.iv = tpc[iv]
+        # V
+        vd = (self.d+4)%7
+        # Same for major and minor
+        vp = (self.p+7)%12
+        v = (vd,vp)
+        self.v = tpc[v]
+        # VI
+        vid = (self.d+5)%7
+        if self.mode == 'major':
+            vip = (self.p+9)%12
+        else:
+            vip = (self.p+8)%12
+        vi = (vid,vip)
+        self.vi = tpc[vi]
+        # VII
+        viid = (self.d+6)%7
+        viip = (self.p+11)%12
+        vii = (viid,viip)
+        self.vii = tpc[vii]
+        return
+
 class HarmDefs:
     ''' Regular expression definitions for the HarmParser class '''
 
@@ -98,6 +244,7 @@ class HarmParser:
     def __init__(self):
         self.harmp = re.compile(HarmParser.defs.harmexpr, re.VERBOSE)
         self.impliedp = re.compile(HarmParser.defs.implied, re.VERBOSE)
+        self.key = HarmKey()
 
     def parse(self, harmexpr):
         # Check for implied harmony
