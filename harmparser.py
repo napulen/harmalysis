@@ -128,12 +128,12 @@ class HarmKey:
         self.i = tpc[self.tpc]
         # II
         iid = (self.d+1)%7
-        # Same for major and minor
         iip = (self.p+2)%12
         ii = (iid,iip)
         self.ii = tpc[ii]
         # III
         iiid = (self.d+2)%7
+        # Different for major and minor mode
         if self.mode == 'major':
             iiip = (self.p+4)%12
         else:
@@ -142,18 +142,17 @@ class HarmKey:
         self.iii = tpc[iii]
         # IV
         ivd = (self.d+3)%7
-        # Same for major and minor
         ivp = (self.p+5)%12
         iv = (ivd,ivp)
         self.iv = tpc[iv]
         # V
         vd = (self.d+4)%7
-        # Same for major and minor
         vp = (self.p+7)%12
         v = (vd,vp)
         self.v = tpc[v]
         # VI
         vid = (self.d+5)%7
+        # Different for major and minor mode
         if self.mode == 'major':
             vip = (self.p+9)%12
         else:
@@ -165,6 +164,18 @@ class HarmKey:
         viip = (self.p+11)%12
         vii = (viid,viip)
         self.vii = tpc[vii]
+        # Neapolitan
+        nd = (self.d+1)%7
+        np = (self.p+1)%12
+        n = (nd,np)
+        self.n = tpc[n]
+        # Augmented sixth chords
+        ltgnfrd = (self.d+3)%7
+        ltgnfrp = (self.p+6)%12
+        ltgnfr = (ltgnfrd, ltgnfrp)
+        self.lt = tpc[ltgnfr]
+        self.gn = tpc[ltgnfr]
+        self.fr = tpc[ltgnfr]
         return
 
 class HarmDefs:
