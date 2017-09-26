@@ -293,4 +293,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     hp = HarmParser()
     x = hp.parse(args.harm)
-    print x
+    pp.pprint(x)
