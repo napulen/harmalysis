@@ -279,10 +279,9 @@ chord : triad_chord | extended_triad_chord | special_chord | descriptive_chord
 ///////////////
 // Harm++ Label
 ///////////////
-explicit : [key] chord
-tonicizable : explicit ( "/" scale_degree )*
-implicit : "(" tonicizable ")"
-alternate : tonicizable "[" tonicizable "]"
-          | tonicizable ( "|" tonicizable )+
+harmpp : [key] chord ( "/" scale_degree )*
+implicit : "(" harmpp ")"
+alternate : harmpp "[" harmpp "]"
+          | harmpp ( "|" harmpp )~1..4
 
-start : tonicizable | implicit | alternate
+start : harmpp | implicit | alternate
