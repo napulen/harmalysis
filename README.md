@@ -1,7 +1,6 @@
 # harmparser
 A parser based on regular expressions for the **harm syntax http://www.humdrum.org/rep/harm/
 
-
 # An improved syntax for encoding Roman Numerals
 
 ## Philosophy of the syntax
@@ -16,11 +15,12 @@ A parser based on regular expressions for the **harm syntax http://www.humdrum.o
 - Agnostic to the music encoding format
   - Encoded as plain-text in a dedicated field (e.g. `<harmony>`) or simply as a lyric
   - The syntax can be used in any encoding format that allows to align text with a musical event (e.g., MusicXML, Humdrum, MEI, MIDI)
-- Self-contained
-  - Any given label should be self-contained. There is no necessity for context. The only exception to this is the local key, which, for commodity, can be provided once and omitted in future labels. In any case, this is not compulsory and local keys can be provided at every label for maximum clarity.
+- Stand-alone
+  - Any given label should be self-explanatory. There is no necessity for context. The only exception to this is the local key, which, for commodity, can be provided once and omitted in future labels. In any case, this is not compulsory and local keys can be provided at every label for maximum clarity.
   - When no local key is provided at the first label, C Major is assumed.
 - Immediately available for annotation within music notation editors
-  - As a plain-text system, the syntax can be annotated as a lyric in music notation software without any additional software 
+  - As a plain-text system, the syntax can be annotated as a lyric in music notation software without any additional software
+- Derivate the machine-readable from the human-readable and not the other way around
 
 # Breaking down the encoding of Roman Numeral Analysis
 - A label like `I` or `i`, implicitly gives us the following information:
@@ -51,3 +51,48 @@ A parser based on regular expressions for the **harm syntax http://www.humdrum.o
 
 > Interesting as these chords may be, the triad and the seventh chord were really the standard fare of music in the ieghteenth and nineteenth centuries. True elevenths and thirteenths are rare before impressionism, which began in the late nineteenth century. Ninths occur throughout the tonal era, but the 9th of the chord often can be analyzed as a NCT and usually disappears before the chord resolves.
 
+
+
+# About the notation of the language
+
+## Accidentals
+
+Sharps and flats are supported.
+
+Sharps are encoded as `#`, flats can be encoded as `-` or `b`.
+
+> Originally, the **harm syntax encodes flats as `-`, however, there is no particular reason for not using the `b` letter, which is more commonly used to denote a flat accidental. Therefore, the `harm++` syntax supports both forms
+
+Double sharps are encoded as `##` or `x`, and double flats are encoded as either `--` (compatible with the `**harm` syntax) or `bb`.
+
+## Note letters
+
+The note letters (e.g., in the context of defining a key of *Eb minor*, `eb:`) are encoded as the letters `A`-`G` and `a`-`g`.
+
+In certain contexts (e.g., defining a key), the syntax is case sensitive, lower-case letters denote minor keys and upper-case letters denote major keys.
+
+## Scale degrees
+
+In the grammar of the `harm++` language, scale degrees have been encoded as *terminal* symbols, which are parsed according to their conventional names:
+
+```
+TONIC_UPPERCASE : "I"
+SUPERTONIC_UPPERCASE : "II"
+MEDIANT_UPPERCASE : "III"
+SUBDOMINANT_UPPERCASE : "IV"
+DOMINANT_UPPERCASE : "V"
+SUBDOMINANT_UPPERCASE : "VI"
+SEVENTH_DEGREE_UPPERCASE : "VII"
+
+TONIC_LOWERCASE : "i"
+SUPERTONIC_LOWERCASE : "ii"
+MEDIANT_LOWERCASE : "iii"
+SUBDOMINANT_LOWERCASE : "iv"
+DOMINANT_LOWERCASE : "v"
+SUBDOMINANT_LOWERCASE : "vi"
+SEVENTH_DEGREE_LOWERCASE : "vii"
+```
+
+Once again, in some contexts (e.g., tonicizations and triads) the syntax is case-sensitive, denoting major mode as upper-case roman numerals and minor mode as lower-case roman numerals.
+
+> Note that the `SEVENTH_DEGREE` was not encoded as `LEADING_TONE`. This decision was made because of the dual role of the seventh degree as leading tone and subtonic (flattened seventh), which cannot be inferred from the grammar.

@@ -1,0 +1,228 @@
+// The harm++ roman numeral analysis language
+//
+// Copyright (c) 2019, Nestor Napoles Lopez
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this
+//    list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+/////////////////////////////////
+// Flats, sharps, and alterations
+/////////////////////////////////
+FLAT : "-" | "b"
+DOUBLE_FLAT : "--" | "bb"
+SHARP : "#"
+DOUBLE_SHARP : "##" | "x"
+alteration : FLAT
+           | DOUBLE_FLAT
+           | SHARP
+           | DOUBLE_SHARP
+
+///////////////////////////////////////////
+// Lower-case, upper-case letters, and keys
+///////////////////////////////////////////
+NOTE_LETTER_LOWERCASE : "a".."g"
+NOTE_LETTER_UPPERCASE : "A".."G"
+letter : NOTE_LETTER_LOWERCASE | NOTE_LETTER_UPPERCASE
+key: letter [alteration] ":"
+
+////////////////
+// Scale degrees
+////////////////
+TONIC_UPPERCASE : "I"
+SUPERTONIC_UPPERCASE : "II"
+MEDIANT_UPPERCASE : "III"
+SUBDOMINANT_UPPERCASE : "IV"
+DOMINANT_UPPERCASE : "V"
+SUBDOMINANT_UPPERCASE : "VI"
+SEVENTH_DEGREE_UPPERCASE : "VII"
+
+TONIC_LOWERCASE : "i"
+SUPERTONIC_LOWERCASE : "ii"
+MEDIANT_LOWERCASE : "iii"
+SUBDOMINANT_LOWERCASE : "iv"
+DOMINANT_LOWERCASE : "v"
+SUBDOMINANT_LOWERCASE : "vi"
+SEVENTH_DEGREE_LOWERCASE : "vii"
+
+scale_degree_major : TONIC_UPPERCASE
+                   | SUPERTONIC_UPPERCASE
+                   | MEDIANT_UPPERCASE
+                   | SUBDOMINANT_UPPERCASE
+                   | DOMINANT_UPPERCASE
+                   | SUBDOMINANT_UPPERCASE
+                   | SEVENTH_DEGREE_UPPERCASE
+
+scale_degree_minor : TONIC_LOWERCASE
+                   | SUPERTONIC_LOWERCASE
+                   | MEDIANT_LOWERCASE
+                   | SUBDOMINANT_LOWERCASE
+                   | DOMINANT_LOWERCASE
+                   | SUBDOMINANT_LOWERCASE
+                   | SEVENTH_DEGREE_LOWERCASE
+
+scale_degree : scale_degree_major | scale_degree_minor
+
+/////////////
+// Inversions
+/////////////
+no_inversion : "a"
+first_inversion : "b"
+second_inversion: "c"
+third_inversion: "d"
+fourth_inversion: "e"
+fifth_inversion: "f"
+sixth_inversion: "g"
+seventh_inversion: "h"
+eighth_inversion: "i"
+ninth_inversion: "j"
+tenth_inversion: "k"
+eleventh_inversion: "l"
+
+triad_inversion : no_inversion
+                | first_inversion
+                | second_inversion
+
+chord_inversion : triad_inversion | third_inversion
+
+extended_chord_inversion : chord_inversion
+                         | fourth_inversion
+                         | fifth_inversion
+                         | sixth_inversion
+                         | seventh_inversion
+                         | eighth_inversion
+                         | ninth_inversion
+                         | tenth_inversion
+                         | eleventh_inversion
+
+//////////////////
+// Added intervals
+//////////////////
+basic_added_intervals : "7" | "9" | "11" | "13"
+all_valid_added_intervals : basic_added_intervals
+               | "1"
+               | "2"
+               | "3"
+               | "4"
+               | "5"
+               | "6"
+               | "8"
+               | "10"
+               | "12"
+               | "14"
+               | "15"
+
+major_interval : "M"
+minor_interval : "m"
+perfect_interval : "P"
+augmented_interval : "A"
+diminished_interval : "D"
+double_augmented_interval : "AA"
+double_diminished_interval : "DD"
+
+interval_quality : major_interval
+                 | minor_interval
+                 | perfect_interval
+                 | augmented_interval
+                 | diminished_interval
+                 | double_augmented_interval
+                 | double_diminished_interval
+
+basic_added_interval : [interval_quality] basic_added_intervals
+any_added_interval : interval_quality all_valid_added_intervals
+
+////////////////////
+// Missing intervals
+////////////////////
+valid_missing_intervals : "1" | "3" | "5"
+missing_interval_symbol : "x"
+missing_interval : missing_interval_symbol valid_missing_intervals
+
+////////////////////
+// Triad alterations
+////////////////////
+diminished_triad_symbol : "o"
+augmented_triad_symbol : "+"
+major_triad : [alteration] scale_degree_major
+augmented_triad : major_triad augmented_triad_symbol
+minor_triad : [alteration] scale_degree_minor
+diminished_triad : minor_triad diminished_triad_symbol
+
+/////////
+// Triads
+/////////
+triad : major_triad
+      | augmented_triad
+      | minor_triad
+      | diminished_triad
+
+/////////////////////
+// Triad-based chords
+/////////////////////
+triad_chord : triad missing_interval* [triad_inversion]
+extended_triad_chord: triad basic_added_interval missing_interval* [chord_inversion]
+
+/////////////////
+// Special chords
+/////////////////
+german : "Ger" | "Gn"
+italian : "Lt" | "It"
+french : "Fr"
+augmented_sixth : german [chord_inversion] | italian [triad_inversion] | french [chord_inversion]
+
+neapolitan : "N"
+tristan : "Tr"
+half_diminished_seventh : "vii0"
+cadential : "Cad" | "V64"
+common_tone : "CTdim7" | "CTo7"
+
+special_chord : augmented_sixth
+              | neapolitan [triad_inversion]
+              | tristan [chord_inversion]
+              | half_diminished_seventh [chord_inversion]
+              | cadential
+              | common_tone [chord_inversion]
+
+/////////////////////
+// Descriptive chords
+/////////////////////
+descriptive_chord : "?" triad any_added_interval* [extended_chord_inversion]
+
+/////////
+// Chords
+/////////
+chord : triad_chord | extended_triad_chord | special_chord | descriptive_chord
+
+///////////////
+// Harm++ Label
+///////////////
+explicit : [key] chord
+tonicizable : explicit ( "/" scale_degree )*
+implicit : "(" tonicizable ")"
+alternate : tonicizable "[" tonicizable "]"
+          | tonicizable ( "|" tonicizable )+
+
+start : tonicizable | implicit | alternate
