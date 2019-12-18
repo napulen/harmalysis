@@ -1,5 +1,5 @@
-# harmparser
-A parser based on regular expressions for the **harm syntax http://www.humdrum.org/rep/harm/
+# harmalysis
+A grammar (and language) for harmonic analysis and roman numerals. Based on and extending the [**harm](http://www.humdrum.org/rep/harm/) syntax
 
 # An improved syntax for encoding Roman Numerals
 
