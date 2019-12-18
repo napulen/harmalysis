@@ -1,5 +1,5 @@
 # harmalysis
-A grammar (and language) for harmonic analysis and roman numerals. Based on and extending the [**harm](http://www.humdrum.org/rep/harm/) syntax
+A language for harmonic analysis and roman numerals. Based on and extending David Huron's [**harm](http://www.humdrum.org/rep/harm/) syntax
 
 # An improved syntax for encoding Roman Numerals
 
