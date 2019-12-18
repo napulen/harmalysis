@@ -96,3 +96,83 @@ SEVENTH_DEGREE_LOWERCASE : "vii"
 Once again, in some contexts (e.g., tonicizations and triads) the syntax is case-sensitive, denoting major mode as upper-case roman numerals and minor mode as lower-case roman numerals.
 
 > Note that the `SEVENTH_DEGREE` was not encoded as `LEADING_TONE`. This decision was made because of the dual role of the seventh degree as leading tone and subtonic (flattened seventh), which cannot be inferred from the grammar.
+
+## Inversions
+
+The language supports up to 11 possible inversions. This would imply that a chord with 12 different notes can be specified with its inversions using this language.
+
+However, in most cases, harmonic analyses describe chords with either 3 or 4 notes, so the number of inversions is divided in three categories:
+
+- Triad inversions: First and second inversions (e.g., 6 and 64), denoted with the letters `b` and `c`, respectively.
+- Chord inversions: First, second, and third inversions (e.g., 65, 43, and 2), denoted with the letters `b`, `c`, and `d`, respectively.
+- Extended-chord inversions: All letters in the range `b`-`l`
+
+The special character `a` denotes a chord in root position, however, this is the default assumption by the syntax if no inversion is specified and can be safely omitted.
+
+## Added intervals
+
+The `**harm` syntax specifies that additional intervals can be added after the scale degree. This is also true for `harm++`, except for a few considerations:
+
+- In a regular triadic-based chord, only one interval can be added
+  - The supported intervals added on top of a triad are `7`, `9`, `11`, and `13`.
+- The intervals can be preceded by their quality
+```
+MAJOR_INTERVAL : "M"
+MINOR_INTERVAL : "m"
+PERFECT_INTERVAL : "P"
+AUGMENTED_INTERVAL : "A"
+DIMINISHED_INTERVAL : "D"
+DOUBLE_AUGMENTED_INTERVAL : "AA"
+DOUBLE_DIMINISHED_INTERVAL : "DD"
+```
+- When no interval quality is specified (only the number), the interval is considered to be diatonic and it is based on the current key and scale degree.
+
+## Missing intervals
+
+The `harm++` language incorporates a new notation, missing intervals, which is not considered in the `**harm` syntax.
+
+Missing intervals can be included in a roman numeral label by writing the corresponding number, preceded by the `x` symbol.
+
+The only supported missing intervals are the `unison`, `third`, and `fifth`.
+
+> By definition, the 7th is an added interval, therefore, it cannot be missing. If it is missing, then it should simply not be annotated
+
+Missing intervals are only possible within triad-based chords, not special chords or descriptive chords.
+
+> By definition, special chords are special instances of pitch-classes in a special context (e.g., cadential or german augmented sixth). If they are missing notes, then they do not fullfil the criteria to be annotated as such special chords.
+
+
+## Special chords
+
+The language supports a handful of *special chords*, which include these:
+
+- Augmented sixth chords
+  - German augmented sixth, `Ger` or `Gn`
+  - Italian augmented sixth, `It`, or `Lt`
+  - French augmented sixth, `Fr`
+
+> In the `**harm` syntax, German augmented sixths are denoted as `Gn` and Italian augmented sixths as `Lt`. In `harm++`, the notations `Ger` and `It` have also been included, as they appear more often in music theory books.
+
+- Neapolitan chord, `N`
+- Tristan chord, `Tr`
+- Half-diminished seventh, `vii0`
+> The half-diminished seventh can be encoded as a triad-based chord as `viiom7`, however, the shorthand `vii0` is included given that it is the way that these chords are written in the MuseScore Campanella font
+- Cadential six-four, `Cad` or `V64`
+- Common-tone diminished seventh, `CTdim7`
+
+The special chords have specific properties, for example, they support inversions according to the number of notes that they contain. For example, a german augmented sixth chord supports 3 inversions, whereas an italian augmented sixth only supports 2 inversions. A more extreme example of this is the cadential six-four chord, which does not support any inversion. If an inversion is specified for this chord, the language parser will throw an error.
+
+> By definition, the cadential six-four has a form of I64. Whether it is the first degree in second inversion or the fifth degree with appoggiaturas is an open debate, however, it is agreed that the bass is always the fifth degree and therefore, there is no ambiguity of the bass as to require to specify an inversion. If the special chord is not to be used, this chord can also be encoded as `Ic` or `Vc`, but we recommend using the special chord notation.
+
+## Descriptive chords
+
+When a chord cannot be explained neither as a triad with an added interval (7th, 9th, 11th, or 13th) nor as a special chord, it can be described by its scale degree root and a series of added intervals. This notation has been implemented in order to support a similar mechanism in the `**harm` syntax.
+
+Although the parser will attempt its best to explain a descriptive chord, their semantic interpretation is much less informative than a triad-based or special chord. Therefore, descriptive chords are discouraged and it is suggested to find a way to explain all the chords through the triad-based or special chords.
+
+Special chords are prepended by the symbol `?` followed by a scale degree and a series of added intervals.
+
+The supported intervals span from the unison to a fifteenth (two octaves above the bass), and 11 possible inversions.
+
+The consistency of the inversions with the added intervals is not verified by the parser. For example, the chord `?IM3P5h` (Descriptive chord starting on the first degree, adding a major third, a perfect fifth, in seventh inversion) is a valid label. This is one of the reasons why we discourage their use.
+

@@ -57,7 +57,7 @@ SUPERTONIC_UPPERCASE : "II"
 MEDIANT_UPPERCASE : "III"
 SUBDOMINANT_UPPERCASE : "IV"
 DOMINANT_UPPERCASE : "V"
-SUBDOMINANT_UPPERCASE : "VI"
+SUBMEDIANT_UPPERCASE : "VI"
 SEVENTH_DEGREE_UPPERCASE : "VII"
 
 TONIC_LOWERCASE : "i"
@@ -65,7 +65,7 @@ SUPERTONIC_LOWERCASE : "ii"
 MEDIANT_LOWERCASE : "iii"
 SUBDOMINANT_LOWERCASE : "iv"
 DOMINANT_LOWERCASE : "v"
-SUBDOMINANT_LOWERCASE : "vi"
+SUBMEDIANT_LOWERCASE : "vi"
 SEVENTH_DEGREE_LOWERCASE : "vii"
 
 scale_degree_major : TONIC_UPPERCASE
@@ -73,7 +73,7 @@ scale_degree_major : TONIC_UPPERCASE
                    | MEDIANT_UPPERCASE
                    | SUBDOMINANT_UPPERCASE
                    | DOMINANT_UPPERCASE
-                   | SUBDOMINANT_UPPERCASE
+                   | SUBMEDIANT_UPPERCASE
                    | SEVENTH_DEGREE_UPPERCASE
 
 scale_degree_minor : TONIC_LOWERCASE
@@ -81,7 +81,7 @@ scale_degree_minor : TONIC_LOWERCASE
                    | MEDIANT_LOWERCASE
                    | SUBDOMINANT_LOWERCASE
                    | DOMINANT_LOWERCASE
-                   | SUBDOMINANT_LOWERCASE
+                   | SUBMEDIANT_LOWERCASE
                    | SEVENTH_DEGREE_LOWERCASE
 
 scale_degree : scale_degree_major | scale_degree_minor
@@ -89,87 +89,139 @@ scale_degree : scale_degree_major | scale_degree_minor
 /////////////
 // Inversions
 /////////////
-no_inversion : "a"
-first_inversion : "b"
-second_inversion: "c"
-third_inversion: "d"
-fourth_inversion: "e"
-fifth_inversion: "f"
-sixth_inversion: "g"
-seventh_inversion: "h"
-eighth_inversion: "i"
-ninth_inversion: "j"
-tenth_inversion: "k"
-eleventh_inversion: "l"
+NO_INVERSION : "a"
+FIRST_INVERSION : "b"
+SECOND_INVERSION: "c"
+THIRD_INVERSION: "d"
+FOURTH_INVERSION: "e"
+FIFTH_INVERSION: "f"
+SIXTH_INVERSION: "g"
+SEVENTH_INVERSION: "h"
+EIGHTH_INVERSION: "i"
+NINTH_INVERSION: "j"
+TENTH_INVERSION: "k"
+ELEVENTH_INVERSION: "l"
 
-triad_inversion : no_inversion
-                | first_inversion
-                | second_inversion
+triad_inversion : NO_INVERSION
+                | FIRST_INVERSION
+                | SECOND_INVERSION
 
-chord_inversion : triad_inversion | third_inversion
+chord_inversion : triad_inversion | THIRD_INVERSION
 
 extended_chord_inversion : chord_inversion
-                         | fourth_inversion
-                         | fifth_inversion
-                         | sixth_inversion
-                         | seventh_inversion
-                         | eighth_inversion
-                         | ninth_inversion
-                         | tenth_inversion
-                         | eleventh_inversion
+                         | FOURTH_INVERSION
+                         | FIFTH_INVERSION
+                         | SIXTH_INVERSION
+                         | SEVENTH_INVERSION
+                         | EIGHTH_INVERSION
+                         | NINTH_INVERSION
+                         | TENTH_INVERSION
+                         | ELEVENTH_INVERSION
+
+/////////////////////
+// Numeric inversions
+/////////////////////
+NUMERIC_INVERSION_TRIAD_FIRST_INVERSION : "6"
+NUMERIC_INVERSION_TRIAD_SECOND_INVERSION : "64"
+
+numeric_inversion_triad : NUMERIC_INVERSION_TRIAD_FIRST_INVERSION
+                        | NUMERIC_INVERSION_TRIAD_SECOND_INVERSION
+
+
+// These are more than numeric inversions, they specify an added 7th
+// AND a numeric inversion, within the same token
+NUMERIC_INVERSION_SEVENTH_FIRST_INVERSION : "65"
+NUMERIC_INVERSION_SEVENTH_SECOND_INVERSION : "43"
+NUMERIC_INVERSION_SEVENTH_THIRD_INVERSION: "42" | "2"
+
+numeric_inversion_seventh : NUMERIC_INVERSION_SEVENTH_FIRST_INVERSION
+                          | NUMERIC_INVERSION_SEVENTH_SECOND_INVERSION
+                          | NUMERIC_INVERSION_SEVENTH_THIRD_INVERSION
 
 //////////////////
 // Added intervals
 //////////////////
-basic_added_intervals : "7" | "9" | "11" | "13"
-all_valid_added_intervals : basic_added_intervals
-               | "1"
-               | "2"
-               | "3"
-               | "4"
-               | "5"
-               | "6"
-               | "8"
-               | "10"
-               | "12"
-               | "14"
-               | "15"
+INTERVAL_UNISON : "1"
+INTERVAL_SECOND : "2"
+INTERVAL_THIRD : "3"
+INTERVAL_FOURTH : "4"
+INTERVAL_FIFTH : "5"
+INTERVAL_SIXTH : "6"
+INTERVAL_SEVENTH : "7"
+INTERVAL_OCTAVE : "8"
+INTERVAL_NINTH : "9"
+INTERVAL_TENTH : "10"
+INTERVAL_ELEVENTH : "11"
+INTERVAL_TWELFTH : "12"
+INTERVAL_THIRTEENTH : "13"
+INTERVAL_FOURTEENTH : "14"
+INTERVAL_FIFTEENTH : "15"
 
-major_interval : "M"
-minor_interval : "m"
-perfect_interval : "P"
-augmented_interval : "A"
-diminished_interval : "D"
-double_augmented_interval : "AA"
-double_diminished_interval : "DD"
+valid_diatonic_intervals : INTERVAL_SEVENTH
+                         | INTERVAL_NINTH
+                         | INTERVAL_ELEVENTH
+                         | INTERVAL_THIRTEENTH
 
-interval_quality : major_interval
-                 | minor_interval
-                 | perfect_interval
-                 | augmented_interval
-                 | diminished_interval
-                 | double_augmented_interval
-                 | double_diminished_interval
+valid_descriptive_intervals : INTERVAL_UNISON
+                            | INTERVAL_SECOND
+                            | INTERVAL_THIRD
+                            | INTERVAL_FOURTH
+                            | INTERVAL_FIFTH
+                            | INTERVAL_SIXTH
+                            | INTERVAL_SEVENTH
+                            | INTERVAL_OCTAVE
+                            | INTERVAL_NINTH
+                            | INTERVAL_TENTH
+                            | INTERVAL_ELEVENTH
+                            | INTERVAL_TWELFTH
+                            | INTERVAL_THIRTEENTH
+                            | INTERVAL_FOURTEENTH
+                            | INTERVAL_FIFTEENTH
 
-basic_added_interval : [interval_quality] basic_added_intervals
-any_added_interval : interval_quality all_valid_added_intervals
+MAJOR_INTERVAL : "M"
+MINOR_INTERVAL : "m"
+PERFECT_INTERVAL : "P"
+AUGMENTED_INTERVAL : "A"
+DIMINISHED_INTERVAL : "D"
+DOUBLE_AUGMENTED_INTERVAL : "AA"
+DOUBLE_DIMINISHED_INTERVAL : "DD"
+
+interval_quality : MAJOR_INTERVAL
+                 | MINOR_INTERVAL
+                 | PERFECT_INTERVAL
+                 | AUGMENTED_INTERVAL
+                 | DIMINISHED_INTERVAL
+                 | DOUBLE_AUGMENTED_INTERVAL
+                 | DOUBLE_DIMINISHED_INTERVAL
+
+diatonic_added_interval : [interval_quality] valid_diatonic_intervals
+
+// For adding arbitrary intervals, it is mandatory to specify the interval quality
+descriptive_added_interval : interval_quality valid_descriptive_intervals
 
 ////////////////////
 // Missing intervals
 ////////////////////
-valid_missing_intervals : "1" | "3" | "5"
-missing_interval_symbol : "x"
-missing_interval : missing_interval_symbol valid_missing_intervals
+MISSING_ROOT : "1"
+MISSING_THIRD: "3"
+MISSING_FIFTH: "5"
+
+valid_missing_intervals : MISSING_ROOT
+                        | MISSING_THIRD
+                        | MISSING_FIFTH
+
+missing_interval : "x" valid_missing_intervals
 
 ////////////////////
 // Triad alterations
 ////////////////////
-diminished_triad_symbol : "o"
-augmented_triad_symbol : "+"
+DIMINISHED_TRIAD_SYMBOL : "o"
+AUGMENTED_TRIAD_SYMBOL : "+"
+
 major_triad : [alteration] scale_degree_major
-augmented_triad : major_triad augmented_triad_symbol
+augmented_triad : major_triad AUGMENTED_TRIAD_SYMBOL
 minor_triad : [alteration] scale_degree_minor
-diminished_triad : minor_triad diminished_triad_symbol
+diminished_triad : minor_triad DIMINISHED_TRIAD_SYMBOL
 
 /////////
 // Triads
@@ -182,34 +234,42 @@ triad : major_triad
 /////////////////////
 // Triad-based chords
 /////////////////////
-triad_chord : triad missing_interval* [triad_inversion]
-extended_triad_chord: triad basic_added_interval missing_interval* [chord_inversion]
+triad_chord : triad [triad_inversion] missing_interval*
+            | triad [numeric_inversion_triad] missing_interval*
+
+extended_triad_chord: triad diatonic_added_interval [chord_inversion] missing_interval*
+                    | triad numeric_inversion_seventh missing_interval*
 
 /////////////////
 // Special chords
 /////////////////
-german : "Ger" | "Gn"
-italian : "Lt" | "It"
-french : "Fr"
-augmented_sixth : german [chord_inversion] | italian [triad_inversion] | french [chord_inversion]
+SPECIAL_GERMAN : "Ger" | "Gn"
+SPECIAL_ITALIAN : "Lt" | "It"
+SPECIAL_FRENCH : "Fr"
+augmented_sixth : SPECIAL_GERMAN [chord_inversion]
+                | SPECIAL_ITALIAN [triad_inversion]
+                | SPECIAL_FRENCH [chord_inversion]
 
-neapolitan : "N"
-tristan : "Tr"
-half_diminished_seventh : "vii0"
-cadential : "Cad" | "V64"
-common_tone : "CTdim7" | "CTo7"
+SPECIAL_NEAPOLITAN : "N"
+SPECIAL_TRISTAN : "Tr"
+SPECIAL_HALF_DIMINISHED_SEVENTH : "vii0"
+SPECIAL_CADENTIAL_SIX_FOUR : "Cad"
+SPECIAL_COMMON_TONE_DIMINISHED : "CTdim7" | "CTo7"
 
 special_chord : augmented_sixth
-              | neapolitan [triad_inversion]
-              | tristan [chord_inversion]
-              | half_diminished_seventh [chord_inversion]
-              | cadential
-              | common_tone [chord_inversion]
+              | SPECIAL_NEAPOLITAN [triad_inversion]
+              | SPECIAL_NEAPOLITAN [numeric_inversion_triad]
+              | SPECIAL_TRISTAN [chord_inversion]
+              | SPECIAL_HALF_DIMINISHED_SEVENTH [chord_inversion]
+              | SPECIAL_HALF_DIMINISHED_SEVENTH [numeric_inversion_seventh]
+              | SPECIAL_CADENTIAL_SIX_FOUR
+              | SPECIAL_COMMON_TONE_DIMINISHED [chord_inversion]
+              | SPECIAL_COMMON_TONE_DIMINISHED [numeric_inversion_seventh]
 
 /////////////////////
 // Descriptive chords
 /////////////////////
-descriptive_chord : "?" triad any_added_interval* [extended_chord_inversion]
+descriptive_chord : "?" triad descriptive_added_interval* [extended_chord_inversion]
 
 /////////
 // Chords

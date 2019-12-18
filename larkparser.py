@@ -36,7 +36,7 @@ import sys
 if __name__ == '__main__':
      grammarfile = 'harmpp.lark'
      with open(grammarfile) as grammar:
-          l = Lark(grammar, start='scale_degree')
+          l = Lark(grammar, start='chord')
      print(l.parse(sys.argv[1]))
 
 
