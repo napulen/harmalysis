@@ -2,45 +2,54 @@ from lark import Lark
 
 grammar = '''
 
+/////////////////////////////////
 // Flats, sharps, and alterations
-
+/////////////////////////////////
 flat : "-" | "b"
 double_flat : "--" | "bb"
 sharp : "#"
 double_sharp : "##" | "x"
-
 alteration : flat
      | double_flat
      | sharp
      | double_sharp
 
-// Lower and upper case letters to be used as keys
-
+///////////////////////////////////////////
+// Lower-case, upper-case letters, and keys
+///////////////////////////////////////////
 lower_letter : "a" | "b" | "c" | "d" | "e" | "f" | "g"
 upper_letter : "A" | "B" | "C" | "D" | "E" | "F" | "G"
 letter : lower_letter | upper_letter
-
 key: letter [alteration] ":"
 
+////////////////
 // Scale degrees
-
+////////////////
 upper_scale_degree : "I" | "II" | "III" | "IV" | "V" | "VI" | "VII"
 lower_scale_degree : "i" | "ii" | "iii" | "iv" | "v" | "vi" | "vii"
 scale_degree : upper_scale_degree | lower_scale_degree
 
+////////////////////
+// Triad alterations
+////////////////////
 diminished_triad_symbol : "o"
 augmented_triad_symbol : "+"
-
 major_triad : [alteration] upper_scale_degree
 augmented_triad : major_triad augmented_triad_symbol
 minor_triad : [alteration] lower_scale_degree
 diminished_triad : minor_triad diminished_triad_symbol
 
+/////////
+// Triads
+/////////
 triad : major_triad
       | augmented_triad
       | minor_triad
       | diminished_triad
 
+/////////////////
+// Special chords
+/////////////////
 german : "Ger" | "Gn"
 italian : "Lt" | "It"
 french : "Fr"
@@ -59,6 +68,23 @@ special_chord : augmented_sixth
               | cadential
               | common_tone
 
+//////////////////
+// Added intervals
+//////////////////
+basic_added_intervals : "7" | "9" | "11" | "13"
+valid_added_intervals : basic_added_intervals
+               | "1"
+               | "2" 
+               | "3" 
+               | "4" 
+               | "5" 
+               | "6" 
+               | "8" 
+               | "10" 
+               | "12" 
+               | "14" 
+               | "15"
+
 major_interval : "M"
 minor_interval : "m"
 augmented_interval : "A"
@@ -73,27 +99,18 @@ interval_quality : major_interval
                  | double_augmented_interval
                  | double_diminished_interval
 
-missing_interval_symbol : "x"
-
-valid_interval : "1" 
-               | "2" 
-               | "3" 
-               | "4" 
-               | "5" 
-               | "6" 
-               | "7" 
-               | "8" 
-               | "9" 
-               | "10" 
-               | "11" 
-               | "12" 
-               | "13" 
-               | "14" 
-               | "15"
-
 added_interval : [interval_quality] valid_interval
-missing_interval : missing_interval_symbol valid_interval
 
+////////////////////
+// Missing intervals
+////////////////////
+valid_missing_intervals : "1" | "3" | "5"
+missing_interval_symbol : "x"
+missing_interval : missing_interval_symbol valid_missing_intervals
+
+/////////////
+// Inversions
+/////////////
 no_inversion : "a"
 first_inversion : "b"
 second_inversion: "c"
