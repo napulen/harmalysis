@@ -37,4 +37,6 @@ if __name__ == '__main__':
      grammarfile = 'harmalysis.lark'
      with open(grammarfile) as grammar:
           l = Lark(grammar)
-     print(l.parse(sys.argv[1]))
+     tree = l.parse(sys.argv[1])
+     print(tree)
+     print(tree.pretty())
