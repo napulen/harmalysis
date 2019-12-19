@@ -47,7 +47,17 @@ alteration : FLAT
 NOTE_LETTER_LOWERCASE : "a".."g"
 NOTE_LETTER_UPPERCASE : "A".."G"
 LETTER : NOTE_LETTER_LOWERCASE | NOTE_LETTER_UPPERCASE
-key: LETTER [alteration] ":"
+
+MINOR_NATURAL : "nat"
+MINOR_HARMONIC : "har"
+MINOR_MELODIC : "mel"
+minor_scale : MINOR_NATURAL | MINOR_HARMONIC | MINOR_MELODIC
+
+major_key : NOTE_LETTER_UPPERCASE [alteration]
+minor_key : NOTE_LETTER_LOWERCASE [alteration]
+          | NOTE_LETTER_LOWERCASE [alteration] "_" minor_scale
+
+key: major_key ":" | minor_key ":"
 
 ////////////////
 // Scale degrees
