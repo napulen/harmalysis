@@ -1,0 +1,130 @@
+// The harmalysis language for harmonic analysis and roman numerals
+// The chordlabels grammar for Chord labels
+//
+// Copyright (c) 2019, Nestor Napoles Lopez
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright notice, this
+//    list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright notice,
+//    this list of conditions and the following disclaimer in the documentation
+//    and/or other materials provided with the distribution.
+//
+// 3. Neither the name of the copyright holder nor the names of its
+//    contributors may be used to endorse or promote products derived from
+//    this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+/////////////////////////////////
+// Flats, sharps, and alterations
+/////////////////////////////////
+FLAT : "-" | "b"
+DOUBLE_FLAT : "--" | "bb"
+SHARP : "#"
+DOUBLE_SHARP : "##" | "x"
+alteration : FLAT         -> flat
+           | DOUBLE_FLAT  -> double_flat
+           | SHARP        -> sharp
+           | DOUBLE_SHARP -> double_sharp
+
+///////////////////////////////////////////
+// Lower-case, upper-case letters, and keys
+///////////////////////////////////////////
+NOTE_LETTER_LOWERCASE : "a".."g"
+NOTE_LETTER_UPPERCASE : "A".."G"
+LETTER : NOTE_LETTER_LOWERCASE | NOTE_LETTER_UPPERCASE
+
+key : NOTE_LETTER_UPPERCASE [alteration] -> major_key
+    | NOTE_LETTER_LOWERCASE [alteration] -> minor_key
+
+root : LETTER [alteration]
+
+//////////////////
+// Added intervals
+//////////////////
+INTERVAL_UNISON : "1"
+INTERVAL_SECOND : "2"
+INTERVAL_THIRD : "3"
+INTERVAL_FOURTH : "4"
+INTERVAL_FIFTH : "5"
+INTERVAL_SIXTH : "6"
+INTERVAL_SEVENTH : "7"
+INTERVAL_OCTAVE : "8"
+INTERVAL_NINTH : "9"
+INTERVAL_TENTH : "10"
+INTERVAL_ELEVENTH : "11"
+INTERVAL_TWELFTH : "12"
+INTERVAL_THIRTEENTH : "13"
+INTERVAL_FOURTEENTH : "14"
+INTERVAL_FIFTEENTH : "15"
+
+MAJOR_INTERVAL : "M"
+MINOR_INTERVAL : "m"
+PERFECT_INTERVAL : "P"
+AUGMENTED_INTERVAL : "A"
+DIMINISHED_INTERVAL : "D"
+DOUBLE_AUGMENTED_INTERVAL : "AA"
+DOUBLE_DIMINISHED_INTERVAL : "DD"
+
+
+_major_third : MAJOR_INTERVAL INTERVAL_THIRD
+_minor_third : MINOR_INTERVAL INTERVAL_THIRD
+_perfect_fifth : PERFECT_INTERVAL INTERVAL_FIFTH
+_diminished_fifth : DIMINISHED_INTERVAL INTERVAL_FIFTH
+_augmented_fifth : AUGMENTED_INTERVAL INTERVAL_FIFTH
+_minor_seventh : MINOR_INTERVAL INTERVAL_SEVENTH
+_major_seventh : MAJOR_INTERVAL INTERVAL_SEVENTH
+_diminished_seventh : DIMINISHED_INTERVAL INTERVAL_SEVENTH
+
+major_triad : _major_third _perfect_fifth
+minor_triad : _minor_third _perfect_fifth
+augmented_triad : _major_third _augmented_fifth
+diminished_triad : _minor_third _diminished_fifth
+
+major_seventhchord : major_triad _major_seventh
+dominant_seventhchord : major_triad _minor_seventh
+
+augmented_major_seventhchord : augmented_triad _major_seventh
+
+minor_seventhchord : minor_triad _minor_seventh
+minor_major_seventhchord : minor_triad _major_seventh
+
+half_diminished_seventhchord : diminished_triad _minor_seventh
+fully_diminished_seventhchord : diminished_triad _diminished_seventh
+
+//////////////
+// Chord label
+//////////////
+
+chord : root "_" major_triad -> major_triad_chord
+      | root "_" minor_triad
+      | root "_" augmented_triad
+      | root "_" diminished_triad
+      | root "_" major_seventhchord
+      | root "_" dominant_seventhchord
+      | root "_" augmented_major_seventhchord
+      | root "_" minor_seventhchord
+      | root "_" minor_major_seventhchord
+      | root "_" half_diminished_seventhchord
+      | root "_" fully_diminished_seventhchord
+
+start : chord
+
+// added_interval_diatonic : [interval_quality] diatonic_interval
+
+// // For adding arbitrary intervals, it is mandatory to specify the interval quality
+// added_interval_descriptive : interval_quality descriptive_interval
