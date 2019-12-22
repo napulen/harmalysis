@@ -58,6 +58,7 @@ minor_key : NOTE_LETTER_LOWERCASE [alteration]
           | NOTE_LETTER_LOWERCASE [alteration] "_" minor_scale
 
 key: major_key ":" | minor_key ":"
+key_established: major_key "=>:" | minor_key "=>:"
 
 ////////////////
 // Scale degrees
@@ -116,23 +117,30 @@ triad_inversion_letter : NO_INVERSION_LETTER
                        | FIRST_INVERSION_LETTER
                        | SECOND_INVERSION_LETTER
 
-chord_inversion_letter : NO_INVERSION_LETTER
-                       | FIRST_INVERSION_LETTER
-                       | SECOND_INVERSION_LETTER
-                       | THIRD_INVERSION_LETTER
+seventhchord_inversion_letter : triad_inversion_letter
+                              | THIRD_INVERSION_LETTER
 
-extended_chord_inversion_letter : NO_INVERSION_LETTER
-                                | FIRST_INVERSION_LETTER
-                                | SECOND_INVERSION_LETTER
-                                | THIRD_INVERSION_LETTER
-                                | FOURTH_INVERSION_LETTER
-                                | FIFTH_INVERSION_LETTER
-                                | SIXTH_INVERSION_LETTER
-                                | SEVENTH_INVERSION_LETTER
-                                | EIGHTH_INVERSION_LETTER
-                                | NINTH_INVERSION_LETTER
-                                | TENTH_INVERSION_LETTER
-                                | ELEVENTH_INVERSION_LETTER
+ninthchord_inversion_letter : seventhchord_inversion_letter
+                            | FOURTH_INVERSION_LETTER
+
+eleventhchord_inversion_letter : ninthchord_inversion_letter
+                               | FIFTH_INVERSION_LETTER
+
+thirteenth_inversion_letter : eleventhchord_inversion_letter
+                            | SIXTH_INVERSION_LETTER
+
+descriptive_chord_inversion_letter : NO_INVERSION_LETTER
+                                   | FIRST_INVERSION_LETTER
+                                   | SECOND_INVERSION_LETTER
+                                   | THIRD_INVERSION_LETTER
+                                   | FOURTH_INVERSION_LETTER
+                                   | FIFTH_INVERSION_LETTER
+                                   | SIXTH_INVERSION_LETTER
+                                   | SEVENTH_INVERSION_LETTER
+                                   | EIGHTH_INVERSION_LETTER
+                                   | NINTH_INVERSION_LETTER
+                                   | TENTH_INVERSION_LETTER
+                                   | ELEVENTH_INVERSION_LETTER
 
 ////////////////////////
 // Inversions by numbers
