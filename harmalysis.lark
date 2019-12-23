@@ -64,9 +64,9 @@ key : NOTE_LETTER_UPPERCASE                                -> major
 
 reference_key : key ":"
 
-local_key: key "=>:"
+established_key : key "=>:"
 
-?explicit_key : reference_key | local_key
+?explicit_key : reference_key | established_key
 
 ////////////////
 // Scale degrees
@@ -148,20 +148,20 @@ DIMINISHED_INTERVAL :        "D"
 DOUBLE_AUGMENTED_INTERVAL :  "AA"
 DOUBLE_DIMINISHED_INTERVAL : "DD"
 
-interval_quality_perfect : PERFECT_INTERVAL           -> perfect
+perfect_interval_quality : PERFECT_INTERVAL           -> perfect
                          | AUGMENTED_INTERVAL         -> augmented
                          | DIMINISHED_INTERVAL        -> diminished
                          | DOUBLE_AUGMENTED_INTERVAL  -> double_augmented
                          | DOUBLE_DIMINISHED_INTERVAL -> double_diminished
 
-interval_quality_nonperfect : MAJOR_INTERVAL             -> major
+nonperfect_interval_quality : MAJOR_INTERVAL             -> major
                             | MINOR_INTERVAL             -> minor
                             | AUGMENTED_INTERVAL         -> augmented
                             | DIMINISHED_INTERVAL        -> diminished
                             | DOUBLE_AUGMENTED_INTERVAL  -> double_augmented
                             | DOUBLE_DIMINISHED_INTERVAL -> double_diminished
 
-interval_quality_all : MAJOR_INTERVAL             -> major
+any_interval_quality : MAJOR_INTERVAL             -> major
                      | MINOR_INTERVAL             -> minor
                      | PERFECT_INTERVAL           -> perfect
                      | AUGMENTED_INTERVAL         -> augmented
@@ -169,100 +169,85 @@ interval_quality_all : MAJOR_INTERVAL             -> major
                      | DOUBLE_AUGMENTED_INTERVAL  -> double_diminished
                      | DOUBLE_DIMINISHED_INTERVAL -> double_augmented
 
-tertian_interval :                             INTERVAL_SEVENTH    -> added_seventh_diatonic
-                 | interval_quality_nonperfect INTERVAL_SEVENTH    -> added_seventh_with_quality
-                 |                             INTERVAL_NINTH      -> added_ninth_diatonic
-                 | interval_quality_nonperfect INTERVAL_NINTH      -> added_ninth_with_quality
-                 |                             INTERVAL_ELEVENTH   -> added_eleventh_diatonic
-                 | interval_quality_perfect    INTERVAL_ELEVENTH   -> added_eleventh_with_quality
-                 |                             INTERVAL_THIRTEENTH -> added_thirteenth_diatonic
-                 | interval_quality_nonperfect INTERVAL_THIRTEENTH -> added_thirteenth_with_quality
+added_seventh :                                INTERVAL_SEVENTH    -> added_seventh_diatonic
+              |    nonperfect_interval_quality INTERVAL_SEVENTH    -> added_seventh_with_quality
+added_ninth   :                                INTERVAL_NINTH      -> added_ninth_diatonic
+              |    nonperfect_interval_quality INTERVAL_NINTH      -> added_ninth_with_quality
+added_eleventh :                               INTERVAL_ELEVENTH   -> added_eleventh_diatonic
+               |   perfect_interval_quality    INTERVAL_ELEVENTH   -> added_eleventh_with_quality
+added_thirteenth :                             INTERVAL_THIRTEENTH -> added_thirteenth_diatonic
+                 | nonperfect_interval_quality INTERVAL_THIRTEENTH -> added_thirteenth_with_quality
 
-descriptive_interval : interval_quality_perfect    INTERVAL_UNISON
-                     | interval_quality_nonperfect INTERVAL_SECOND
-                     | interval_quality_nonperfect INTERVAL_THIRD
-                     | interval_quality_perfect    INTERVAL_FOURTH
-                     | interval_quality_perfect    INTERVAL_FIFTH
-                     | interval_quality_nonperfect INTERVAL_SIXTH
-                     | interval_quality_nonperfect INTERVAL_SEVENTH
-                     | interval_quality_perfect    INTERVAL_OCTAVE
-                     | interval_quality_nonperfect INTERVAL_NINTH
-                     | interval_quality_nonperfect INTERVAL_TENTH
-                     | interval_quality_perfect    INTERVAL_ELEVENTH
-                     | interval_quality_perfect    INTERVAL_TWELFTH
-                     | interval_quality_nonperfect INTERVAL_THIRTEENTH
-                     | interval_quality_nonperfect INTERVAL_FOURTEENTH
-                     | interval_quality_perfect    INTERVAL_FIFTEENTH
+_tertian_interval : added_seventh
+                  | added_ninth
+                  | added_eleventh
+                  | added_thirteenth
+
+descriptive_interval : perfect_interval_quality    INTERVAL_UNISON
+                     | nonperfect_interval_quality INTERVAL_SECOND
+                     | nonperfect_interval_quality INTERVAL_THIRD
+                     | perfect_interval_quality    INTERVAL_FOURTH
+                     | perfect_interval_quality    INTERVAL_FIFTH
+                     | nonperfect_interval_quality INTERVAL_SIXTH
+                     | nonperfect_interval_quality INTERVAL_SEVENTH
+                     | perfect_interval_quality    INTERVAL_OCTAVE
+                     | nonperfect_interval_quality INTERVAL_NINTH
+                     | nonperfect_interval_quality INTERVAL_TENTH
+                     | perfect_interval_quality    INTERVAL_ELEVENTH
+                     | perfect_interval_quality    INTERVAL_TWELFTH
+                     | nonperfect_interval_quality INTERVAL_THIRTEENTH
+                     | nonperfect_interval_quality INTERVAL_FOURTEENTH
+                     | perfect_interval_quality    INTERVAL_FIFTEENTH
+
+////////////////////////
+// Inversions by numbers
+////////////////////////
+TRIAD_FIRST_INVERSION_NUMERIC :  "6"
+TRIAD_SECOND_INVERSION_NUMERIC : "64"
+
+numeric_triad_inversion : TRIAD_FIRST_INVERSION_NUMERIC
+                        | TRIAD_SECOND_INVERSION_NUMERIC
 
 
-tertian_chord : triad tertian_interval
+// These are more than numeric inversions, they specify an added 7th
+// AND a numeric inversion, within the same token
+SEVENTHCHORD_FIRST_INVERSION_NUMERIC :  "65"
+SEVENTHCHORD_SECOND_INVERSION_NUMERIC : "43"
+SEVENTHCHORD_THIRD_INVERSION_NUMERIC:   "42" | "2"
+
+numeric_seventhchord_inversion : SEVENTHCHORD_FIRST_INVERSION_NUMERIC
+                               | SEVENTHCHORD_SECOND_INVERSION_NUMERIC
+                               | SEVENTHCHORD_THIRD_INVERSION_NUMERIC
+
+///////////////////////
+// Inversions by letter
+///////////////////////
+TRIAD_INVERSION_LETTER :           "a".."c"
+SEVENTHCHORD_INVERSION_LETTER :    "a".."d"
+NINTHCHORD_INVERSION_LETTER :      "a".."e"
+ELEVENTHCHORD_INVERSION_LETTER :   "a".."f"
+THIRTEENTHCHORD_INVERSION_LETTER : "a".."g"
+
+triad_inversion_letter :           TRIAD_INVERSION_LETTER           -> inversion_by_letter
+seventhchord_inversion_letter :    SEVENTHCHORD_INVERSION_LETTER    -> inversion_by_letter
+ninthchord_inversion_letter :      NINTHCHORD_INVERSION_LETTER      -> inversion_by_letter
+eleventhchord_inversion_letter :   ELEVENTHCHORD_INVERSION_LETTER   -> inversion_by_letter
+thirteenthchord_inversion_letter : THIRTEENTHCHORD_INVERSION_LETTER -> inversion_by_letter
+
+tertian_chord : triad
+              | triad numeric_triad_inversion
+              | triad numeric_seventhchord_inversion
+              | triad triad_inversion_letter
+              | triad added_seventh
+              | triad added_seventh    seventhchord_inversion_letter
+              | triad added_ninth
+              | triad added_ninth      ninthchord_inversion_letter
+              | triad added_eleventh
+              | triad added_eleventh   eleventhchord_inversion_letter
+              | triad added_thirteenth
+              | triad added_thirteenth thirteenthchord_inversion_letter
 
 start : explicit_key tertian_chord
-
-// ///////////////////////
-// // Inversions by letter
-// ///////////////////////
-// NO_INVERSION_LETTER : "a"
-// FIRST_INVERSION_LETTER : "b"
-// SECOND_INVERSION_LETTER: "c"
-// THIRD_INVERSION_LETTER: "d"
-// FOURTH_INVERSION_LETTER: "e"
-// FIFTH_INVERSION_LETTER: "f"
-// SIXTH_INVERSION_LETTER: "g"
-// SEVENTH_INVERSION_LETTER: "h"
-// EIGHTH_INVERSION_LETTER: "i"
-// NINTH_INVERSION_LETTER: "j"
-// TENTH_INVERSION_LETTER: "k"
-// ELEVENTH_INVERSION_LETTER: "l"
-
-// triad_inversion_letter : NO_INVERSION_LETTER
-//                        | FIRST_INVERSION_LETTER
-//                        | SECOND_INVERSION_LETTER
-
-// seventhchord_inversion_letter : triad_inversion_letter
-//                               | THIRD_INVERSION_LETTER
-
-// ninthchord_inversion_letter : seventhchord_inversion_letter
-//                             | FOURTH_INVERSION_LETTER
-
-// eleventhchord_inversion_letter : ninthchord_inversion_letter
-//                                | FIFTH_INVERSION_LETTER
-
-// thirteenth_inversion_letter : eleventhchord_inversion_letter
-//                             | SIXTH_INVERSION_LETTER
-
-// descriptive_chord_inversion_letter : NO_INVERSION_LETTER
-//                                    | FIRST_INVERSION_LETTER
-//                                    | SECOND_INVERSION_LETTER
-//                                    | THIRD_INVERSION_LETTER
-//                                    | FOURTH_INVERSION_LETTER
-//                                    | FIFTH_INVERSION_LETTER
-//                                    | SIXTH_INVERSION_LETTER
-//                                    | SEVENTH_INVERSION_LETTER
-//                                    | EIGHTH_INVERSION_LETTER
-//                                    | NINTH_INVERSION_LETTER
-//                                    | TENTH_INVERSION_LETTER
-//                                    | ELEVENTH_INVERSION_LETTER
-
-// ////////////////////////
-// // Inversions by numbers
-// ////////////////////////
-// TRIAD_FIRST_INVERSION_NUMERIC : "6"
-// TRIAD_SECOND_INVERSION_NUMERIC : "64"
-
-// triad_inversion_numeric : TRIAD_FIRST_INVERSION_NUMERIC
-//                         | TRIAD_SECOND_INVERSION_NUMERIC
-
-
-// // These are more than numeric inversions, they specify an added 7th
-// // AND a numeric inversion, within the same token
-// SEVENTHCHORD_FIRST_INVERSION_NUMERIC : "65"
-// SEVENTHCHORD_SECOND_INVERSION_NUMERIC : "43"
-// SEVENTHCHORD_THIRD_INVERSION_NUMERIC: "42" | "2"
-
-// seventhchord_inversion_numeric : SEVENTHCHORD_FIRST_INVERSION_NUMERIC
-//                                | SEVENTHCHORD_SECOND_INVERSION_NUMERIC
-//                                | SEVENTHCHORD_THIRD_INVERSION_NUMERIC
 
 // ////////////////////
 // // Missing intervals
