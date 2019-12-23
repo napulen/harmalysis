@@ -234,40 +234,47 @@ ninthchord_inversion_letter :      NINTHCHORD_INVERSION_LETTER      -> inversion
 eleventhchord_inversion_letter :   ELEVENTHCHORD_INVERSION_LETTER   -> inversion_by_letter
 thirteenthchord_inversion_letter : THIRTEENTHCHORD_INVERSION_LETTER -> inversion_by_letter
 
-tertian_chord : triad
-              | triad numeric_triad_inversion
-              | triad numeric_seventhchord_inversion
-              | triad triad_inversion_letter
-              | triad added_seventh
-              | triad added_seventh    seventhchord_inversion_letter
-              | triad added_ninth
-              | triad added_ninth      ninthchord_inversion_letter
-              | triad added_eleventh
-              | triad added_eleventh   eleventhchord_inversion_letter
-              | triad added_thirteenth
-              | triad added_thirteenth thirteenthchord_inversion_letter
+////////////////////
+// Missing intervals
+////////////////////
+MISSING_ROOT :     "1"
+MISSING_THIRD :    "3"
+MISSING_FIFTH :    "5"
+MISSING_SEVENTH :  "7"
+MISSING_NINTH :    "9"
+MISSING_ELEVENTH : "11"
+
+_MISSING_INTERVAL_SYMBOL : "x"
+
+_missing_intervals_triad :           [_MISSING_INTERVAL_SYMBOL MISSING_ROOT] [_MISSING_INTERVAL_SYMBOL MISSING_THIRD] [_MISSING_INTERVAL_SYMBOL MISSING_FIFTH]
+_missing_intervals_seventhchord :    [_missing_intervals_triad]
+_missing_intervals_ninthchord :      [_missing_intervals_seventhchord]  [_MISSING_INTERVAL_SYMBOL MISSING_SEVENTH]
+_missing_intervals_eleventhchord :   [_missing_intervals_ninthchord]    [_MISSING_INTERVAL_SYMBOL MISSING_NINTH]
+_missing_intervals_thirteenthchord : [_missing_intervals_eleventhchord] [_MISSING_INTERVAL_SYMBOL MISSING_ELEVENTH]
+
+missing_intervals_triad :           _missing_intervals_triad
+missing_intervals_seventhchord :    _missing_intervals_seventhchord
+missing_intervals_ninthchord :      _missing_intervals_ninthchord
+missing_intervals_eleventhchord :   _missing_intervals_eleventhchord
+missing_intervals_thirteenthchord : _missing_intervals_thirteenthchord
+
+/////////////////
+// Tertian chords
+/////////////////
+tertian_chord : triad                                                    missing_intervals_triad
+              | triad numeric_triad_inversion                            missing_intervals_triad
+              | triad numeric_seventhchord_inversion                     missing_intervals_seventhchord
+              | triad triad_inversion_letter                             missing_intervals_triad
+              | triad added_seventh                                      missing_intervals_seventhchord
+              | triad added_seventh    seventhchord_inversion_letter     missing_intervals_seventhchord
+              | triad added_ninth                                        missing_intervals_ninthchord
+              | triad added_ninth      ninthchord_inversion_letter       missing_intervals_ninthchord
+              | triad added_eleventh                                     missing_intervals_eleventhchord
+              | triad added_eleventh   eleventhchord_inversion_letter    missing_intervals_eleventhchord
+              | triad added_thirteenth                                   missing_intervals_thirteenthchord
+              | triad added_thirteenth thirteenthchord_inversion_letter  missing_intervals_thirteenthchord
 
 start : explicit_key tertian_chord
-
-// ////////////////////
-// // Missing intervals
-// ////////////////////
-// MISSING_ROOT : "1"
-// MISSING_THIRD: "3"
-// MISSING_FIFTH: "5"
-
-// missing_interval : "x" MISSING_ROOT
-//                  | "x" MISSING_THIRD
-//                  | "x" MISSING_FIFTH
-
-
-// /////////////////
-// // Tertian chords
-// /////////////////
-// tertian_chord : triad [triad_inversion_letter] missing_interval*
-//               | triad [triad_inversion_numeric] missing_interval*
-//               | triad added_interval_diatonic [chord_inversion_letter] missing_interval*
-//               | triad seventhchord_inversion_numeric missing_interval*
 
 // /////////////////
 // // Special chords
