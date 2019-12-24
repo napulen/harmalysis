@@ -114,7 +114,7 @@ DIMINISHED_FIFTH : "o"
 /////////
 triad : scale_degree_major                             -> major_triad
       | alteration scale_degree_major                  -> major_triad_with_alteration
-      | scale_degree_major            AUGMENTED_FIFTH  -> augmented_triad 
+      | scale_degree_major            AUGMENTED_FIFTH  -> augmented_triad
       | alteration scale_degree_major AUGMENTED_FIFTH  -> augmented_triad_with_alteration
       | scale_degree_minor                             -> minor_triad
       | alteration scale_degree_minor                  -> minor_triad_with_alteration
@@ -205,8 +205,8 @@ descriptive_interval : perfect_interval_quality    INTERVAL_UNISON
 TRIAD_FIRST_INVERSION_NUMERIC :  "6"
 TRIAD_SECOND_INVERSION_NUMERIC : "64"
 
-numeric_triad_inversion : TRIAD_FIRST_INVERSION_NUMERIC
-                        | TRIAD_SECOND_INVERSION_NUMERIC
+triad_inversion_by_number : TRIAD_FIRST_INVERSION_NUMERIC
+                          | TRIAD_SECOND_INVERSION_NUMERIC
 
 
 // These are more than numeric inversions, they specify an added 7th
@@ -215,9 +215,9 @@ SEVENTHCHORD_FIRST_INVERSION_NUMERIC :  "65"
 SEVENTHCHORD_SECOND_INVERSION_NUMERIC : "43"
 SEVENTHCHORD_THIRD_INVERSION_NUMERIC:   "42" | "2"
 
-numeric_seventhchord_inversion : SEVENTHCHORD_FIRST_INVERSION_NUMERIC
-                               | SEVENTHCHORD_SECOND_INVERSION_NUMERIC
-                               | SEVENTHCHORD_THIRD_INVERSION_NUMERIC
+seventhchord_inversion_by_number : SEVENTHCHORD_FIRST_INVERSION_NUMERIC
+                                 | SEVENTHCHORD_SECOND_INVERSION_NUMERIC
+                                 | SEVENTHCHORD_THIRD_INVERSION_NUMERIC
 
 ///////////////////////
 // Inversions by letter
@@ -228,11 +228,11 @@ NINTHCHORD_INVERSION_LETTER :      "a".."e"
 ELEVENTHCHORD_INVERSION_LETTER :   "a".."f"
 THIRTEENTHCHORD_INVERSION_LETTER : "a".."g"
 
-triad_inversion_letter :           TRIAD_INVERSION_LETTER           -> inversion_by_letter
-seventhchord_inversion_letter :    SEVENTHCHORD_INVERSION_LETTER    -> inversion_by_letter
-ninthchord_inversion_letter :      NINTHCHORD_INVERSION_LETTER      -> inversion_by_letter
-eleventhchord_inversion_letter :   ELEVENTHCHORD_INVERSION_LETTER   -> inversion_by_letter
-thirteenthchord_inversion_letter : THIRTEENTHCHORD_INVERSION_LETTER -> inversion_by_letter
+triad_inversion_by_letter :           TRIAD_INVERSION_LETTER           -> inversion_by_letter
+seventhchord_inversion_by_letter :    SEVENTHCHORD_INVERSION_LETTER    -> inversion_by_letter
+ninthchord_inversion_by_letter :      NINTHCHORD_INVERSION_LETTER      -> inversion_by_letter
+eleventhchord_inversion_by_letter :   ELEVENTHCHORD_INVERSION_LETTER   -> inversion_by_letter
+thirteenthchord_inversion_by_letter : THIRTEENTHCHORD_INVERSION_LETTER -> inversion_by_letter
 
 ////////////////////
 // Missing intervals
@@ -261,47 +261,60 @@ missing_intervals_thirteenthchord : _missing_intervals_thirteenthchord
 /////////////////
 // Tertian chords
 /////////////////
-tertian_chord : triad                                                    missing_intervals_triad
-              | triad numeric_triad_inversion                            missing_intervals_triad
-              | triad numeric_seventhchord_inversion                     missing_intervals_seventhchord
-              | triad triad_inversion_letter                             missing_intervals_triad
-              | triad added_seventh                                      missing_intervals_seventhchord
-              | triad added_seventh    seventhchord_inversion_letter     missing_intervals_seventhchord
-              | triad added_ninth                                        missing_intervals_ninthchord
-              | triad added_ninth      ninthchord_inversion_letter       missing_intervals_ninthchord
-              | triad added_eleventh                                     missing_intervals_eleventhchord
-              | triad added_eleventh   eleventhchord_inversion_letter    missing_intervals_eleventhchord
-              | triad added_thirteenth                                   missing_intervals_thirteenthchord
-              | triad added_thirteenth thirteenthchord_inversion_letter  missing_intervals_thirteenthchord
+tertian_chord : triad                                                      missing_intervals_triad
+              | triad triad_inversion_by_number                            missing_intervals_triad
+              | triad seventhchord_inversion_by_number                     missing_intervals_seventhchord
+              | triad triad_inversion_by_letter                            missing_intervals_triad
+              | triad added_seventh                                        missing_intervals_seventhchord
+              | triad added_seventh    seventhchord_inversion_by_letter    missing_intervals_seventhchord
+              | triad added_ninth                                          missing_intervals_ninthchord
+              | triad added_ninth      ninthchord_inversion_by_letter      missing_intervals_ninthchord
+              | triad added_eleventh                                       missing_intervals_eleventhchord
+              | triad added_eleventh   eleventhchord_inversion_by_letter   missing_intervals_eleventhchord
+              | triad added_thirteenth                                     missing_intervals_thirteenthchord
+              | triad added_thirteenth thirteenthchord_inversion_by_letter missing_intervals_thirteenthchord
 
-start : explicit_key tertian_chord
+/////////////////
+// Special chords
+/////////////////
+GERMAN :                  "Ger" | "Gn"
+ITALIAN :                 "Lt"  | "It"
+FRENCH :                  "Fr"
+NEAPOLITAN :              "N"
+TRISTAN :                 "Tr"
+HALF_DIMINISHED_SEVENTH : "vii0"
+CADENTIAL_SIX_FOUR :      "Cad"
+COMMON_TONE_DIMINISHED :  "CTo7"
 
-// /////////////////
-// // Special chords
-// /////////////////
-// SPECIAL_GERMAN : "Ger" | "Gn"
-// SPECIAL_ITALIAN : "Lt" | "It"
-// SPECIAL_FRENCH : "Fr"
-// augmented_sixth : SPECIAL_GERMAN [chord_inversion_letter]
-//                 | SPECIAL_ITALIAN [triad_inversion_letter]
-//                 | SPECIAL_FRENCH [chord_inversion_letter]
+german :                  GERMAN                  -> name
+italian :                 ITALIAN                 -> name
+french :                  FRENCH                  -> name
+neapolitan :              NEAPOLITAN              -> name
+tristan :                 TRISTAN                 -> name
+half_diminished_seventh : HALF_DIMINISHED_SEVENTH -> name
+cadential_six_four :      CADENTIAL_SIX_FOUR      -> name
+common_tone_diminished :  COMMON_TONE_DIMINISHED  -> name
 
-// SPECIAL_NEAPOLITAN : "N"
-// SPECIAL_TRISTAN : "Tr"
-// SPECIAL_HALF_DIMINISHED_SEVENTH : "vii0"
-// SPECIAL_CADENTIAL_SIX_FOUR : "Cad"
-// SPECIAL_COMMON_TONE_DIMINISHED : "CTdim7" | "CTo7"
-
-// special_chord : augmented_sixth
-//               | SPECIAL_NEAPOLITAN [triad_inversion_letter]
-//               | SPECIAL_NEAPOLITAN [triad_inversion_numeric]
-//               | SPECIAL_TRISTAN [chord_inversion_letter]
-//               | SPECIAL_HALF_DIMINISHED_SEVENTH [chord_inversion_letter]
-//               | SPECIAL_HALF_DIMINISHED_SEVENTH [chord_inversion_letter] "7"
-//               | SPECIAL_HALF_DIMINISHED_SEVENTH [seventhchord_inversion_numeric]
-//               | SPECIAL_CADENTIAL_SIX_FOUR
-//               | SPECIAL_COMMON_TONE_DIMINISHED [chord_inversion_letter]
-//               | SPECIAL_COMMON_TONE_DIMINISHED [seventhchord_inversion_numeric]
+special_chord : german
+              | german seventhchord_inversion_by_letter
+              | german seventhchord_inversion_by_number
+              | italian
+              | italian triad_inversion_by_letter
+              | italian triad_inversion_by_number
+              | french
+              | french seventhchord_inversion_by_letter
+              | french seventhchord_inversion_by_number
+              | neapolitan
+              | neapolitan triad_inversion_by_letter
+              | neapolitan triad_inversion_by_number
+              | tristan
+              | half_diminished_seventh ["7"]
+              | half_diminished_seventh ["7"] seventhchord_inversion_by_letter
+              | half_diminished_seventh seventhchord_inversion_by_number
+              | cadential_six_four ["64"]
+              | common_tone_diminished
+              | common_tone_diminished seventhchord_inversion_by_letter
+              | common_tone_diminished seventhchord_inversion_by_number
 
 // /////////////////////
 // // Descriptive chords
@@ -312,6 +325,10 @@ start : explicit_key tertian_chord
 // // Chords
 // /////////
 // chord : tertian_chord | special_chord | descriptive_chord
+
+start : explicit_key tertian_chord
+      | explicit_key special_chord
+
 
 // ///////////////////
 // // Harmalysis Label
