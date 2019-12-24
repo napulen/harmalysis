@@ -65,7 +65,7 @@ key : NOTE_LETTER_UPPERCASE                                -> major
 reference_key :   key ":"
 established_key : key "=>:"
 
-?explicit_key : reference_key | established_key
+_explicit_key : reference_key | established_key
 
 ////////////////
 // Scale degrees
@@ -86,7 +86,7 @@ DOMINANT_LOWERCASE :       "v"
 SUBMEDIANT_LOWERCASE :     "vi"
 SEVENTH_DEGREE_LOWERCASE : "vii"
 
-?scale_degree_major : TONIC_UPPERCASE
+_scale_degree_major : TONIC_UPPERCASE
                     | SUPERTONIC_UPPERCASE
                     | MEDIANT_UPPERCASE
                     | SUBDOMINANT_UPPERCASE
@@ -94,7 +94,7 @@ SEVENTH_DEGREE_LOWERCASE : "vii"
                     | SUBMEDIANT_UPPERCASE
                     | SEVENTH_DEGREE_UPPERCASE
 
-?scale_degree_minor : TONIC_LOWERCASE
+_scale_degree_minor : TONIC_LOWERCASE
                     | SUPERTONIC_LOWERCASE
                     | MEDIANT_LOWERCASE
                     | SUBDOMINANT_LOWERCASE
@@ -111,14 +111,14 @@ DIMINISHED_FIFTH : "o"
 /////////
 // Triads
 /////////
-triad : scale_degree_major                             -> major_triad
-      | alteration scale_degree_major                  -> major_triad_with_alteration
-      | scale_degree_major            AUGMENTED_FIFTH  -> augmented_triad
-      | alteration scale_degree_major AUGMENTED_FIFTH  -> augmented_triad_with_alteration
-      | scale_degree_minor                             -> minor_triad
-      | alteration scale_degree_minor                  -> minor_triad_with_alteration
-      | scale_degree_minor            DIMINISHED_FIFTH -> diminished_triad
-      | alteration scale_degree_minor DIMINISHED_FIFTH -> diminished_triad_with_alteration
+triad : _scale_degree_major                             -> major_triad
+      | alteration _scale_degree_major                  -> major_triad_with_alteration
+      | _scale_degree_major            AUGMENTED_FIFTH  -> augmented_triad
+      | alteration _scale_degree_major AUGMENTED_FIFTH  -> augmented_triad_with_alteration
+      | _scale_degree_minor                             -> minor_triad
+      | alteration _scale_degree_minor                  -> minor_triad_with_alteration
+      | _scale_degree_minor            DIMINISHED_FIFTH -> diminished_triad
+      | alteration _scale_degree_minor DIMINISHED_FIFTH -> diminished_triad_with_alteration
 
 //////////////////
 // Added intervals
@@ -182,21 +182,21 @@ _tertian_interval : added_seventh
                   | added_eleventh
                   | added_thirteenth
 
-descriptive_interval : perfect_interval_quality    INTERVAL_UNISON
-                     | nonperfect_interval_quality INTERVAL_SECOND
-                     | nonperfect_interval_quality INTERVAL_THIRD
-                     | perfect_interval_quality    INTERVAL_FOURTH
-                     | perfect_interval_quality    INTERVAL_FIFTH
-                     | nonperfect_interval_quality INTERVAL_SIXTH
-                     | nonperfect_interval_quality INTERVAL_SEVENTH
-                     | perfect_interval_quality    INTERVAL_OCTAVE
-                     | nonperfect_interval_quality INTERVAL_NINTH
-                     | nonperfect_interval_quality INTERVAL_TENTH
-                     | perfect_interval_quality    INTERVAL_ELEVENTH
-                     | perfect_interval_quality    INTERVAL_TWELFTH
-                     | nonperfect_interval_quality INTERVAL_THIRTEENTH
-                     | nonperfect_interval_quality INTERVAL_FOURTEENTH
-                     | perfect_interval_quality    INTERVAL_FIFTEENTH
+_descriptive_interval : perfect_interval_quality    INTERVAL_UNISON
+                      | nonperfect_interval_quality INTERVAL_SECOND
+                      | nonperfect_interval_quality INTERVAL_THIRD
+                      | perfect_interval_quality    INTERVAL_FOURTH
+                      | perfect_interval_quality    INTERVAL_FIFTH
+                      | nonperfect_interval_quality INTERVAL_SIXTH
+                      | nonperfect_interval_quality INTERVAL_SEVENTH
+                      | perfect_interval_quality    INTERVAL_OCTAVE
+                      | nonperfect_interval_quality INTERVAL_NINTH
+                      | nonperfect_interval_quality INTERVAL_TENTH
+                      | perfect_interval_quality    INTERVAL_ELEVENTH
+                      | perfect_interval_quality    INTERVAL_TWELFTH
+                      | nonperfect_interval_quality INTERVAL_THIRTEENTH
+                      | nonperfect_interval_quality INTERVAL_FOURTEENTH
+                      | perfect_interval_quality    INTERVAL_FIFTEENTH
 
 ////////////////////////
 // Inversions by numbers
@@ -323,10 +323,10 @@ pitch_class_root : NOTE_LETTER_LOWERCASE                -> pitch_class
                  | NOTE_LETTER_UPPERCASE                -> pitch_class
                  | NOTE_LETTER_UPPERCASE alteration     -> pitch_class_with_alteration
 
-scale_degree_root : scale_degree_major            -> scale_degree
-                  | scale_degree_minor            -> scale_degree
-                  | alteration scale_degree_major -> scale_degree_with_alteration
-                  | alteration scale_degree_minor -> scale_degree_with_alteration
+scale_degree_root : _scale_degree_major            -> scale_degree
+                  | _scale_degree_minor            -> scale_degree
+                  | alteration _scale_degree_major -> scale_degree_with_alteration
+                  | alteration _scale_degree_minor -> scale_degree_with_alteration
 
 _added_unison :                       [perfect_interval_quality    INTERVAL_UNISON]
 _added_second :     _added_unison     [nonperfect_interval_quality INTERVAL_SECOND]
@@ -359,18 +359,19 @@ chord : tertian_chord
 ///////////////////
 // Harmalysis Label
 ///////////////////
-by_scale_degree : "/" scale_degree_major
-                          | "/" scale_degree_minor
+by_scale_degree : "/" _scale_degree_major -> by_scale_degree_major
+                | "/" _scale_degree_minor -> by_scale_degree_minor
+                | "/" NEAPOLITAN          -> by_scale_degree_neapolitan
 
 by_pitch_class : "/" NOTE_LETTER_UPPERCASE             -> by_letter_major
                | "/" NOTE_LETTER_UPPERCASE alteration  -> by_letter_major_with_alteration
                | "/" NOTE_LETTER_LOWERCASE             -> by_letter_minor
                | "/" NOTE_LETTER_LOWERCASE alteration  -> by_letter_minor_with_alteration
 
-tonicization : by_scale_degree*
+tonicization : by_scale_degree+
              | by_pitch_class
 
-harmalysis : explicit_key? chord tonicization
+harmalysis : _explicit_key? chord tonicization?
 implicit : "(" harmalysis ")"
 alternate : harmalysis "[" harmalysis "]"
           | harmalysis ( "|" harmalysis )~1..3
