@@ -63,7 +63,6 @@ key : NOTE_LETTER_UPPERCASE                                -> major
     | NOTE_LETTER_LOWERCASE alteration "_" _MINOR_MELODIC  -> melodic_minor_with_alteration
 
 reference_key : key ":"
-
 established_key : key "=>:"
 
 ?explicit_key : reference_key | established_key
@@ -284,7 +283,7 @@ NEAPOLITAN :              "N"
 TRISTAN :                 "Tr"
 HALF_DIMINISHED_SEVENTH : "vii0"
 CADENTIAL_SIX_FOUR :      "Cad"
-COMMON_TONE_DIMINISHED :  "CTo7"
+COMMON_TONE_DIMINISHED :  "CTo"
 
 german :                  GERMAN                  -> name
 italian :                 ITALIAN                 -> name
@@ -296,38 +295,66 @@ cadential_six_four :      CADENTIAL_SIX_FOUR      -> name
 common_tone_diminished :  COMMON_TONE_DIMINISHED  -> name
 
 special_chord : german
-              | german seventhchord_inversion_by_letter
-              | german seventhchord_inversion_by_number
+              | german                        seventhchord_inversion_by_letter
+              | german                        seventhchord_inversion_by_number
               | italian
-              | italian triad_inversion_by_letter
-              | italian triad_inversion_by_number
+              | italian                       triad_inversion_by_letter
+              | italian                       triad_inversion_by_number
               | french
-              | french seventhchord_inversion_by_letter
-              | french seventhchord_inversion_by_number
+              | french                        seventhchord_inversion_by_letter
+              | french                        seventhchord_inversion_by_number
               | neapolitan
-              | neapolitan triad_inversion_by_letter
-              | neapolitan triad_inversion_by_number
+              | neapolitan                    triad_inversion_by_letter
+              | neapolitan                    triad_inversion_by_number
               | tristan
               | half_diminished_seventh ["7"]
               | half_diminished_seventh ["7"] seventhchord_inversion_by_letter
-              | half_diminished_seventh seventhchord_inversion_by_number
+              | half_diminished_seventh       seventhchord_inversion_by_number
               | cadential_six_four ["64"]
-              | common_tone_diminished
-              | common_tone_diminished seventhchord_inversion_by_letter
-              | common_tone_diminished seventhchord_inversion_by_number
+              | common_tone_diminished ["7"]
+              | common_tone_diminished ["7"]  seventhchord_inversion_by_letter
+              | common_tone_diminished        seventhchord_inversion_by_number
 
-// /////////////////////
-// // Descriptive chords
-// /////////////////////
-// descriptive_chord : "?" triad added_interval_descriptive* [extended_chord_inversion_letter]
+/////////////////////
+// Descriptive chords
+/////////////////////
+pitch_class : NOTE_LETTER_LOWERCASE                -> pitch_class
+            | NOTE_LETTER_LOWERCASE alteration     -> pitch_class_with_alteration
+            | NOTE_LETTER_UPPERCASE                -> pitch_class
+            | NOTE_LETTER_UPPERCASE alteration     -> pitch_class_with_alteration
 
-// /////////
-// // Chords
-// /////////
-// chord : tertian_chord | special_chord | descriptive_chord
+scale_degree : scale_degree_major            -> scale_degree
+             | scale_degree_minor            -> scale_degree
+             | alteration scale_degree_major -> scale_degree_with_alteration
+             | alteration scale_degree_minor -> scale_degree_with_alteration
 
+_added_unison :                       [perfect_interval_quality    INTERVAL_UNISON]
+_added_second :     _added_unison     [nonperfect_interval_quality INTERVAL_SECOND]
+_added_third :      _added_second     [nonperfect_interval_quality INTERVAL_THIRD]
+_added_fourth :     _added_third      [perfect_interval_quality    INTERVAL_FOURTH]
+_added_fifth :      _added_fourth     [perfect_interval_quality    INTERVAL_FIFTH]
+_added_sixth :      _added_fifth      [nonperfect_interval_quality INTERVAL_SIXTH]
+_added_seventh :    _added_sixth      [nonperfect_interval_quality INTERVAL_SEVENTH]
+_added_octave :     _added_seventh    [perfect_interval_quality    INTERVAL_OCTAVE]
+_added_ninth :      _added_octave     [nonperfect_interval_quality INTERVAL_NINTH]
+_added_tenth :      _added_ninth      [nonperfect_interval_quality INTERVAL_TENTH]
+_added_eleventh :   _added_tenth      [perfect_interval_quality    INTERVAL_ELEVENTH]
+_added_twelfth :    _added_eleventh   [perfect_interval_quality    INTERVAL_TWELFTH]
+_added_thirteenth : _added_twelfth    [nonperfect_interval_quality INTERVAL_THIRTEENTH]
+_added_fourteenth : _added_thirteenth [nonperfect_interval_quality INTERVAL_FOURTEENTH]
+_added_fifteenth :  _added_fourteenth [perfect_interval_quality    INTERVAL_FIFTEENTH]
+
+descriptive_intervals : _added_fifteenth
+
+descriptive_chord : "?" pitch_class descriptive_intervals
+                  | "?" scale_degree descriptive_intervals
+
+/////////
+// Chords
+/////////
 start : explicit_key tertian_chord
       | explicit_key special_chord
+      | explicit_key descriptive_chord
 
 
 // ///////////////////
