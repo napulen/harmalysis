@@ -123,6 +123,6 @@ chord : _major_triad                   -> major_triad_chord
       | _half_diminished_seventhchord  -> half_diminished_seventh_chord
       | _fully_diminished_seventhchord -> fully_diminished_seventh_chord
 
-chordlabel : root "_" chord
+chordlabel : root chord
 
 start : chordlabel
