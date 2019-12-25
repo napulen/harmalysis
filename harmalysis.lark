@@ -36,10 +36,10 @@ FLAT :         "-"  | "b"
 DOUBLE_FLAT :  "--" | "bb"
 SHARP :        "#"
 DOUBLE_SHARP : "##" | "x"
-alteration : FLAT         -> flat
-           | DOUBLE_FLAT  -> double_flat
-           | SHARP        -> sharp
-           | DOUBLE_SHARP -> double_sharp
+_alteration : FLAT
+            | DOUBLE_FLAT
+            | SHARP
+            | DOUBLE_SHARP
 
 ///////////////////////////////////////////
 // Lower-case, upper-case letters, and keys
@@ -51,21 +51,25 @@ _MINOR_NATURAL :  "nat"
 _MINOR_HARMONIC : "har"
 _MINOR_MELODIC :  "mel"
 
-key : NOTE_LETTER_UPPERCASE                                -> major
-    | NOTE_LETTER_UPPERCASE alteration                     -> major_with_alteration
-    | NOTE_LETTER_LOWERCASE                                -> default_minor
-    | NOTE_LETTER_LOWERCASE alteration                     -> default_minor_with_alteration
-    | NOTE_LETTER_LOWERCASE            "_" _MINOR_NATURAL  -> natural_minor
-    | NOTE_LETTER_LOWERCASE alteration "_" _MINOR_NATURAL  -> natural_minor_with_alteration
-    | NOTE_LETTER_LOWERCASE            "_" _MINOR_HARMONIC -> harmonic_minor
-    | NOTE_LETTER_LOWERCASE alteration "_" _MINOR_HARMONIC -> harmonic_minor_with_alteration
-    | NOTE_LETTER_LOWERCASE            "_" _MINOR_MELODIC  -> melodic_minor
-    | NOTE_LETTER_LOWERCASE alteration "_" _MINOR_MELODIC  -> melodic_minor_with_alteration
+KEY_AS_REFERENCE :   ":"
+KEY_AS_ESTABLISHED : "=>:"
 
-reference_key :   key ":"
-established_key : key "=>:"
+key_as_reference :   KEY_AS_REFERENCE
+key_as_established : KEY_AS_ESTABLISHED
 
-_explicit_key : reference_key | established_key
+key_definition : NOTE_LETTER_UPPERCASE                                 -> major_key
+               | NOTE_LETTER_UPPERCASE _alteration                     -> major_key_with_alteration
+               | NOTE_LETTER_LOWERCASE                                 -> default_minor_key
+               | NOTE_LETTER_LOWERCASE _alteration                     -> default_minor_key_with_alteration
+               | NOTE_LETTER_LOWERCASE            "_" _MINOR_NATURAL   -> natural_minor_key
+               | NOTE_LETTER_LOWERCASE _alteration "_" _MINOR_NATURAL  -> natural_minor_key_with_alteration
+               | NOTE_LETTER_LOWERCASE            "_" _MINOR_HARMONIC  -> harmonic_minor_key
+               | NOTE_LETTER_LOWERCASE _alteration "_" _MINOR_HARMONIC -> harmonic_minor_key_with_alteration
+               | NOTE_LETTER_LOWERCASE            "_" _MINOR_MELODIC   -> melodic_minor_key
+               | NOTE_LETTER_LOWERCASE _alteration "_" _MINOR_MELODIC  -> melodic_minor_key_with_alteration
+
+key : key_definition key_as_reference
+    | key_definition key_as_established
 
 ////////////////
 // Scale degrees
@@ -112,13 +116,13 @@ DIMINISHED_FIFTH : "o"
 // Triads
 /////////
 triad : _scale_degree_major                             -> major_triad
-      | alteration _scale_degree_major                  -> major_triad_with_alteration
+      | _alteration _scale_degree_major                  -> major_triad_with_alteration
       | _scale_degree_major            AUGMENTED_FIFTH  -> augmented_triad
-      | alteration _scale_degree_major AUGMENTED_FIFTH  -> augmented_triad_with_alteration
+      | _alteration _scale_degree_major AUGMENTED_FIFTH  -> augmented_triad_with_alteration
       | _scale_degree_minor                             -> minor_triad
-      | alteration _scale_degree_minor                  -> minor_triad_with_alteration
+      | _alteration _scale_degree_minor                  -> minor_triad_with_alteration
       | _scale_degree_minor            DIMINISHED_FIFTH -> diminished_triad
-      | alteration _scale_degree_minor DIMINISHED_FIFTH -> diminished_triad_with_alteration
+      | _alteration _scale_degree_minor DIMINISHED_FIFTH -> diminished_triad_with_alteration
 
 //////////////////
 // Added intervals
@@ -147,56 +151,56 @@ DIMINISHED_INTERVAL :        "D"
 DOUBLE_AUGMENTED_INTERVAL :  "AA"
 DOUBLE_DIMINISHED_INTERVAL : "DD"
 
-perfect_interval_quality : PERFECT_INTERVAL           -> perfect
-                         | AUGMENTED_INTERVAL         -> augmented
-                         | DIMINISHED_INTERVAL        -> diminished
-                         | DOUBLE_AUGMENTED_INTERVAL  -> double_augmented
-                         | DOUBLE_DIMINISHED_INTERVAL -> double_diminished
+_perfect_interval_quality : PERFECT_INTERVAL
+                          | AUGMENTED_INTERVAL
+                          | DIMINISHED_INTERVAL
+                          | DOUBLE_AUGMENTED_INTERVAL
+                          | DOUBLE_DIMINISHED_INTERVAL
 
-nonperfect_interval_quality : MAJOR_INTERVAL             -> major
-                            | MINOR_INTERVAL             -> minor
-                            | AUGMENTED_INTERVAL         -> augmented
-                            | DIMINISHED_INTERVAL        -> diminished
-                            | DOUBLE_AUGMENTED_INTERVAL  -> double_augmented
-                            | DOUBLE_DIMINISHED_INTERVAL -> double_diminished
+_nonperfect_interval_quality : MAJOR_INTERVAL
+                             | MINOR_INTERVAL
+                             | AUGMENTED_INTERVAL
+                             | DIMINISHED_INTERVAL
+                             | DOUBLE_AUGMENTED_INTERVAL
+                             | DOUBLE_DIMINISHED_INTERVAL
 
-any_interval_quality : MAJOR_INTERVAL             -> major
-                     | MINOR_INTERVAL             -> minor
-                     | PERFECT_INTERVAL           -> perfect
-                     | AUGMENTED_INTERVAL         -> augmented
-                     | DIMINISHED_INTERVAL        -> diminished
-                     | DOUBLE_AUGMENTED_INTERVAL  -> double_diminished
-                     | DOUBLE_DIMINISHED_INTERVAL -> double_augmented
+_any_interval_quality : MAJOR_INTERVAL
+                      | MINOR_INTERVAL
+                      | PERFECT_INTERVAL
+                      | AUGMENTED_INTERVAL
+                      | DIMINISHED_INTERVAL
+                      | DOUBLE_AUGMENTED_INTERVAL
+                      | DOUBLE_DIMINISHED_INTERVAL
 
-added_seventh :                                INTERVAL_SEVENTH    -> added_seventh_diatonic
-              |    nonperfect_interval_quality INTERVAL_SEVENTH    -> added_seventh_with_quality
-added_ninth   :                                INTERVAL_NINTH      -> added_ninth_diatonic
-              |    nonperfect_interval_quality INTERVAL_NINTH      -> added_ninth_with_quality
-added_eleventh :                               INTERVAL_ELEVENTH   -> added_eleventh_diatonic
-               |   perfect_interval_quality    INTERVAL_ELEVENTH   -> added_eleventh_with_quality
-added_thirteenth :                             INTERVAL_THIRTEENTH -> added_thirteenth_diatonic
-                 | nonperfect_interval_quality INTERVAL_THIRTEENTH -> added_thirteenth_with_quality
+added_seventh :                                 INTERVAL_SEVENTH    -> added_seventh_diatonic
+              |    _nonperfect_interval_quality INTERVAL_SEVENTH    -> added_seventh_with_quality
+added_ninth   :                                 INTERVAL_NINTH      -> added_ninth_diatonic
+              |    _nonperfect_interval_quality INTERVAL_NINTH      -> added_ninth_with_quality
+added_eleventh :                                INTERVAL_ELEVENTH   -> added_eleventh_diatonic
+               |   _perfect_interval_quality    INTERVAL_ELEVENTH   -> added_eleventh_with_quality
+added_thirteenth :                              INTERVAL_THIRTEENTH -> added_thirteenth_diatonic
+                 | _nonperfect_interval_quality INTERVAL_THIRTEENTH -> added_thirteenth_with_quality
 
 _tertian_interval : added_seventh
                   | added_ninth
                   | added_eleventh
                   | added_thirteenth
 
-_descriptive_interval : perfect_interval_quality    INTERVAL_UNISON
-                      | nonperfect_interval_quality INTERVAL_SECOND
-                      | nonperfect_interval_quality INTERVAL_THIRD
-                      | perfect_interval_quality    INTERVAL_FOURTH
-                      | perfect_interval_quality    INTERVAL_FIFTH
-                      | nonperfect_interval_quality INTERVAL_SIXTH
-                      | nonperfect_interval_quality INTERVAL_SEVENTH
-                      | perfect_interval_quality    INTERVAL_OCTAVE
-                      | nonperfect_interval_quality INTERVAL_NINTH
-                      | nonperfect_interval_quality INTERVAL_TENTH
-                      | perfect_interval_quality    INTERVAL_ELEVENTH
-                      | perfect_interval_quality    INTERVAL_TWELFTH
-                      | nonperfect_interval_quality INTERVAL_THIRTEENTH
-                      | nonperfect_interval_quality INTERVAL_FOURTEENTH
-                      | perfect_interval_quality    INTERVAL_FIFTEENTH
+_descriptive_interval : _perfect_interval_quality    INTERVAL_UNISON
+                      | _nonperfect_interval_quality INTERVAL_SECOND
+                      | _nonperfect_interval_quality INTERVAL_THIRD
+                      | _perfect_interval_quality    INTERVAL_FOURTH
+                      | _perfect_interval_quality    INTERVAL_FIFTH
+                      | _nonperfect_interval_quality INTERVAL_SIXTH
+                      | _nonperfect_interval_quality INTERVAL_SEVENTH
+                      | _perfect_interval_quality    INTERVAL_OCTAVE
+                      | _nonperfect_interval_quality INTERVAL_NINTH
+                      | _nonperfect_interval_quality INTERVAL_TENTH
+                      | _perfect_interval_quality    INTERVAL_ELEVENTH
+                      | _perfect_interval_quality    INTERVAL_TWELFTH
+                      | _nonperfect_interval_quality INTERVAL_THIRTEENTH
+                      | _nonperfect_interval_quality INTERVAL_FOURTEENTH
+                      | _perfect_interval_quality    INTERVAL_FIFTEENTH
 
 ////////////////////////
 // Inversions by numbers
@@ -246,10 +250,10 @@ MISSING_ELEVENTH : "11"
 _MISSING_INTERVAL_SYMBOL : "x"
 
 _missing_intervals_triad :           [_MISSING_INTERVAL_SYMBOL MISSING_ROOT] [_MISSING_INTERVAL_SYMBOL MISSING_THIRD] [_MISSING_INTERVAL_SYMBOL MISSING_FIFTH]
-_missing_intervals_seventhchord :    [_missing_intervals_triad]
-_missing_intervals_ninthchord :      [_missing_intervals_seventhchord]  [_MISSING_INTERVAL_SYMBOL MISSING_SEVENTH]
-_missing_intervals_eleventhchord :   [_missing_intervals_ninthchord]    [_MISSING_INTERVAL_SYMBOL MISSING_NINTH]
-_missing_intervals_thirteenthchord : [_missing_intervals_eleventhchord] [_MISSING_INTERVAL_SYMBOL MISSING_ELEVENTH]
+_missing_intervals_seventhchord :    _missing_intervals_triad
+_missing_intervals_ninthchord :      _missing_intervals_seventhchord  [_MISSING_INTERVAL_SYMBOL MISSING_SEVENTH]
+_missing_intervals_eleventhchord :   _missing_intervals_ninthchord    [_MISSING_INTERVAL_SYMBOL MISSING_NINTH]
+_missing_intervals_thirteenthchord : _missing_intervals_eleventhchord [_MISSING_INTERVAL_SYMBOL MISSING_ELEVENTH]
 
 missing_intervals_triad :           _missing_intervals_triad
 missing_intervals_seventhchord :    _missing_intervals_seventhchord
@@ -285,14 +289,14 @@ HALF_DIMINISHED_SEVENTH : "vii0"
 CADENTIAL_SIX_FOUR :      "Cad"
 COMMON_TONE_DIMINISHED :  "CTo"
 
-german :                  GERMAN                  -> name
-italian :                 ITALIAN                 -> name
-french :                  FRENCH                  -> name
-neapolitan :              NEAPOLITAN              -> name
-tristan :                 TRISTAN                 -> name
-half_diminished_seventh : HALF_DIMINISHED_SEVENTH -> name
-cadential_six_four :      CADENTIAL_SIX_FOUR      -> name
-common_tone_diminished :  COMMON_TONE_DIMINISHED  -> name
+german :                  GERMAN                  -> special_chord_name
+italian :                 ITALIAN                 -> special_chord_name
+french :                  FRENCH                  -> special_chord_name
+neapolitan :              NEAPOLITAN              -> special_chord_name
+tristan :                 TRISTAN                 -> special_chord_name
+half_diminished_seventh : HALF_DIMINISHED_SEVENTH -> special_chord_name
+cadential_six_four :      CADENTIAL_SIX_FOUR      -> special_chord_name
+common_tone_diminished :  COMMON_TONE_DIMINISHED  -> special_chord_name
 
 special_chord : german
               | german                        seventhchord_inversion_by_letter
@@ -319,61 +323,70 @@ special_chord : german
 // Descriptive chords
 /////////////////////
 pitch_class_root : NOTE_LETTER_LOWERCASE                -> pitch_class
-                 | NOTE_LETTER_LOWERCASE alteration     -> pitch_class_with_alteration
+                 | NOTE_LETTER_LOWERCASE _alteration     -> pitch_class_with_alteration
                  | NOTE_LETTER_UPPERCASE                -> pitch_class
-                 | NOTE_LETTER_UPPERCASE alteration     -> pitch_class_with_alteration
+                 | NOTE_LETTER_UPPERCASE _alteration     -> pitch_class_with_alteration
 
 scale_degree_root : _scale_degree_major            -> scale_degree
                   | _scale_degree_minor            -> scale_degree
-                  | alteration _scale_degree_major -> scale_degree_with_alteration
-                  | alteration _scale_degree_minor -> scale_degree_with_alteration
+                  | _alteration _scale_degree_major -> scale_degree_with_alteration
+                  | _alteration _scale_degree_minor -> scale_degree_with_alteration
 
-_added_unison :                       [perfect_interval_quality    INTERVAL_UNISON]
-_added_second :     _added_unison     [nonperfect_interval_quality INTERVAL_SECOND]
-_added_third :      _added_second     [nonperfect_interval_quality INTERVAL_THIRD]
-_added_fourth :     _added_third      [perfect_interval_quality    INTERVAL_FOURTH]
-_added_fifth :      _added_fourth     [perfect_interval_quality    INTERVAL_FIFTH]
-_added_sixth :      _added_fifth      [nonperfect_interval_quality INTERVAL_SIXTH]
-_added_seventh :    _added_sixth      [nonperfect_interval_quality INTERVAL_SEVENTH]
-_added_octave :     _added_seventh    [perfect_interval_quality    INTERVAL_OCTAVE]
-_added_ninth :      _added_octave     [nonperfect_interval_quality INTERVAL_NINTH]
-_added_tenth :      _added_ninth      [nonperfect_interval_quality INTERVAL_TENTH]
-_added_eleventh :   _added_tenth      [perfect_interval_quality    INTERVAL_ELEVENTH]
-_added_twelfth :    _added_eleventh   [perfect_interval_quality    INTERVAL_TWELFTH]
-_added_thirteenth : _added_twelfth    [nonperfect_interval_quality INTERVAL_THIRTEENTH]
-_added_fourteenth : _added_thirteenth [nonperfect_interval_quality INTERVAL_FOURTEENTH]
-_added_fifteenth :  _added_fourteenth [perfect_interval_quality    INTERVAL_FIFTEENTH]
+_added_unison :                       [_perfect_interval_quality    INTERVAL_UNISON]
+_added_second :     _added_unison     [_nonperfect_interval_quality INTERVAL_SECOND]
+_added_third :      _added_second     [_nonperfect_interval_quality INTERVAL_THIRD]
+_added_fourth :     _added_third      [_perfect_interval_quality    INTERVAL_FOURTH]
+_added_fifth :      _added_fourth     [_perfect_interval_quality    INTERVAL_FIFTH]
+_added_sixth :      _added_fifth      [_nonperfect_interval_quality INTERVAL_SIXTH]
+_added_seventh :    _added_sixth      [_nonperfect_interval_quality INTERVAL_SEVENTH]
+_added_octave :     _added_seventh    [_perfect_interval_quality    INTERVAL_OCTAVE]
+_added_ninth :      _added_octave     [_nonperfect_interval_quality INTERVAL_NINTH]
+_added_tenth :      _added_ninth      [_nonperfect_interval_quality INTERVAL_TENTH]
+_added_eleventh :   _added_tenth      [_perfect_interval_quality    INTERVAL_ELEVENTH]
+_added_twelfth :    _added_eleventh   [_perfect_interval_quality    INTERVAL_TWELFTH]
+_added_thirteenth : _added_twelfth    [_nonperfect_interval_quality INTERVAL_THIRTEENTH]
+_added_fourteenth : _added_thirteenth [_nonperfect_interval_quality INTERVAL_FOURTEENTH]
+_added_fifteenth :  _added_fourteenth [_perfect_interval_quality    INTERVAL_FIFTEENTH]
 
 descriptive_intervals : _added_fifteenth
 
-descriptive_chord : "?" pitch_class_root descriptive_intervals
-                  | "?" scale_degree_root descriptive_intervals
+descriptive_chord_by_letter : "?" pitch_class_root descriptive_intervals -> descriptive_chord
+descriptive_chord_by_degree : "?" scale_degree_root descriptive_intervals -> descriptive_chord
 
-/////////
-// Chords
-/////////
-chord : tertian_chord
-      | special_chord
-      | descriptive_chord
-
-///////////////////
-// Harmalysis Label
-///////////////////
+////////////////
+// Tonicizations
+////////////////
 by_scale_degree : "/" _scale_degree_major -> by_scale_degree_major
                 | "/" _scale_degree_minor -> by_scale_degree_minor
                 | "/" NEAPOLITAN          -> by_scale_degree_neapolitan
 
 by_pitch_class : "/" NOTE_LETTER_UPPERCASE             -> by_letter_major
-               | "/" NOTE_LETTER_UPPERCASE alteration  -> by_letter_major_with_alteration
+               | "/" NOTE_LETTER_UPPERCASE _alteration  -> by_letter_major_with_alteration
                | "/" NOTE_LETTER_LOWERCASE             -> by_letter_minor
-               | "/" NOTE_LETTER_LOWERCASE alteration  -> by_letter_minor_with_alteration
+               | "/" NOTE_LETTER_LOWERCASE _alteration  -> by_letter_minor_with_alteration
 
 tonicization : by_scale_degree+
              | by_pitch_class
 
-harmalysis : _explicit_key? chord tonicization?
+///////////////////
+// Harmalysis label
+///////////////////
+harmalysis : key? tertian_chord tonicization?
+           | key? special_chord tonicization?
+           | key? descriptive_chord_by_degree
+           | descriptive_chord_by_letter
+
+/////////////////////
+// Implicit harmonies
+/////////////////////
 implicit : "(" harmalysis ")"
+
+//////////////////////
+// Alternate harmonies
+//////////////////////
 alternate : harmalysis "[" harmalysis "]"
           | harmalysis ( "|" harmalysis )~1..3
-
-start : harmalysis | implicit | alternate
+////////
+// Start
+////////
+?start : harmalysis | implicit | alternate
