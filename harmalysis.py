@@ -36,21 +36,19 @@ import sys
 class Interval(object):
      valid_intervals = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
      interval_qualities = ['P', 'M', 'M', 'P', 'P', 'M', 'M']
-     operations_perfect = {
-          "DD": -2,
-          "D": -1,
-          "P": 0,
-          "A": 1,
-          "AA": 2
+     interval_alterations = {
+          # Perfect intervals (1, 4, 5, 8, 11, etc.)
+          "P": { "DD": -2, "D": -1, "P": 0, "A": 1, "AA": 2},
+          # Nonperfect intervals (2, 3, 6, 7, 9, 10, etc.)
+          "M": { "DD": -3, "D": -2, "m": -1, "M": 0, "A": 1, "AA": 2}
      }
-     operations_nonperfect = {
-          "DD": -3,
-          "D": -2,
-          "m": -1,
-          "M": 0,
-          "A": 1,
-          "AA": 2
-     }
+
+     def __init__(self, interval_quality, general_interval):
+          interval_index = (general_interval - 1) % 7
+          self.interval_type = Interval.interval_qualities[interval_index]
+          # A diminished interval means different things for
+          # perfect intervals and nonperfect intervals
+          self.interval_alteration = Interval.interval_alterations[self.interval_type][interval_quality]
 
 class PitchClassSpelling(object):
      pcspell_from_duple = {
