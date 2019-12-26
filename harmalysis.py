@@ -35,35 +35,53 @@ import sys
 
 class Interval(object):
      valid_intervals = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
-     interval_qualities = ['P', 'M', 'M', 'P', 'P', 'M', 'M']
+     # TODO: Currently, it only supports intervals from unison to 15th
+     interval_qualities = ['P', 'M', 'M', 'P', 'P', 'M', 'M'
+                           'P', 'M', 'M', 'P', 'P', 'M', 'M', 'P']
+     reference_semitones = [0, 2, 4, 5, 7, 9, 11,
+                           12, 14, 16, 17, 19, 21, 23, 24]
      interval_alterations = {
           # Perfect intervals (1, 4, 5, 8, 11, etc.)
-          "P": { "DD": -2, "D": -1, "P": 0, "A": 1, "AA": 2},
+          "P": {"DD": -2, "D": -1, "P": 0, "A": 1, "AA": 2},
           # Nonperfect intervals (2, 3, 6, 7, 9, 10, etc.)
-          "M": { "DD": -3, "D": -2, "m": -1, "M": 0, "A": 1, "AA": 2}
+          "M": {"DD": -3, "D": -2, "m": -1, "M": 0, "A": 1, "AA": 2}
      }
 
      def __init__(self, interval_quality, general_interval):
-          interval_index = (general_interval - 1) % 7
+          interval_index = general_interval - 1
           self.interval_type = Interval.interval_qualities[interval_index]
           # A diminished interval means different things for
           # perfect intervals and nonperfect intervals
           self.interval_alteration = Interval.interval_alterations[self.interval_type][interval_quality]
 
 class PitchClassSpelling(object):
-     pcspell_from_duple = {
-          (0,10): 'C--', (0,11): 'C-', (0, 0): 'C', (0, 1): 'C#', (0, 2): 'C##',
-          (1, 0): 'D--', (1, 1): 'D-', (1, 2): 'D', (1, 3): 'D#', (1, 4): 'D##',
-          (2, 2): 'E--', (2, 3): 'E-', (2, 4): 'E', (2, 5): 'E#', (2, 6): 'E##',
-          (3, 3): 'F--', (3, 4): 'F-', (3, 5): 'F', (3, 6): 'F#', (3, 7): 'F##',
-          (4, 5): 'G--', (4, 6): 'G-', (4, 7): 'G', (4, 8): 'G#', (4, 9): 'G##',
-          (5, 7): 'A--', (5, 8): 'A-', (5, 9): 'A', (5,10): 'A#', (5,11): 'A##',
-          (6, 9): 'B--', (6,10): 'B-', (6,11): 'B', (6, 0): 'B#', (6, 1): 'B##'
+     diatonic_classes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+     pitch_classes = [0, 2, 4, 5, 7, 9, 11]
+     alterations = {
+          '--': -2, 'bb': -2,
+          '-':  -1, 'b':  -1,
+          '#':   1,
+          '##':  2, 'x':   2
      }
-     pcspell_from_string = {value: key for key, value in pcspell_from_duple.items()}
-     def __init__(self, pcspell_string):
-          if pcspell_string in PitchClassSpelling.pcspell_from_string:
-               self.diatonic_class, self.chromatic_class = PitchClassSpelling.pcspell_from_string[pcspell_string]
+     def __init__(self, note_letter, alteration=None):
+          if not note_letter in PitchClassSpelling.diatonic_classes:
+               raise ValueError("note letter '{}' is not supported.".format(note_letter))
+          self.note_letter = note_letter
+          self.diatonic_class = PitchClassSpelling.diatonic_classes.index(note_letter)
+          if alteration:
+               if not alteration in PitchClassSpelling.alterations:
+                    raise ValueError("alteration '{}' is not supported.".format(alteration))
+               self.alteration = alteration
+               alteration_value = PitchClassSpelling.alterations[alteration]
+          else:
+               self.alteration = ''
+               alteration_value = 0
+          default_chromatic_class = PitchClassSpelling.pitch_classes[self.diatonic_class]
+          self.chromatic_class = (12 + default_chromatic_class + alteration_value) % 12
+
+     def __str__(self):
+          return '{}{}'.format(self.note_letter, self.alteration)
+
 
 @v_args(inline=True)
 class HarmalysisParser(Transformer):
