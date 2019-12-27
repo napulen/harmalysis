@@ -33,11 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from lark import Lark, Transformer, Visitor, v_args, tree
 import sys
 
-class Interval(object):
+class IntervalSpelling(object):
      valid_intervals = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
      # TODO: Currently, it only supports intervals from unison to 15th
-     interval_qualities = ['P', 'M', 'M', 'P', 'P', 'M', 'M'
-                           'P', 'M', 'M', 'P', 'P', 'M', 'M', 'P']
      reference_semitones = [0, 2, 4, 5, 7, 9, 11,
                            12, 14, 16, 17, 19, 21, 23, 24]
      interval_alterations = {
@@ -49,10 +47,50 @@ class Interval(object):
 
      def __init__(self, interval_quality, general_interval):
           interval_index = general_interval - 1
-          self.interval_type = Interval.interval_qualities[interval_index]
+          self.interval_type = IntervalSpelling.interval_qualities[interval_index]
           # A diminished interval means different things for
           # perfect intervals and nonperfect intervals
-          self.interval_alteration = Interval.interval_alterations[self.interval_type][interval_quality]
+          self.interval_alteration = IntervalSpelling.interval_alterations[self.interval_type][interval_quality]
+
+
+class MajorScale(object):
+     def __init__(self):
+          self.template = ['P', 'M', 'M', 'P', 'P', 'M', 'M']
+          self.reference_semitones = [0, 2, 4, 5, 7, 9, 11]
+
+     def step_to_interval_spelling(self, step):
+          self.quality = self.template[(step - 1) % 7]
+
+     def step_to_semitones(self, step):
+          octaves = (step - 1) // 7
+          step_semitones = self.reference_semitones[(step - 1) % 7]
+          self.semitones = (12 * octaves) + step_semitones
+
+
+class MinorNaturalScale(MajorScale):
+     def __init__(self):
+          super().__init__()
+          self.template[2] = 'm'
+          self.template[5] = 'm'
+          self.template[6] = 'm'
+          self.reference_semitones[2] = 3
+          self.reference_semitones[5] = 8
+          self.reference_semitones[6] = 10
+
+
+class HarmonicMinorScale(MinorNaturalScale):
+     def __init__(self):
+          super().__init__()
+          self.template[6] = 'M'
+          self.reference_semitones[6] = 11
+
+
+class AscendingMelodicMinorScale(HarmonicMinorScale):
+     def __init__(self):
+          super().__init__()
+          self.template[5] = 'M'
+          self.reference_semitones[5] = 9
+
 
 class PitchClassSpelling(object):
      diatonic_classes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
