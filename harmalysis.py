@@ -78,7 +78,7 @@ class MajorScale(object):
 
      def step_to_interval_spelling(self, step):
           self.quality = self.scale_degree_quality[(step - 1) % DIATONIC_CLASSES]
-          return self.quality
+          return IntervalSpelling(self.quality, step)
 
      def step_to_semitones(self, step):
           octaves = (step - 1) // DIATONIC_CLASSES
@@ -87,7 +87,7 @@ class MajorScale(object):
           return self.semitones
 
 
-class MinorNaturalScale(MajorScale):
+class NaturalMinorScale(MajorScale):
      def __init__(self):
           super().__init__()
           self.scale_degree_quality[MEDIANT] = 'm'
@@ -98,7 +98,7 @@ class MinorNaturalScale(MajorScale):
           self.scale_degree_semitones[SEVENTH_DEGREE] = 10
 
 
-class HarmonicMinorScale(MinorNaturalScale):
+class HarmonicMinorScale(NaturalMinorScale):
      def __init__(self):
           super().__init__()
           self.scale_degree_quality[SEVENTH_DEGREE] = 'M'
@@ -128,6 +128,7 @@ class PitchClassSpelling(object):
           2: 'x'
      }
      def __init__(self, note_letter, alteration=None):
+          note_letter = note_letter.upper()
           if not note_letter in PitchClassSpelling.diatonic_classes:
                raise ValueError("note letter '{}' is not supported.".format(note_letter))
           self.note_letter = note_letter
@@ -146,9 +147,9 @@ class PitchClassSpelling(object):
      @classmethod
      def from_diatonic_chromatic_classes(cls, diatonic_class, chromatic_class):
           if  0 > diatonic_class or diatonic_class >= DIATONIC_CLASSES:
-               raise ValueError("diatonic class {} is out of bounds".format(diatonic_class))
+               raise ValueError("diatonic class {} is out of bounds.".format(diatonic_class))
           if  0 > diatonic_class or diatonic_class >= 12:
-               raise ValueError("chromatic class {} is out of bounds".format(chromatic_class))
+               raise ValueError("chromatic class {} is out of bounds.".format(chromatic_class))
           note_letter = cls.diatonic_classes[diatonic_class]
           default_pitch_class = cls.pitch_classes[diatonic_class]
           if default_pitch_class == chromatic_class:
@@ -161,12 +162,12 @@ class PitchClassSpelling(object):
                          alteration_found = True
                          break
                if not alteration_found:
-                    raise ValueError("chromatic class {} is unreachable by this diatonic class".format(chromatic_class))
+                    raise ValueError("chromatic class {} is unreachable by this diatonic class.".format(chromatic_class))
           return PitchClassSpelling(note_letter, alteration)
 
      def to_interval(self, interval_spelling):
           if not isinstance(interval_spelling, IntervalSpelling):
-               raise TypeError('expecting IntervalSpelling instead of {}'.format(type(interval_spelling)))
+               raise TypeError('expecting IntervalSpelling instead of {}.'.format(type(interval_spelling)))
           diatonic_steps = interval_spelling.diatonic_interval - 1
           semitones = interval_spelling.semitones
 
@@ -176,6 +177,34 @@ class PitchClassSpelling(object):
 
      def __str__(self):
           return '{}{}'.format(self.note_letter, self.alteration)
+
+
+class Key(object):
+     scale_mapping = {
+          "major": MajorScale(),
+          "natural_minor": NaturalMinorScale(),
+          "harmonic_minor": HarmonicMinorScale(), "default_minor": HarmonicMinorScale(),
+          "ascending_melodic_minor": AscendingMelodicMinorScale()
+     }
+
+     def __init__(self, note_letter, alteration, scale):
+          self.tonic = PitchClassSpelling(note_letter, alteration)
+          if not scale in Key.scale_mapping:
+               raise KeyError("scale '{}' is not supported.".format(scale))
+          self.mode = Key.scale_mapping[scale]
+          self.i = self.I = self.scale_degree(1)
+          self.ii = self.II = self.scale_degree(2)
+          self.iii = self.III = self.scale_degree(3)
+          self.iv = self.IV = self.scale_degree(4)
+          self.v = self.V = self.scale_degree(5)
+          self.vi = self.VI = self.scale_degree(6)
+          self.vii = self.VII = self.scale_degree(7)
+
+     def scale_degree(self, scale_degree):
+          if 1 > scale_degree and scale_degree > DIATONIC_CLASSES:
+               raise ValueError("scale degree should be within 1 and 7.")
+          interval = self.mode.step_to_interval_spelling(scale_degree)
+          return self.tonic.to_interval(interval)
 
 
 @v_args(inline=True)
@@ -233,13 +262,18 @@ test_strings = [
 ]
 
 def test_intervals():
-     orig = PitchClassSpelling('C', 'b')
+     orig = PitchClassSpelling('C')
      M6 = IntervalSpelling('P', 1)
      target = orig.to_interval(M6)
      print(target)
 
+def test_key():
+     note_letter, alteration, scale = 'f', None, 'major'
+     key = Key(note_letter, alteration, scale)
+     print(key.i, key.II, key.iii, key.IV, key.V, key.vi, key.VII)
+
 if __name__ == '__main__':
-     test_intervals()
+     test_key()
      # grammar = 'harmalysis.lark'
      # l = Lark(open(grammar).read(), start="start")
      # t = l.parse(sys.argv[1])
