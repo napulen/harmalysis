@@ -115,13 +115,13 @@ DIMINISHED_FIFTH : "o"
 /////////
 // Triads
 /////////
-triad : _scale_degree_major                             -> major_triad
+triad : _scale_degree_major                              -> major_triad
       | _alteration _scale_degree_major                  -> major_triad_with_alteration
-      | _scale_degree_major            AUGMENTED_FIFTH  -> augmented_triad
+      | _scale_degree_major             AUGMENTED_FIFTH  -> augmented_triad
       | _alteration _scale_degree_major AUGMENTED_FIFTH  -> augmented_triad_with_alteration
-      | _scale_degree_minor                             -> minor_triad
+      | _scale_degree_minor                              -> minor_triad
       | _alteration _scale_degree_minor                  -> minor_triad_with_alteration
-      | _scale_degree_minor            DIMINISHED_FIFTH -> diminished_triad
+      | _scale_degree_minor             DIMINISHED_FIFTH -> diminished_triad
       | _alteration _scale_degree_minor DIMINISHED_FIFTH -> diminished_triad_with_alteration
 
 //////////////////
@@ -322,13 +322,13 @@ special_chord : german
 /////////////////////
 // Descriptive chords
 /////////////////////
-pitch_class_root : NOTE_LETTER_LOWERCASE                -> pitch_class
+pitch_class_root : NOTE_LETTER_LOWERCASE                 -> pitch_class
                  | NOTE_LETTER_LOWERCASE _alteration     -> pitch_class_with_alteration
-                 | NOTE_LETTER_UPPERCASE                -> pitch_class
+                 | NOTE_LETTER_UPPERCASE                 -> pitch_class
                  | NOTE_LETTER_UPPERCASE _alteration     -> pitch_class_with_alteration
 
-scale_degree_root : _scale_degree_major            -> scale_degree
-                  | _scale_degree_minor            -> scale_degree
+scale_degree_root : _scale_degree_major             -> scale_degree
+                  | _scale_degree_minor             -> scale_degree
                   | _alteration _scale_degree_major -> scale_degree_with_alteration
                   | _alteration _scale_degree_minor -> scale_degree_with_alteration
 
@@ -350,7 +350,7 @@ _added_fifteenth :  _added_fourteenth [_perfect_interval_quality    INTERVAL_FIF
 
 descriptive_intervals : _added_fifteenth
 
-descriptive_chord_by_letter : "?" pitch_class_root descriptive_intervals -> descriptive_chord
+descriptive_chord_by_letter : "?" pitch_class_root descriptive_intervals  -> descriptive_chord
 descriptive_chord_by_degree : "?" scale_degree_root descriptive_intervals -> descriptive_chord
 
 ////////////////
@@ -360,9 +360,9 @@ by_scale_degree : "/" _scale_degree_major -> by_scale_degree_major
                 | "/" _scale_degree_minor -> by_scale_degree_minor
                 | "/" NEAPOLITAN          -> by_scale_degree_neapolitan
 
-by_pitch_class : "/" NOTE_LETTER_UPPERCASE             -> by_letter_major
+by_pitch_class : "/" NOTE_LETTER_UPPERCASE              -> by_letter_major
                | "/" NOTE_LETTER_UPPERCASE _alteration  -> by_letter_major_with_alteration
-               | "/" NOTE_LETTER_LOWERCASE             -> by_letter_minor
+               | "/" NOTE_LETTER_LOWERCASE              -> by_letter_minor
                | "/" NOTE_LETTER_LOWERCASE _alteration  -> by_letter_minor_with_alteration
 
 tonicization : by_scale_degree+
@@ -371,10 +371,17 @@ tonicization : by_scale_degree+
 ///////////////////
 // Harmalysis label
 ///////////////////
-harmalysis : key? tertian_chord tonicization?
-           | key? special_chord tonicization?
-           | key? descriptive_chord_by_degree
-           | descriptive_chord_by_letter
+harmalysis :     tertian_chord                                -> harmalysis_tertian
+           | key tertian_chord                                -> harmalysis_tertian_with_key
+           |     tertian_chord               tonicization     -> harmalysis_tertian_with_tonicization
+           | key tertian_chord               tonicization     -> harmalysis_tertian_with_key_and_tonicization
+           :     special_chord                                -> harmalysis_special
+           | key special_chord                                -> harmalysis_special_with_key
+           |     special_chord               tonicization     -> harmalysis_special_with_tonicization
+           | key special_chord               tonicization     -> harmalysis_special_with_key_and_tonicization
+           |     descriptive_chord_by_degree                  -> harmalysis_descriptive_by_degree
+           | key descriptive_chord_by_degree                  -> harmalysis_descriptive_by_degree_with_key
+           |     descriptive_chord_by_letter                  -> harmalysis_descriptive_by_letter
 
 /////////////////////
 // Implicit harmonies
