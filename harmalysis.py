@@ -35,9 +35,6 @@ import sys
 
 class IntervalSpelling(object):
      valid_intervals = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
-     # TODO: Currently, it only supports intervals from unison to 15th
-     reference_semitones = [0, 2, 4, 5, 7, 9, 11,
-                           12, 14, 16, 17, 19, 21, 23, 24]
      interval_alterations = {
           # Perfect intervals (1, 4, 5, 8, 11, etc.)
           "P": {"DD": -2, "D": -1, "P": 0, "A": 1, "AA": 2},
