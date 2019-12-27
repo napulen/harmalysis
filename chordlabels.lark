@@ -110,7 +110,6 @@ _fully_diminished_seventhchord : _diminished_triad _diminished_seventh
 //////////////
 // Chord label
 //////////////
-
 chord : _major_triad                   -> major_triad_chord
       | _minor_triad                   -> minor_triad_chord
       | _augmented_triad               -> augmented_triad_chord
