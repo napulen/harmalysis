@@ -33,60 +33,83 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from lark import Lark, Transformer, Visitor, v_args, tree
 import sys
 
-class IntervalSpelling(object):
-     valid_intervals = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
-     interval_alterations = {
-          # Perfect intervals (1, 4, 5, 8, 11, etc.)
-          "P": {"DD": -2, "D": -1, "P": 0, "A": 1, "AA": 2},
-          # Nonperfect intervals (2, 3, 6, 7, 9, 10, etc.)
-          "M": {"DD": -3, "D": -2, "m": -1, "M": 0, "A": 1, "AA": 2}
-     }
+TONIC = 0
+SUPERTONIC = 1
+MEDIANT = 2
+SUBDOMINANT = 3
+DOMINANT = 4
+SUBMEDIANT = 5
+SEVENTH_DEGREE = 6
+DIATONIC_CLASSES = 7
 
-     def __init__(self, interval_quality, general_interval):
-          interval_index = general_interval - 1
-          self.interval_type = IntervalSpelling.interval_qualities[interval_index]
-          # A diminished interval means different things for
-          # perfect intervals and nonperfect intervals
-          self.interval_alteration = IntervalSpelling.interval_alterations[self.interval_type][interval_quality]
+class IntervalSpelling(object):
+     interval_qualities = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
+     # Perfect intervals (1, 4, 5, 8, 11, etc.)
+     perfect_interval_alterations = {
+          "DD": -2, "D": -1, "P": 0, "A": 1, "AA": 2
+     }
+     # Nonperfect intervals (2, 3, 6, 7, 9, 10, etc.)
+     nonperfect_interval_alterations = {
+          "DD": -3, "D": -2, "m": -1, "M": 0, "A": 1, "AA": 2
+     }
+     def __init__(self, interval_quality, diatonic_interval):
+          # The diatonic classes that have a perfect interval:
+          # Unison, Subdominant, Dominant, and compound
+          # intervals of the same classes (8ve, 11th, 12th, 15th, etc.)
+          diatonic_classes_with_perfect_intervals = [TONIC, SUBDOMINANT, DOMINANT]
+          diatonic_class = (diatonic_interval - 1) % DIATONIC_CLASSES
+          is_perfect_interval = diatonic_class in diatonic_classes_with_perfect_intervals
+          if is_perfect_interval:
+               alteration_effects = IntervalSpelling.perfect_interval_alterations
+          else:
+               alteration_effects = IntervalSpelling.nonperfect_interval_alterations
+          if not interval_quality in alteration_effects:
+               raise KeyError("interval quality '{}' is not supported".format(interval_quality))
+          self.interval_quality = interval_quality
+          self.diatonic_interval = diatonic_interval
+          self.alteration_effect = alteration_effects[interval_quality]
+          self.semitones = MajorScale().step_to_semitones(diatonic_interval) + self.alteration_effect
 
 
 class MajorScale(object):
      def __init__(self):
-          self.template = ['P', 'M', 'M', 'P', 'P', 'M', 'M']
-          self.reference_semitones = [0, 2, 4, 5, 7, 9, 11]
+          self.scale_degree_quality = ['P', 'M', 'M', 'P', 'P', 'M', 'M']
+          self.scale_degree_semitones = [0, 2, 4, 5, 7, 9, 11]
 
      def step_to_interval_spelling(self, step):
-          self.quality = self.template[(step - 1) % 7]
+          self.quality = self.scale_degree_quality[(step - 1) % DIATONIC_CLASSES]
+          return self.quality
 
      def step_to_semitones(self, step):
-          octaves = (step - 1) // 7
-          step_semitones = self.reference_semitones[(step - 1) % 7]
+          octaves = (step - 1) // DIATONIC_CLASSES
+          step_semitones = self.scale_degree_semitones[(step - 1) % DIATONIC_CLASSES]
           self.semitones = (12 * octaves) + step_semitones
+          return self.semitones
 
 
 class MinorNaturalScale(MajorScale):
      def __init__(self):
           super().__init__()
-          self.template[2] = 'm'
-          self.template[5] = 'm'
-          self.template[6] = 'm'
-          self.reference_semitones[2] = 3
-          self.reference_semitones[5] = 8
-          self.reference_semitones[6] = 10
+          self.scale_degree_quality[MEDIANT] = 'm'
+          self.scale_degree_quality[SUBMEDIANT] = 'm'
+          self.scale_degree_quality[SEVENTH_DEGREE] = 'm'
+          self.scale_degree_semitones[MEDIANT] = 3
+          self.scale_degree_semitones[SUBMEDIANT] = 8
+          self.scale_degree_semitones[SEVENTH_DEGREE] = 10
 
 
 class HarmonicMinorScale(MinorNaturalScale):
      def __init__(self):
           super().__init__()
-          self.template[6] = 'M'
-          self.reference_semitones[6] = 11
+          self.scale_degree_quality[SEVENTH_DEGREE] = 'M'
+          self.scale_degree_semitones[SEVENTH_DEGREE] = 11
 
 
 class AscendingMelodicMinorScale(HarmonicMinorScale):
      def __init__(self):
           super().__init__()
-          self.template[5] = 'M'
-          self.reference_semitones[5] = 9
+          self.scale_degree_quality[SUBMEDIANT] = 'M'
+          self.scale_degree_semitones[SUBMEDIANT] = 9
 
 
 class PitchClassSpelling(object):
@@ -97,6 +120,12 @@ class PitchClassSpelling(object):
           '-':  -1, 'b':  -1,
           '#':   1,
           '##':  2, 'x':   2
+     }
+     alterations_r = {
+          -2: 'bb',
+          -1: 'b',
+          1: '#',
+          2: 'x'
      }
      def __init__(self, note_letter, alteration=None):
           if not note_letter in PitchClassSpelling.diatonic_classes:
@@ -113,6 +142,37 @@ class PitchClassSpelling(object):
                alteration_value = 0
           default_chromatic_class = PitchClassSpelling.pitch_classes[self.diatonic_class]
           self.chromatic_class = (12 + default_chromatic_class + alteration_value) % 12
+
+     @classmethod
+     def from_diatonic_chromatic_classes(cls, diatonic_class, chromatic_class):
+          if  0 > diatonic_class or diatonic_class >= DIATONIC_CLASSES:
+               raise ValueError("diatonic class {} is out of bounds".format(diatonic_class))
+          if  0 > diatonic_class or diatonic_class >= 12:
+               raise ValueError("chromatic class {} is out of bounds".format(chromatic_class))
+          note_letter = cls.diatonic_classes[diatonic_class]
+          default_pitch_class = cls.pitch_classes[diatonic_class]
+          if default_pitch_class == chromatic_class:
+               alteration = None
+          else:
+               alteration_found = False
+               for alteration_effect, alteration in cls.alterations_r.items():
+                    test_chromatic_class = (12 + chromatic_class - alteration_effect) % 12
+                    if test_chromatic_class == default_pitch_class:
+                         alteration_found = True
+                         break
+               if not alteration_found:
+                    raise ValueError("chromatic class {} is unreachable by this diatonic class".format(chromatic_class))
+          return PitchClassSpelling(note_letter, alteration)
+
+     def to_interval(self, interval_spelling):
+          if not isinstance(interval_spelling, IntervalSpelling):
+               raise TypeError('expecting IntervalSpelling instead of {}'.format(type(interval_spelling)))
+          diatonic_steps = interval_spelling.diatonic_interval - 1
+          semitones = interval_spelling.semitones
+
+          new_diatonic_class = (diatonic_steps + self.diatonic_class) % DIATONIC_CLASSES
+          new_chromatic_class = (semitones + self.chromatic_class) % 12
+          return PitchClassSpelling.from_diatonic_chromatic_classes(new_diatonic_class, new_chromatic_class)
 
      def __str__(self):
           return '{}{}'.format(self.note_letter, self.alteration)
@@ -172,14 +232,21 @@ test_strings = [
      'f#_nat:#viiom7bx5[f#_nat=>:vii065]',
 ]
 
+def test_intervals():
+     orig = PitchClassSpelling('C', 'b')
+     M6 = IntervalSpelling('P', 1)
+     target = orig.to_interval(M6)
+     print(target)
+
 if __name__ == '__main__':
-     grammar = 'harmalysis.lark'
-     l = Lark(open(grammar).read(), start="start")
-     t = l.parse(sys.argv[1])
-     print(t)
-     print(t.pretty())
-     tree.pydot__tree_to_png(t, 'harmparser.png')
-     print("Transformer")
-     HarmalysisParser().transform(t)
+     test_intervals()
+     # grammar = 'harmalysis.lark'
+     # l = Lark(open(grammar).read(), start="start")
+     # t = l.parse(sys.argv[1])
+     # print(t)
+     # print(t.pretty())
+     # tree.pydot__tree_to_png(t, 'harmparser.png')
+     # print("Transformer")
+     # HarmalysisParser().transform(t)
 
 
