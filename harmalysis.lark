@@ -265,9 +265,9 @@ missing_intervals_thirteenthchord : _missing_intervals_thirteenthchord
 // Tertian chords
 /////////////////
 tertian_chord : triad                                                      missing_intervals_triad             -> tertian_triad
-              | triad triad_inversion_by_number                            missing_intervals_triad             -> tertian_triad_with_inversion_by_number
-              | triad seventhchord_inversion_by_number                     missing_intervals_seventhchord      -> tertian_seventh_with_inversion_by_number
-              | triad triad_inversion_by_letter                            missing_intervals_triad             -> tertian_triad_with_inversion_by_letter
+              | triad                  triad_inversion_by_number           missing_intervals_triad             -> tertian_triad_with_inversion_by_number
+              | triad                  seventhchord_inversion_by_number    missing_intervals_seventhchord      -> tertian_seventh_with_inversion_by_number
+              | triad                  triad_inversion_by_letter           missing_intervals_triad             -> tertian_triad_with_inversion_by_letter
               | triad added_seventh                                        missing_intervals_seventhchord      -> tertian_seventh
               | triad added_seventh    seventhchord_inversion_by_letter    missing_intervals_seventhchord      -> tertian_seventh_with_inversion_by_letter
               | triad added_ninth                                          missing_intervals_ninthchord        -> tertian_ninth
