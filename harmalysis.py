@@ -70,6 +70,9 @@ class IntervalSpelling(object):
           self.alteration_effect = alteration_effects[interval_quality]
           self.semitones = MajorScale().step_to_semitones(diatonic_interval) + self.alteration_effect
 
+     def __str__(self):
+          return '{}{}'.format(self.interval_quality, self.diatonic_interval)
+
 
 class MajorScale(object):
      def __init__(self):
@@ -207,6 +210,54 @@ class Key(object):
           return self.tonic.to_interval(interval)
 
 
+class Harmalysis(object):
+     def __init__(self):
+          self.reference_key = None
+          self.established_key = None
+          self.chord = None
+
+
+class ChordBase(object):
+     def __init__(self):
+          self.root = None
+          self._intervals = [None] * 14
+          self.bass = None
+          self.second = self._intervals[0]
+          self.third = self._intervals[1]
+          self.fourth = self._intervals[2]
+          self.fifth = self._intervals[3]
+          self.sixth = self._intervals[4]
+          self.seventh = self._intervals[5]
+          self.ninth = self._intervals[7]
+          self.tenth = self._intervals[8]
+          self.eleventh = self._intervals[9]
+          self.twelfth = self._intervals[10]
+          self.thirteenth = self._intervals[11]
+          self.fourteenth = self._intervals[12]
+          self.fifteenth = self._intervals[13]
+
+     def added_interval(self, general_interval):
+          return self._intervals[general_interval - 2]
+
+     def __str__(self):
+          ret = str(self.root)
+          for interval in self._intervals:
+               if interval:
+                    ret += str(interval)
+
+
+class TertianChord(ChordBase):
+     def __init__(self, missing_intervals=[]):
+          super().__init__()
+          self.scale_degree = None
+          self.triad_quality = None
+          self.inversion = None
+          self.default_function = None
+          self.contextual_function = None
+          self.chord_label = None
+          self.pcset = None
+
+
 @v_args(inline=True)
 class HarmalysisParser(Transformer):
      ##################
@@ -214,46 +265,66 @@ class HarmalysisParser(Transformer):
      ##################
 
      # Key scales
-     def major_key(self, letter):
-          print(sys._getframe().f_code.co_name, letter)
 
-     def major_key_with_alteration(self, letter, alteration):
-          print('{}{}'.format(letter, alteration))
+     # # Verbose version
+     # def major_key(self, letter):
+     #      print(sys._getframe().f_code.co_name, letter)
+     #      key_definition = Key(letter, None, 'major')
+     #      return key_definition
 
-     def default_minor_key(self, letter):
-          print(sys._getframe().f_code.co_name, letter)
-
-     def default_minor_key_with_alteration(self, letter, alteration):
-          print(sys._getframe().f_code.co_name, letter, alteration)
-
-     def natural_minor_key(self, letter):
-          print(sys._getframe().f_code.co_name, letter)
-
-     def natural_minor_key_with_alteration(self, letter, alteration):
-          print(sys._getframe().f_code.co_name, letter, alteration)
-
-     def harmonic_minor_key(self, letter):
-          print(sys._getframe().f_code.co_name, letter)
-
-     def harmonic_minor_key_with_alteration(self, letter, alteration):
-          print(sys._getframe().f_code.co_name, letter, alteration)
-
-     def melodic_minor_key(self, letter):
-          print(sys._getframe().f_code.co_name, letter)
-
-     def melodic_minor_key_with_alteration(self, letter, alteration):
-          print(sys._getframe().f_code.co_name, letter, alteration)
+     major_key = lambda self, letter: Key(letter, None, 'major')
+     major_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'major')
+     default_minor_key = lambda self, letter: Key(letter, None, 'default_minor')
+     default_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'default_minor')
+     natural_minor_key = lambda self, letter: Key(letter, None, 'natural_minor')
+     natural_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'natural_minor')
+     harmonic_minor_key = lambda self, letter: Key(letter, None, 'harmonic_minor')
+     harmonic_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'harmonic_minor')
+     melodic_minor_key = lambda self, letter: Key(letter, None, 'ascending_melodic_minor')
+     melodic_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'ascending_melodic_minor')
 
      # Key types
-     def key_as_reference(self, reference):
-          print(sys._getframe().f_code.co_name, reference)
-
-     def key_as_established(self, established):
-          print(sys._getframe().f_code.co_name, established)
+     key_as_reference = lambda self, _: 'reference'
+     key_as_established = lambda self, _: 'established'
 
      # Key
-     def key(self, key_definition, key_function):
-          print(sys._getframe().f_code.co_name)
+     key = lambda self, key_definition, key_function: (key_definition, key_function)
+
+     ##########################
+     ## Parsing a tertian chord
+     ##########################
+
+     # Triad
+     major_triad = lambda self, scale_degree: ('major_triad', str(scale_degree), None)
+     major_triad_with_alteration = lambda self, alteration, scale_degree: ('major_triad', str(scale_degree), str(alteration))
+     minor_triad = lambda self, scale_degree: ('minor_triad', str(scale_degree), None)
+     minor_triad_with_alteration = lambda self, alteration, scale_degree: ('minor_triad', str(scale_degree), str(alteration))
+     augmented_triad = lambda self, scale_degree: ('augmented_triad', str(scale_degree), None)
+     augmented_triad_with_alteration = lambda self, alteration, scale_degree: ('augmented_triad', str(scale_degree), str(alteration))
+     diminished_triad = lambda self, scale_degree: ('diminished_triad', str(scale_degree), None)
+     diminished_triad_with_alteration = lambda self, alteration, scale_degree: ('diminished_triad', str(scale_degree), str(alteration))
+
+     # Missing intervals
+     missing_intervals_triad = list
+     missing_intervals_seventhchord = list
+     missing_intervals_ninthchord = list
+     missing_intervals_eleventhchord = list
+     missing_intervals_thirteenthchord = list
+
+     #############################
+     ## Parsing a harmalysis entry
+     #############################
+     def harmalysis_tertian(self, tertian):
+          print(sys._getframe().f_code.co_name, tertian)
+
+     def harmalysis_tertian_with_key(self, key, tertian):
+          print(sys._getframe().f_code.co_name, key, tertian)
+
+     def harmalysis_tertian_with_tonicization(self, tertian, tonicization):
+          print(sys._getframe().f_code.co_name, tertian, tonicization)
+
+     def harmalysis_tertian_with_key_and_tonicization(self, key, tertian, tonicization):
+          print(sys._getframe().f_code.co_name, key, tertian, tonicization)
 
 test_strings = [
      'C:viio65',
@@ -273,14 +344,13 @@ def test_key():
      print(key.i, key.II, key.iii, key.IV, key.V, key.vi, key.VII)
 
 if __name__ == '__main__':
-     test_key()
-     # grammar = 'harmalysis.lark'
-     # l = Lark(open(grammar).read(), start="start")
-     # t = l.parse(sys.argv[1])
-     # print(t)
-     # print(t.pretty())
-     # tree.pydot__tree_to_png(t, 'harmparser.png')
-     # print("Transformer")
-     # HarmalysisParser().transform(t)
+     grammar = 'harmalysis.lark'
+     l = Lark(open(grammar).read(), start="start")
+     t = l.parse(sys.argv[1])
+     print(t)
+     print(t.pretty())
+     tree.pydot__tree_to_png(t, 'harmparser.png')
+     print("Transformer")
+     HarmalysisParser().transform(t)
 
 
