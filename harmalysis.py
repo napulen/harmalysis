@@ -205,7 +205,7 @@ class Key(object):
           self.vii = self.VII = self.scale_degree(7)
 
      def scale_degree(self, scale_degree):
-          if 1 > scale_degree and scale_degree > DIATONIC_CLASSES:
+          if 1 > scale_degree or scale_degree > DIATONIC_CLASSES:
                raise ValueError("scale degree should be within 1 and 7.")
           interval = self.mode.step_to_interval_spelling(scale_degree)
           return self.tonic.to_interval(interval)
@@ -249,6 +249,7 @@ class ChordBase(object):
           for interval in self._intervals:
                if interval:
                     ret += str(interval)
+          return ret
 
 
 class TertianChord(ChordBase):
@@ -311,17 +312,17 @@ class TertianChord(ChordBase):
                raise KeyError("the inversion letter '{}' is not supported".format(inversion_by_letter))
           self.inversion = TertianChord.inversions_by_letter.index(inversion_by_letter)
 
-     def __str__(self):
-          ret = """
-          scale degree: {}
-          triad quality: {}
-          inversion: {}
-          intervals: {}
-          """.format(self.scale_degree,
-          self.triad_quality,
-          self.inversion,
-          self._intervals)
-          return ret
+     # def __str__(self):
+     #      ret = """
+     #      scale degree: {}
+     #      triad quality: {}
+     #      inversion: {}
+     #      intervals: {}
+     #      """.format(self.scale_degree,
+     #      self.triad_quality,
+     #      self.inversion,
+     #      self._intervals)
+     #      return ret
 
 def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion_by_letter=None, added_interval=None):
           tertian = TertianChord()
@@ -356,6 +357,8 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
                     diatonic_intervals = [7, 9, 11, 13]
           return (tertian, diatonic_intervals)
 
+def _harmalysis():
+     '''hi'''
 
 @v_args(inline=True)
 class HarmalysisParser(Transformer):
@@ -432,6 +435,20 @@ class HarmalysisParser(Transformer):
 
      def harmalysis_tertian_with_key(self, key, tertian):
           print(sys._getframe().f_code.co_name, key, tertian)
+          harmalysis = Harmalysis()
+          key, function = key
+          if function == 'reference':
+               harmalysis.reference_key = key
+          elif function == 'established':
+               harmalysis.established_key = key
+          tertian_chord, diatonic_intervals = tertian
+          scale_degree = tertian_chord.scale_degree
+          tertian_chord.root = getattr(key, scale_degree)
+          for diatonic in diatonic_intervals:
+               interval = key.mode.step_to_interval_spelling(diatonic)
+               tertian_chord.add_interval(interval)
+          harmalysis.chord = tertian_chord
+          return harmalysis
 
      def harmalysis_tertian_with_tonicization(self, tertian, tonicization):
           print(sys._getframe().f_code.co_name, tertian, tonicization)
@@ -464,6 +481,7 @@ if __name__ == '__main__':
      print(t.pretty())
      tree.pydot__tree_to_png(t, 'harmparser.png')
      print("Transformer")
-     HarmalysisParser().transform(t)
+     x = HarmalysisParser().transform(t)
+     print(str(x.chord))
 
 
