@@ -130,6 +130,7 @@ class PitchClassSpelling(object):
           1: '#',
           2: 'x'
      }
+
      def __init__(self, note_letter, alteration=None):
           note_letter = note_letter.upper()
           if not note_letter in PitchClassSpelling.diatonic_classes:
@@ -216,7 +217,6 @@ class Harmalysis(object):
           self.established_key = None
           self.chord = None
 
-
 class ChordBase(object):
      def __init__(self):
           self.root = None
@@ -252,7 +252,19 @@ class ChordBase(object):
 
 
 class TertianChord(ChordBase):
-     def __init__(self, missing_intervals=[]):
+     triad_qualities = [
+          'major_triad',
+          'minor_triad',
+          'diminished_triad',
+          'augmented_triad'
+     ]
+     inversions_by_number = [
+          6, 64, 65, 43, 42, 2
+     ]
+     inversions_by_letter = [
+          'a', 'b', 'c', 'd', 'e', 'f', 'g'
+     ]
+     def __init__(self):
           super().__init__()
           self.scale_degree = None
           self.scale_degree_alteration = None
@@ -262,6 +274,87 @@ class TertianChord(ChordBase):
           self.contextual_function = None
           self.chord_label = None
           self.pcset = None
+
+     def set_triad_quality(self, triad_quality):
+          if not triad_quality in TertianChord.triad_qualities:
+               raise KeyError("the triad quality '{}' is not supported".format(triad_quality))
+          self.triad_quality = triad_quality
+          if triad_quality == 'major_triad':
+               self.add_interval(IntervalSpelling('M', 3))
+               self.add_interval(IntervalSpelling('P', 5))
+          elif triad_quality == 'minor_triad':
+               self.add_interval(IntervalSpelling('m', 3))
+               self.add_interval(IntervalSpelling('P', 5))
+          elif triad_quality == 'diminished_triad':
+               self.add_interval(IntervalSpelling('m', 3))
+               self.add_interval(IntervalSpelling('D', 5))
+          elif triad_quality == 'augmented_triad':
+               self.add_interval(IntervalSpelling('M', 3))
+               self.add_interval(IntervalSpelling('A', 5))
+
+     def set_inversion_by_number(self, inversion_by_number):
+          if not inversion_by_number in TertianChord.inversions_by_number:
+               raise KeyError("the numeric inversion '{}' is not supported".format(inversion_by_number))
+          if inversion_by_number == 6:
+               self.inversion = 1
+          elif inversion_by_number == 64:
+               self.inversion = 2
+          elif inversion_by_number == 65:
+               self.inversion = 1
+          elif inversion_by_number == 43:
+               self.inversion = 2
+          elif inversion_by_number == 42 or inversion_by_number == 2:
+               self.inversion = 3
+
+     def set_inversion_by_letter(self, inversion_by_letter):
+          if not inversion_by_letter in TertianChord.inversions_by_letter:
+               raise KeyError("the inversion letter '{}' is not supported".format(inversion_by_letter))
+          self.inversion = TertianChord.inversions_by_letter.index(inversion_by_letter)
+
+     def __str__(self):
+          ret = """
+          scale degree: {}
+          triad quality: {}
+          inversion: {}
+          intervals: {}
+          """.format(self.scale_degree,
+          self.triad_quality,
+          self.inversion,
+          self._intervals)
+          return ret
+
+def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion_by_letter=None, added_interval=None):
+          tertian = TertianChord()
+          triad_quality, scale_degree, alteration = triad
+          tertian.scale_degree = scale_degree
+          tertian.scale_degree_alteration = alteration
+          tertian.set_triad_quality(triad_quality)
+
+          if inversion_by_number:
+               tertian.set_inversion_by_number(inversion_by_number)
+          elif inversion_by_letter:
+               tertian.set_inversion_by_letter(inversion_by_letter)
+
+          for interval in missing_intervals:
+               tertian.missing_interval(int(interval))
+
+          diatonic_intervals = []
+
+          if not added_interval:
+               return (tertian, diatonic_intervals)
+
+          if isinstance(added_interval, IntervalSpelling):
+               tertian.add_interval(added_interval)
+          else:
+               if added_interval == 7:
+                    diatonic_intervals = [7]
+               elif added_interval == 9:
+                    diatonic_intervals = [7, 9]
+               elif added_interval == 11:
+                    diatonic_intervals = [7, 9, 11]
+               elif added_interval == 13:
+                    diatonic_intervals = [7, 9, 11, 13]
+          return (tertian, diatonic_intervals)
 
 
 @v_args(inline=True)
@@ -299,19 +392,19 @@ class HarmalysisParser(Transformer):
      diminished_triad = lambda self, scale_degree: ('diminished_triad', str(scale_degree), None)
      diminished_triad_with_alteration = lambda self, alteration, scale_degree: ('diminished_triad', str(scale_degree), str(alteration))
      # Inversions by number
-     triad_inversion_by_number = lambda self, inversion: str(inversion)
-     seventhchord_inversion_by_number = lambda self, inversion: str(inversion)
+     triad_inversion_by_number = lambda self, inversion: int(inversion)
+     seventhchord_inversion_by_number = lambda self, inversion: int(inversion)
      # Inversions by letter
      inversion_by_letter = lambda self, inversion: str(inversion)
      # Added intervals
-     added_seventh_diatonic = lambda self, interval: [int(interval)]
-     added_seventh_with_quality = lambda self, quality, interval: [str(quality), int(interval)]
-     added_ninth_diatonic = lambda self, interval: [int(interval)]
-     added_ninth_with_quality = lambda self, quality, interval: [str(quality), int(interval)]
-     added_eleventh_diatonic = lambda self, interval: [int(interval)]
-     added_eleventh_with_quality = lambda self, quality, interval: [str(quality), int(interval)]
-     added_thirteenth_diatonic = lambda self, interval: [int(interval)]
-     added_thirteenth_with_quality = lambda self, quality, interval: [str(quality), int(interval)]
+     added_seventh_diatonic = lambda self, interval: int(interval)
+     added_seventh_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
+     added_ninth_diatonic = lambda self, interval: int(interval)
+     added_ninth_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
+     added_eleventh_diatonic = lambda self, interval: int(interval)
+     added_eleventh_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
+     added_thirteenth_diatonic = lambda self, interval: int(interval)
+     added_thirteenth_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
      # Missing intervals
      missing_intervals_triad = list
      missing_intervals_seventhchord = list
@@ -319,23 +412,18 @@ class HarmalysisParser(Transformer):
      missing_intervals_eleventhchord = list
      missing_intervals_thirteenthchord = list
      # Tertian
-     def tertian_triad(self, triad, missing_intervals):
-          print(sys._getframe().f_code.co_name, triad, missing_intervals)
-          triad_quality, scale_degree, alteration = triad
-          tertian = TertianChord()
-          tertian.scale_degree = scale_degree
-          tertian.triad_quality = triad_quality
-          tertian.scale_degree_alteration = alteration
-          if triad_quality == 'major_triad':
-               tertian.add_interval(IntervalSpelling('M', 3))
-               tertian.add_interval(IntervalSpelling('P', 5))
-          for interval in missing_intervals:
-               tertian.missing_interval(int(interval))
-          return tertian
-
-     # TODO
-     # def tertian_triad_with_inversion_by_number(self, triad, missing_intervals):
-
+     tertian_triad = lambda self, triad, missing_intervals: _tertian_chord(triad, missing_intervals)
+     tertian_triad_with_inversion_by_number = lambda self, triad, inversion_by_number, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_number=inversion_by_number)
+     tertian_seventh_with_inversion_by_number = lambda self, triad, inversion_by_number, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_number=inversion_by_number, added_interval=7)
+     tertian_triad_with_inversion_by_letter = lambda self, triad, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter)
+     tertian_seventh = lambda self, triad, added_seventh, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_seventh)
+     tertian_seventh_with_inversion_by_letter = lambda self, triad, added_seventh, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_seventh)
+     tertian_ninth = lambda self, triad, added_ninth, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_ninth)
+     tertian_ninth_with_inversion_by_letter = lambda self, triad, added_ninth, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_ninth)
+     tertian_eleventh = lambda self, triad, added_eleventh, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_eleventh)
+     tertian_eleventh_with_inversion_by_letter = lambda self, triad, added_eleventh, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_eleventh)
+     tertian_thirteenth = lambda self, triad, added_thirteenth, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_thirteenth)
+     tertian_thirteenth_with_inversion_by_letter = lambda self, triad, added_thirteenth, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_thirteenth)
      #############################
      ## Parsing a harmalysis entry
      #############################
@@ -343,7 +431,7 @@ class HarmalysisParser(Transformer):
           print(sys._getframe().f_code.co_name, tertian)
 
      def harmalysis_tertian_with_key(self, key, tertian):
-          print(sys._getframe().f_code.co_name, key, tertian.triad_quality)
+          print(sys._getframe().f_code.co_name, key, tertian)
 
      def harmalysis_tertian_with_tonicization(self, tertian, tonicization):
           print(sys._getframe().f_code.co_name, tertian, tonicization)
