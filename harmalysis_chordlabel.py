@@ -37,7 +37,7 @@ import sys
 @v_args(inline=True)
 class ChordLabelParser(Transformer):
      root = str
-     root_with_alteration = lambda self, letter, alteration: "{}{}".format(letter.lower(), alteration)
+     root_with_alteration = lambda self, letter, alteration: "{}{}".format(letter, alteration)
      major_triad_chord = lambda self: 'major'
      minor_triad_chord = lambda self: 'minor'
      augmented_triad_chord = lambda self: 'augmented'

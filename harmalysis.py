@@ -51,10 +51,13 @@ if __name__ == '__main__':
      # print("Transformer")
      # x = HarmalysisParser().transform(t)
      # print(str(x.chord))
-
-     chord = harmalysis_roman.parse(sys.argv[1])
-     chordlabel = harmalysis_chordlabel.parse(str(chord.chord))
-
-     print(chordlabel)
+     while True:
+          try:
+               query = input('> ')
+          except EOFError:
+               break
+          chord = harmalysis_roman.parse(query)
+          chordlabel = harmalysis_chordlabel.parse(str(chord.chord))
+          print(chordlabel)
 
 
