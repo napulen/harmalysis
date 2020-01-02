@@ -1,7 +1,7 @@
 '''
 The harmalysis language for harmonic analysis and roman numerals
 
-Copyright (c) 2019, Néstor Nápoles
+Copyright (c) 2019, Nestor Napoles
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -30,38 +30,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-from lark import Lark, tree, Transformer, v_args
-import sys
+TONIC = 0
+SUPERTONIC = 1
+MEDIANT = 2
+SUBDOMINANT = 3
+DOMINANT = 4
+SUBMEDIANT = 5
+SEVENTH_DEGREE = 6
+DIATONIC_CLASSES = 7
 
-
-@v_args(inline=True)
-class ChordLabelParser(Transformer):
-     root = str
-     root_with_alteration = lambda self, letter, alteration: "{}{}".format(letter.lower(), alteration)
-     major_triad_chord = lambda self: 'major'
-     minor_triad_chord = lambda self: 'minor'
-     augmented_triad_chord = lambda self: 'augmented'
-     diminished_triad_chord = lambda self: 'diminished'
-     major_seventh_chord = lambda self: 'major seventh'
-     dominant_seventh_chord = lambda self: 'dominant seventh'
-     augmented_major_seventh_chord = lambda self: 'augmented major seventh'
-     minor_seventh_chord = lambda self: 'minor seventh'
-     minor_major_seventh_chord = lambda self: 'minor major seventh'
-     half_diminished_seventh_chord = lambda self: 'half-diminished seventh'
-     fully_diminished_seventh_chord = lambda self: 'fully-diminished seventh'
-     chordlabel = lambda self, root, chord: "{} {}".format(root, chord)
-
-
-grammarfile = 'harmalysis_chordlabel.lark'
-parser = Lark(open(grammarfile).read())
-
-def parse(query, full_tree=False):
-     ast = parser.parse(query)
-     if full_tree:
-          return ast
-     return ChordLabelParser().transform(ast)
-
-if __name__ == '__main__':
-     ast = parse(sys.argv[1], full_tree=True)
-     print(ChordLabelParser().transform(ast))
-     tree.pydot__tree_to_png(ast, 'harmalysis_chordlabel.png')
+roman_to_int = {
+     'I':   1, 'i':   1,
+     'II':  2, 'ii':  2,
+     'III': 3, 'iii': 3,
+     'IV':  4, 'iv':  4,
+     'V':   5, 'v':   5,
+     'VI':  6, 'vi':  6,
+     'VII': 7, 'vii': 7
+}

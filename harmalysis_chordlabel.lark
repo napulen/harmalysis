@@ -32,14 +32,14 @@
 /////////////////////////////////
 // Flats, sharps, and alterations
 /////////////////////////////////
-_FLAT : "-" | "b"
-_DOUBLE_FLAT : "--" | "bb"
-_SHARP : "#"
-_DOUBLE_SHARP : "##" | "x"
-alteration : _FLAT         -> flat
-           | _DOUBLE_FLAT  -> double_flat
-           | _SHARP        -> sharp
-           | _DOUBLE_SHARP -> double_sharp
+FLAT :         "-"  | "b"
+DOUBLE_FLAT :  "--" | "bb"
+SHARP :        "#"
+DOUBLE_SHARP : "##" | "x"
+_alteration : FLAT
+            | DOUBLE_FLAT
+            | SHARP
+            | DOUBLE_SHARP
 
 ///////////////////////////////////////////
 // Lower-case, upper-case letters, and keys
@@ -48,11 +48,11 @@ NOTE_LETTER_LOWERCASE : "a".."g"
 NOTE_LETTER_UPPERCASE : "A".."G"
 LETTER : NOTE_LETTER_LOWERCASE | NOTE_LETTER_UPPERCASE
 
-key : NOTE_LETTER_UPPERCASE [alteration] -> major_key
-    | NOTE_LETTER_LOWERCASE [alteration] -> minor_key
+key : NOTE_LETTER_UPPERCASE [_alteration] -> major_key
+    | NOTE_LETTER_LOWERCASE [_alteration] -> minor_key
 
-root : LETTER            -> root
-     | LETTER alteration -> root_with_alteration
+root : LETTER             -> root
+     | LETTER _alteration -> root_with_alteration
 
 //////////////////
 // Added intervals
