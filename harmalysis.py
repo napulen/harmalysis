@@ -78,6 +78,13 @@ class MajorScale(object):
      def __init__(self):
           self.scale_degree_quality = ['P', 'M', 'M', 'P', 'P', 'M', 'M']
           self.scale_degree_semitones = [0, 2, 4, 5, 7, 9, 11]
+          self.i = self.I = self.step_to_interval_spelling(1)
+          self.ii = self.II = self.step_to_interval_spelling(2)
+          self.iii = self.III = self.step_to_interval_spelling(3)
+          self.iv = self.IV = self.step_to_interval_spelling(4)
+          self.v = self.V = self.step_to_interval_spelling(5)
+          self.vi = self.VI = self.step_to_interval_spelling(6)
+          self.vii = self.VII = self.step_to_interval_spelling(7)
 
      def step_to_interval_spelling(self, step):
           self.quality = self.scale_degree_quality[(step - 1) % DIATONIC_CLASSES]
@@ -99,6 +106,9 @@ class NaturalMinorScale(MajorScale):
           self.scale_degree_semitones[MEDIANT] = 3
           self.scale_degree_semitones[SUBMEDIANT] = 8
           self.scale_degree_semitones[SEVENTH_DEGREE] = 10
+          self.iii = self.III = self.step_to_interval_spelling(3)
+          self.vi = self.VI = self.step_to_interval_spelling(6)
+          self.vii = self.VII = self.step_to_interval_spelling(7)
 
 
 class HarmonicMinorScale(NaturalMinorScale):
@@ -106,6 +116,7 @@ class HarmonicMinorScale(NaturalMinorScale):
           super().__init__()
           self.scale_degree_quality[SEVENTH_DEGREE] = 'M'
           self.scale_degree_semitones[SEVENTH_DEGREE] = 11
+          self.vii = self.VII = self.step_to_interval_spelling(7)
 
 
 class AscendingMelodicMinorScale(HarmonicMinorScale):
@@ -113,6 +124,7 @@ class AscendingMelodicMinorScale(HarmonicMinorScale):
           super().__init__()
           self.scale_degree_quality[SUBMEDIANT] = 'M'
           self.scale_degree_semitones[SUBMEDIANT] = 9
+          self.vi = self.VI = self.step_to_interval_spelling(6)
 
 
 class PitchClassSpelling(object):
@@ -325,40 +337,41 @@ class TertianChord(ChordBase):
      #      return ret
 
 def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion_by_letter=None, added_interval=None):
-          tertian = TertianChord()
-          triad_quality, scale_degree, alteration = triad
-          tertian.scale_degree = scale_degree
-          tertian.scale_degree_alteration = alteration
-          tertian.set_triad_quality(triad_quality)
+     tertian = TertianChord()
+     triad_quality, scale_degree, alteration = triad
+     tertian.scale_degree = scale_degree
+     tertian.scale_degree_alteration = alteration
+     tertian.set_triad_quality(triad_quality)
 
-          if inversion_by_number:
-               tertian.set_inversion_by_number(inversion_by_number)
-          elif inversion_by_letter:
-               tertian.set_inversion_by_letter(inversion_by_letter)
+     if inversion_by_number:
+          tertian.set_inversion_by_number(inversion_by_number)
+     elif inversion_by_letter:
+          tertian.set_inversion_by_letter(inversion_by_letter)
 
-          for interval in missing_intervals:
-               tertian.missing_interval(int(interval))
+     for interval in missing_intervals:
+          tertian.missing_interval(int(interval))
 
-          diatonic_intervals = []
+     diatonic_intervals = []
 
-          if not added_interval:
-               return (tertian, diatonic_intervals)
+     if not added_interval:
+          return (tertian, diatonic_intervals)
 
-          if isinstance(added_interval, IntervalSpelling):
-               tertian.add_interval(added_interval)
-          else:
-               if added_interval == 7:
-                    diatonic_intervals = [7]
-               elif added_interval == 9:
-                    diatonic_intervals = [7, 9]
-               elif added_interval == 11:
-                    diatonic_intervals = [7, 9, 11]
-               elif added_interval == 13:
-                    diatonic_intervals = [7, 9, 11, 13]
+     if isinstance(added_interval, IntervalSpelling):
+          tertian.add_interval(added_interval)
+     else:
+          if added_interval == 7:
+               diatonic_intervals = [7]
+          elif added_interval == 9:
+               diatonic_intervals = [7, 9]
+          elif added_interval == 11:
+               diatonic_intervals = [7, 9, 11]
+          elif added_interval == 13:
+               diatonic_intervals = [7, 9, 11, 13]
           return (tertian, diatonic_intervals)
 
 def _harmalysis():
      '''hi'''
+
 
 @v_args(inline=True)
 class HarmalysisParser(Transformer):
@@ -443,6 +456,7 @@ class HarmalysisParser(Transformer):
                harmalysis.established_key = key
           tertian_chord, diatonic_intervals = tertian
           scale_degree = tertian_chord.scale_degree
+          # scale_degree_interval = step_to_interval_spelling
           tertian_chord.root = getattr(key, scale_degree)
           for diatonic in diatonic_intervals:
                interval = key.mode.step_to_interval_spelling(diatonic)
