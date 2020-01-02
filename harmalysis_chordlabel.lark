@@ -124,4 +124,4 @@ chord : _major_triad                   -> major_triad_chord
 
 chordlabel : root chord
 
-start : chordlabel
+?start : chordlabel
