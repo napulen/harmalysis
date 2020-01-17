@@ -56,8 +56,8 @@ if __name__ == '__main__':
                query = input('> ')
           except EOFError:
                break
-          chord = harmalysis_roman.parse(query, create_png=True)
-          chordlabel = harmalysis_chordlabel.parse(str(chord.chord))
+          roman = harmalysis_roman.parse(query, create_png=True)
+          chordlabel = harmalysis_chordlabel.parse(str(roman.chord))
           print(chordlabel)
 
 

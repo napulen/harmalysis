@@ -68,6 +68,24 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
 
      return (tertian, diatonic_intervals)
 
+
+def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
+     if name == "Gn" or name == "Ger":
+          special = harmalysis_classes.AugmentedSixthChord('german')
+     elif name == 'Fr':
+          special = harmalysis_classes.AugmentedSixthChord('french')
+     elif name == 'It' or name == "Lt":
+          special = harmalysis_classes.AugmentedSixthChord('italian')
+     
+     if inversion_by_number:
+          special.set_inversion_by_number(inversion_by_number)
+     elif inversion_by_letter:
+          special.set_inversion_by_letter(inversion_by_letter)
+
+     return special
+
+
+
 def _harmalysis():
      '''hi'''
 
@@ -139,6 +157,12 @@ class RomanParser(Transformer):
      tertian_eleventh_with_inversion_by_letter = lambda self, triad, added_eleventh, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_eleventh)
      tertian_thirteenth = lambda self, triad, added_thirteenth, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_thirteenth)
      tertian_thirteenth_with_inversion_by_letter = lambda self, triad, added_thirteenth, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_thirteenth)
+     
+     # Special chords
+     special_german = lambda self, name: _special_chord(name)
+     special_german_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
+     special_german_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
+     
      #############################
      ## Parsing a harmalysis entry
      #############################
@@ -172,10 +196,25 @@ class RomanParser(Transformer):
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
 
+def create_filename(query):
+     ret = query.replace(":", "_colon_")
+     ret = ret.replace("=", "_equal_")
+     ret = ret.replace(">", "_gt_")
+     ret = ret.replace("/", "_slash_")
+     ret = ret.replace("|", "_pipe_")
+     ret = ret.replace("?", "_questionmark_")
+     ret = ret.replace("#", "_sharp_")
+     ret = ret.replace("+", "_plus_")
+     ret = ret.replace("(", "_parenthesisl_")
+     ret = ret.replace(")", "_parenthesisr_")
+     ret = ret.replace("[", "_bracketl_")
+     ret = ret.replace("]", "_bracketr_")
+     return ret + ".png"
+
 def parse(query, full_tree=False, create_png=True):
      ast = parser.parse(query)
      if create_png:
-          filename = '{}.png'.format("".join(x for x in query if x.isalnum()))
+          filename = create_filename(query)
           tree.pydot__tree_to_png(ast, filename)
      if full_tree:
           return ast

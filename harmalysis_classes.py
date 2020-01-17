@@ -35,6 +35,7 @@ import interval
 import scale
 import equal_temperament
 
+
 class Key(object):
      scale_mapping = {
           "major": scale.MajorScale(),
@@ -74,6 +75,7 @@ class Harmalysis(object):
           self.reference_key = None
           self.established_key = None
           self.chord = None
+
 
 class ChordBase(object):
      def __init__(self):
@@ -152,7 +154,7 @@ class TertianChord(ChordBase):
                self.add_interval(interval.IntervalSpelling('A', 5))
 
      def set_inversion_by_number(self, inversion_by_number):
-          if not inversion_by_number in TertianChord.inversions_by_number:
+          if not inversion_by_number in self.inversions_by_number:
                raise KeyError("the numeric inversion '{}' is not supported".format(inversion_by_number))
           if inversion_by_number == 6:
                self.inversion = 1
@@ -166,7 +168,7 @@ class TertianChord(ChordBase):
                self.inversion = 3
 
      def set_inversion_by_letter(self, inversion_by_letter):
-          if not inversion_by_letter in TertianChord.inversions_by_letter:
+          if not inversion_by_letter in self.inversions_by_letter:
                raise KeyError("the inversion letter '{}' is not supported".format(inversion_by_letter))
           self.inversion = TertianChord.inversions_by_letter.index(inversion_by_letter)
 
@@ -181,3 +183,9 @@ class TertianChord(ChordBase):
      #      self.inversion,
      #      self._intervals)
      #      return ret
+
+
+class AugmentedSixthChord(TertianChord):
+     def __init__(self, augmented_sixth_type):
+          super().__init__()
+          self.augmented_sixth_type = augmented_sixth_type
