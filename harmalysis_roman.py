@@ -68,15 +68,15 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
 
      return (tertian, diatonic_intervals)
 
-
 def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
+     print(name)
      if name == "Gn" or name == "Ger":
           special = harmalysis_classes.AugmentedSixthChord('german')
      elif name == 'Fr':
           special = harmalysis_classes.AugmentedSixthChord('french')
      elif name == 'It' or name == "Lt":
           special = harmalysis_classes.AugmentedSixthChord('italian')
-     
+
      if inversion_by_number:
           special.set_inversion_by_number(inversion_by_number)
      elif inversion_by_letter:
@@ -157,12 +157,16 @@ class RomanParser(Transformer):
      tertian_eleventh_with_inversion_by_letter = lambda self, triad, added_eleventh, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_eleventh)
      tertian_thirteenth = lambda self, triad, added_thirteenth, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_thirteenth)
      tertian_thirteenth_with_inversion_by_letter = lambda self, triad, added_thirteenth, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_thirteenth)
-     
-     # Special chords
+     ##########################
+     ## Parsing a special chord
+     ##########################
+     special_chord_name = str
      special_german = lambda self, name: _special_chord(name)
      special_german_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
      special_german_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
-     
+
+
+
      #############################
      ## Parsing a harmalysis entry
      #############################
@@ -192,6 +196,9 @@ class RomanParser(Transformer):
 
      def harmalysis_tertian_with_key_and_tonicization(self, key, tertian, tonicization):
           "print(sys._getframe().f_code.co_name, key, tertian, tonicization)"
+
+     def harmalysis_special_with_key(self, key, special):
+          return special
 
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
