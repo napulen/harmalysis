@@ -65,7 +65,7 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
 
      for i in missing_intervals:
           tertian.missing_interval(int(i))
-     
+
      return (tertian, diatonic_intervals)
 
 def _harmalysis():
@@ -172,8 +172,11 @@ class RomanParser(Transformer):
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
 
-def parse(query, full_tree=False):
+def parse(query, full_tree=False, create_png=True):
      ast = parser.parse(query)
+     if create_png:
+          filename = '{}.png'.format("".join(x for x in query if x.isalnum()))
+          tree.pydot__tree_to_png(ast, filename)
      if full_tree:
           return ast
      return RomanParser().transform(ast)

@@ -61,11 +61,11 @@ key_definition : NOTE_LETTER_UPPERCASE                                 -> major_
                | NOTE_LETTER_UPPERCASE _alteration                     -> major_key_with_alteration
                | NOTE_LETTER_LOWERCASE                                 -> default_minor_key
                | NOTE_LETTER_LOWERCASE _alteration                     -> default_minor_key_with_alteration
-               | NOTE_LETTER_LOWERCASE            "_" _MINOR_NATURAL   -> natural_minor_key
+               | NOTE_LETTER_LOWERCASE             "_" _MINOR_NATURAL  -> natural_minor_key
                | NOTE_LETTER_LOWERCASE _alteration "_" _MINOR_NATURAL  -> natural_minor_key_with_alteration
-               | NOTE_LETTER_LOWERCASE            "_" _MINOR_HARMONIC  -> harmonic_minor_key
+               | NOTE_LETTER_LOWERCASE             "_" _MINOR_HARMONIC -> harmonic_minor_key
                | NOTE_LETTER_LOWERCASE _alteration "_" _MINOR_HARMONIC -> harmonic_minor_key_with_alteration
-               | NOTE_LETTER_LOWERCASE            "_" _MINOR_MELODIC   -> melodic_minor_key
+               | NOTE_LETTER_LOWERCASE             "_" _MINOR_MELODIC  -> melodic_minor_key
                | NOTE_LETTER_LOWERCASE _alteration "_" _MINOR_MELODIC  -> melodic_minor_key_with_alteration
 
 key : key_definition key_as_reference
