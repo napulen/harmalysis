@@ -42,14 +42,13 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
      tertian.scale_degree = scale_degree
      tertian.scale_degree_alteration = alteration
      tertian.set_triad_quality(triad_quality)
-
+     # Handling inversions
      if inversion_by_number:
           tertian.set_inversion_by_number(inversion_by_number)
      elif inversion_by_letter:
           tertian.set_inversion_by_letter(inversion_by_letter)
-
+     # Handling added intervals
      diatonic_intervals = []
-
      if added_interval:
           if isinstance(added_interval, interval.IntervalSpelling):
                tertian.add_interval(added_interval)
@@ -62,10 +61,9 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
                     diatonic_intervals = [7, 9, 11]
                elif added_interval == 13:
                     diatonic_intervals = [7, 9, 11, 13]
-
+     # Handling missing intervals
      for i in missing_intervals:
           tertian.missing_interval(int(i))
-
      return (tertian, diatonic_intervals)
 
 def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
@@ -76,12 +74,11 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
           special = harmalysis_classes.AugmentedSixthChord('french')
      elif name == 'It' or name == "Lt":
           special = harmalysis_classes.AugmentedSixthChord('italian')
-
+     # Handling inversions
      if inversion_by_number:
           special.set_inversion_by_number(inversion_by_number)
      elif inversion_by_letter:
           special.set_inversion_by_letter(inversion_by_letter)
-
      return special
 
 

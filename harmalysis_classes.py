@@ -35,7 +35,6 @@ import interval
 import scale
 import equal_temperament
 
-
 class Key(object):
      scale_mapping = {
           "major": scale.MajorScale(),
@@ -95,6 +94,10 @@ class ChordBase(object):
           self.thirteenth = self._intervals[11]
           self.fourteenth = self._intervals[12]
           self.fifteenth = self._intervals[13]
+          self.default_function = None
+          self.contextual_function = None
+          self.chord_label = None
+          self.pcset = None
 
      def add_interval(self, interval_spelling):
           if not isinstance(interval_spelling, interval.IntervalSpelling):
@@ -112,13 +115,7 @@ class ChordBase(object):
           return ret
 
 
-class TertianChord(ChordBase):
-     triad_qualities = [
-          'major_triad',
-          'minor_triad',
-          'diminished_triad',
-          'augmented_triad'
-     ]
+class InvertibleChord(ChordBase):
      inversions_by_number = [
           6, 64, 65, 43, 42, 2
      ]
@@ -127,31 +124,7 @@ class TertianChord(ChordBase):
      ]
      def __init__(self):
           super().__init__()
-          self.scale_degree = None
-          self.scale_degree_alteration = None
-          self.triad_quality = None
           self.inversion = None
-          self.default_function = None
-          self.contextual_function = None
-          self.chord_label = None
-          self.pcset = None
-
-     def set_triad_quality(self, triad_quality):
-          if not triad_quality in TertianChord.triad_qualities:
-               raise KeyError("the triad quality '{}' is not supported".format(triad_quality))
-          self.triad_quality = triad_quality
-          if triad_quality == 'major_triad':
-               self.add_interval(interval.IntervalSpelling('M', 3))
-               self.add_interval(interval.IntervalSpelling('P', 5))
-          elif triad_quality == 'minor_triad':
-               self.add_interval(interval.IntervalSpelling('m', 3))
-               self.add_interval(interval.IntervalSpelling('P', 5))
-          elif triad_quality == 'diminished_triad':
-               self.add_interval(interval.IntervalSpelling('m', 3))
-               self.add_interval(interval.IntervalSpelling('D', 5))
-          elif triad_quality == 'augmented_triad':
-               self.add_interval(interval.IntervalSpelling('M', 3))
-               self.add_interval(interval.IntervalSpelling('A', 5))
 
      def set_inversion_by_number(self, inversion_by_number):
           if not inversion_by_number in self.inversions_by_number:
@@ -170,7 +143,38 @@ class TertianChord(ChordBase):
      def set_inversion_by_letter(self, inversion_by_letter):
           if not inversion_by_letter in self.inversions_by_letter:
                raise KeyError("the inversion letter '{}' is not supported".format(inversion_by_letter))
-          self.inversion = TertianChord.inversions_by_letter.index(inversion_by_letter)
+          self.inversion = self.inversions_by_letter.index(inversion_by_letter)
+
+
+class TertianChord(InvertibleChord):
+     triad_qualities = [
+          'major_triad',
+          'minor_triad',
+          'diminished_triad',
+          'augmented_triad'
+     ]
+     def __init__(self):
+          super().__init__()
+          self.scale_degree = None
+          self.scale_degree_alteration = None
+          self.triad_quality = None
+
+     def set_triad_quality(self, triad_quality):
+          if not triad_quality in TertianChord.triad_qualities:
+               raise KeyError("the triad quality '{}' is not supported".format(triad_quality))
+          self.triad_quality = triad_quality
+          if triad_quality == 'major_triad':
+               self.add_interval(interval.IntervalSpelling('M', 3))
+               self.add_interval(interval.IntervalSpelling('P', 5))
+          elif triad_quality == 'minor_triad':
+               self.add_interval(interval.IntervalSpelling('m', 3))
+               self.add_interval(interval.IntervalSpelling('P', 5))
+          elif triad_quality == 'diminished_triad':
+               self.add_interval(interval.IntervalSpelling('m', 3))
+               self.add_interval(interval.IntervalSpelling('D', 5))
+          elif triad_quality == 'augmented_triad':
+               self.add_interval(interval.IntervalSpelling('M', 3))
+               self.add_interval(interval.IntervalSpelling('A', 5))
 
      # def __str__(self):
      #      ret = """
@@ -185,7 +189,7 @@ class TertianChord(ChordBase):
      #      return ret
 
 
-class AugmentedSixthChord(TertianChord):
+class AugmentedSixthChord(InvertibleChord):
      def __init__(self, augmented_sixth_type):
           super().__init__()
           self.augmented_sixth_type = augmented_sixth_type
