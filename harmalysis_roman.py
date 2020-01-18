@@ -199,21 +199,22 @@ class RomanParser(Transformer):
 
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
+pngs_folder = 'ast_pngs/'
 
 def create_filename(query):
-     ret = query.replace(":", "_colon_")
-     ret = ret.replace("=", "_equal_")
-     ret = ret.replace(">", "_gt_")
-     ret = ret.replace("/", "_slash_")
-     ret = ret.replace("|", "_pipe_")
-     ret = ret.replace("?", "_questionmark_")
-     ret = ret.replace("#", "_sharp_")
-     ret = ret.replace("+", "_plus_")
-     ret = ret.replace("(", "_parenthesisl_")
-     ret = ret.replace(")", "_parenthesisr_")
-     ret = ret.replace("[", "_bracketl_")
-     ret = ret.replace("]", "_bracketr_")
-     return ret + ".png"
+     f = query.replace(":", "_colon_")
+     f = f.replace("=", "_equal_")
+     f = f.replace(">", "_gt_")
+     f = f.replace("/", "_slash_")
+     f = f.replace("|", "_pipe_")
+     f = f.replace("?", "_questionmark_")
+     f = f.replace("#", "_sharp_")
+     f = f.replace("+", "_plus_")
+     f = f.replace("(", "_parenthesisl_")
+     f = f.replace(")", "_parenthesisr_")
+     f = f.replace("[", "_bracketl_")
+     f = f.replace("]", "_bracketr_")
+     return pngs_folder + f + ".png"
 
 def parse(query, full_tree=False, create_png=True):
      ast = parser.parse(query)
@@ -227,4 +228,4 @@ def parse(query, full_tree=False, create_png=True):
 if __name__ == '__main__':
      ast = parse(sys.argv[1], full_tree=True)
      print(RomanParser().transform(ast))
-     tree.pydot__tree_to_png(ast, 'harmalysis_roman.png')
+     tree.pydot__tree_to_png(ast, 'ast_pngs/harmalysis_roman.png')

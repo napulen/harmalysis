@@ -54,11 +54,12 @@ class ChordLabelParser(Transformer):
 
 grammarfile = 'harmalysis_chordlabel.lark'
 parser = Lark(open(grammarfile).read())
+pngs_folder = 'ast_pngs/'
 
 def parse(query, full_tree=False, create_png=True):
      ast = parser.parse(query)
      if create_png:
-          tree.pydot__tree_to_png(ast, '{}.png'.format(query))
+          tree.pydot__tree_to_png(ast, '{}{}.png'.format(pngs_folder, query))
      if full_tree:
           return ast
      return ChordLabelParser().transform(ast)
@@ -66,4 +67,4 @@ def parse(query, full_tree=False, create_png=True):
 if __name__ == '__main__':
      ast = parse(sys.argv[1], full_tree=True)
      print(ChordLabelParser().transform(ast))
-     tree.pydot__tree_to_png(ast, 'harmalysis_chordlabel.png')
+     tree.pydot__tree_to_png(ast, 'ast_pngs/harmalysis_chordlabel.png')
