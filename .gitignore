@@ -99,3 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# ignore auto-generated pngs
+ast_pngs/*.png
