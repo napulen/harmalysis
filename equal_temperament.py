@@ -51,19 +51,19 @@ class PitchClassSpelling(object):
 
      def __init__(self, note_letter, alteration=None):
           note_letter = note_letter.upper()
-          if not note_letter in PitchClassSpelling.diatonic_classes:
+          if not note_letter in self.diatonic_classes:
                raise ValueError("note letter '{}' is not supported.".format(note_letter))
           self.note_letter = note_letter
-          self.diatonic_class = PitchClassSpelling.diatonic_classes.index(note_letter)
+          self.diatonic_class = self.diatonic_classes.index(note_letter)
           if alteration:
-               if not alteration in PitchClassSpelling.alterations:
+               if not alteration in self.alterations:
                     raise ValueError("alteration '{}' is not supported.".format(alteration))
                self.alteration = alteration
-               alteration_value = PitchClassSpelling.alterations[alteration]
+               alteration_value = self.alterations[alteration]
           else:
                self.alteration = ''
                alteration_value = 0
-          default_chromatic_class = PitchClassSpelling.pitch_classes[self.diatonic_class]
+          default_chromatic_class = self.pitch_classes[self.diatonic_class]
           self.chromatic_class = (12 + default_chromatic_class + alteration_value) % 12
 
      @classmethod

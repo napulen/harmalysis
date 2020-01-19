@@ -42,10 +42,19 @@ class Key(object):
           "harmonic_minor": scale.HarmonicMinorScale(), "default_minor": scale.HarmonicMinorScale(),
           "ascending_melodic_minor": scale.AscendingMelodicMinorScale()
      }
+     scale_degree_alterations = {
+          '--': interval.IntervalSpelling('DD', 1),
+          'bb': interval.IntervalSpelling('DD', 1),
+          '-': interval.IntervalSpelling('D', 1),
+          'b': interval.IntervalSpelling('D', 1),
+          "#": interval.IntervalSpelling('A', 1),
+          "##": interval.IntervalSpelling('AA', 1),
+          "x": interval.IntervalSpelling('AA', 1)
+     }
 
      def __init__(self, note_letter, alteration, scale):
           self.tonic = equal_temperament.PitchClassSpelling(note_letter, alteration)
-          if not scale in Key.scale_mapping:
+          if not scale in self.scale_mapping:
                raise KeyError("scale '{}' is not supported.".format(scale))
           self.mode = Key.scale_mapping[scale]
           self.i = self.I = self.scale_degree(1)
@@ -56,17 +65,17 @@ class Key(object):
           self.vi = self.VI = self.scale_degree(6)
           self.vii = self.VII = self.scale_degree(7)
 
-     def scale_degree(self, scale_degree):
+     def scale_degree(self, scale_degree, alteration=None):
           if 1 > scale_degree or scale_degree > common.DIATONIC_CLASSES:
                raise ValueError("scale degree should be within 1 and 7.")
           interval = self.mode.step_to_interval_spelling(scale_degree)
-          return self.tonic.to_interval(interval)
-
-
-def test_key():
-     note_letter, alteration, scale = 'f', None, 'major'
-     key = Key(note_letter, alteration, scale)
-     print(key.i, key.II, key.iii, key.IV, key.V, key.vi, key.VII)
+          pc = self.tonic.to_interval(interval)
+          if alteration:
+               if not alteration in self.scale_degree_alterations:
+                    raise KeyError("alteration '{}' is not supported.".format(alteration))
+               unison_alteration = self.scale_degree_alterations[alteration]
+               pc = pc.to_interval(unison_alteration)
+          return pc
 
 
 class Harmalysis(object):
@@ -78,6 +87,8 @@ class Harmalysis(object):
 
 class ChordBase(object):
      def __init__(self):
+          self.scale_degree = None
+          self.scale_degree_alteration = None
           self.root = None
           self._intervals = [None] * 14
           self.bass = None
@@ -155,8 +166,6 @@ class TertianChord(InvertibleChord):
      ]
      def __init__(self):
           super().__init__()
-          self.scale_degree = None
-          self.scale_degree_alteration = None
           self.triad_quality = None
 
      def set_triad_quality(self, triad_quality):

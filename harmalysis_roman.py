@@ -70,18 +70,30 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
      print(name)
      if name == "Gn" or name == "Ger":
           special = harmalysis_classes.AugmentedSixthChord('german')
+          special.scale_degree = "iv"
+          special.scale_degree_alteration = '#'
+          special.add_interval(interval.IntervalSpelling("D", 3))
+          special.add_interval(interval.IntervalSpelling("D", 5))
+          special.add_interval(interval.IntervalSpelling("D", 7))
      elif name == 'Fr':
           special = harmalysis_classes.AugmentedSixthChord('french')
+          special.scale_degree = "iv"
+          special.scale_degree_alteration = '#'
+          special.add_interval(interval.IntervalSpelling("D", 3))
+          special.add_interval(interval.IntervalSpelling("D", 5))
+          special.add_interval(interval.IntervalSpelling("m", 6))
      elif name == 'It' or name == "Lt":
           special = harmalysis_classes.AugmentedSixthChord('italian')
+          special.scale_degree = "iv"
+          special.scale_degree_alteration = '#'
+          special.add_interval(interval.IntervalSpelling("D", 3))
+          special.add_interval(interval.IntervalSpelling("D", 5))
      # Handling inversions
      if inversion_by_number:
           special.set_inversion_by_number(inversion_by_number)
      elif inversion_by_letter:
           special.set_inversion_by_letter(inversion_by_letter)
      return special
-
-
 
 def _harmalysis():
      '''hi'''
@@ -179,9 +191,10 @@ class RomanParser(Transformer):
           elif function == 'established':
                harmalysis.established_key = key
           tertian_chord, diatonic_intervals = tertian
-          scale_degree = tertian_chord.scale_degree
-          root_diatonic_step = common.roman_to_int[scale_degree]
-          tertian_chord.root = getattr(key, scale_degree)
+          degree = tertian_chord.scale_degree
+          degree_alteration = tertian_chord.scale_degree_alteration
+          root_diatonic_step = common.roman_to_int[degree]
+          tertian_chord.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
           for diatonic in diatonic_intervals:
                interval = key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
                tertian_chord.add_interval(interval)
@@ -195,7 +208,17 @@ class RomanParser(Transformer):
           "print(sys._getframe().f_code.co_name, key, tertian, tonicization)"
 
      def harmalysis_special_with_key(self, key, special):
-          return special
+          harmalysis = harmalysis_classes.Harmalysis()
+          key, function = key
+          if function == 'reference':
+               harmalysis.reference_key = key
+          elif function == 'established':
+               harmalysis.established_key = key
+          degree = special.scale_degree
+          degree_alteration = special.scale_degree_alteration
+          special.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
+          harmalysis.chord = special
+          return harmalysis
 
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
