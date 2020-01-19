@@ -360,13 +360,7 @@ by_scale_degree : "/" _scale_degree_major -> by_scale_degree_major
                 | "/" _scale_degree_minor -> by_scale_degree_minor
                 | "/" NEAPOLITAN          -> by_scale_degree_neapolitan
 
-by_pitch_class : "/" NOTE_LETTER_UPPERCASE              -> by_letter_major
-               | "/" NOTE_LETTER_UPPERCASE _alteration  -> by_letter_major_with_alteration
-               | "/" NOTE_LETTER_LOWERCASE              -> by_letter_minor
-               | "/" NOTE_LETTER_LOWERCASE _alteration  -> by_letter_minor_with_alteration
-
 tonicization : by_scale_degree+
-             | by_pitch_class
 
 ///////////////////
 // Harmalysis label

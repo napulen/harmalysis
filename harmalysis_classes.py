@@ -54,6 +54,7 @@ class Key(object):
 
      def __init__(self, note_letter, alteration=None, scale="major"):
           self.tonic = equal_temperament.PitchClassSpelling(note_letter, alteration)
+          self.scale = scale
           if not scale in self.scale_mapping:
                raise KeyError("scale '{}' is not supported.".format(scale))
           self.mode = Key.scale_mapping[scale]
@@ -76,6 +77,9 @@ class Key(object):
                unison_alteration = self.scale_degree_alterations[alteration]
                pc = pc.to_interval(unison_alteration)
           return pc
+
+     def __str__(self):
+          return str(self.tonic) + " " + self.scale
 
 
 class Harmalysis(object):
