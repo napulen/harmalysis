@@ -253,6 +253,29 @@ class RomanParser(Transformer):
 
      def harmalysis_tertian_with_key_and_tonicization(self, key, tertian, tonicizations):
           harmalysis = harmalysis_classes.Harmalysis()
+          key, function = key
+          if function == 'reference':
+               harmalysis.reference_key = key
+          elif function == 'established':
+               harmalysis_classes.Harmalysis.established_key = key
+          current_key = key
+          tonicized_keys = []
+          for tonicization in reversed(tonicizations):
+               alteration, degree, mode = tonicization
+               tonicized_pc = current_key.scale_degree(common.roman_to_int[degree], alteration)
+               tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
+               tonicized_keys.insert(0, tonicized_key)
+               current_key = tonicized_key
+          tertian_chord, diatonic_intervals = tertian
+          degree = tertian_chord.scale_degree
+          degree_alteration = tertian_chord.scale_degree_alteration
+          root_diatonic_step = common.roman_to_int[degree]
+          tertian_chord.root = current_key.scale_degree(common.roman_to_int[degree], degree_alteration)
+          for diatonic in diatonic_intervals:
+               interval = current_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
+               tertian_chord.add_interval(interval)
+          harmalysis.chord = tertian_chord
+          return harmalysis
 
      def harmalysis_special(self, special):
           harmalysis = harmalysis_classes.Harmalysis()
