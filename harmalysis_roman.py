@@ -86,9 +86,59 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
           special.set_inversion_by_letter(inversion_by_letter)
      return special
 
-def _harmalysis():
-     '''hi'''
+def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
+     harmalysis = harmalysis_classes.Harmalysis()
+     if key_function:
+          key, function = key_function
+          if function == 'reference':
+               harmalysis.reference_key = key
+          elif function == 'established':
+               harmalysis_classes.Harmalysis.established_key = key
+     else:
+          key = harmalysis_classes.Harmalysis.established_key
+     current_key = key
+     tonicized_keys = []
+     for tonicization in reversed(tonicizations):
+          alteration, degree, mode = tonicization
+          tonicized_pc = current_key.scale_degree(common.roman_to_int[degree], alteration)
+          tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
+          tonicized_keys.insert(0, tonicized_key)
+          current_key = tonicized_key
+     tertian_chord, diatonic_intervals = tertian
+     degree = tertian_chord.scale_degree
+     degree_alteration = tertian_chord.scale_degree_alteration
+     root_diatonic_step = common.roman_to_int[degree]
+     tertian_chord.root = current_key.scale_degree(common.roman_to_int[degree], degree_alteration)
+     for diatonic in diatonic_intervals:
+          interval = current_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
+          tertian_chord.add_interval(interval)
+     harmalysis.chord = tertian_chord
+     return harmalysis
 
+
+def _harmalysis_special(special, key_function=None, tonicizations=[]):
+     harmalysis = harmalysis_classes.Harmalysis()
+     if key_function:
+          key, function = key_function
+          if function == 'reference':
+               harmalysis.reference_key = key
+          elif function == 'established':
+               harmalysis.established_key = key
+     else:
+          key = harmalysis_classes.Harmalysis.established_key
+     current_key = key
+     tonicized_keys = []
+     for tonicization in reversed(tonicizations):
+          alteration, degree, mode = tonicization
+          tonicized_pc = current_key.scale_degree(common.roman_to_int[degree], alteration)
+          tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
+          tonicized_keys.insert(0, tonicized_key)
+          current_key = tonicized_key
+     degree = special.scale_degree
+     degree_alteration = special.scale_degree_alteration
+     special.root = current_key.scale_degree(common.roman_to_int[degree], degree_alteration)
+     harmalysis.chord = special
+     return harmalysis
 
 @v_args(inline=True)
 class RomanParser(Transformer):
@@ -193,111 +243,20 @@ class RomanParser(Transformer):
      by_scale_degree_minor = lambda self, degree: (None, degree, "default_minor")
      by_scale_degree_neapolitan = lambda self, degree: ('b', "ii", "major")
      tonicization = lambda self, *args: list(args)
-
      #############################
      ## Parsing a harmalysis entry
      #############################
-     def harmalysis_tertian(self, tertian):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key = harmalysis_classes.Harmalysis.established_key
-          tertian_chord, diatonic_intervals = tertian
-          degree = tertian_chord.scale_degree
-          degree_alteration = tertian_chord.scale_degree_alteration
-          root_diatonic_step = common.roman_to_int[degree]
-          tertian_chord.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
-          for diatonic in diatonic_intervals:
-               interval = key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
-               tertian_chord.add_interval(interval)
-          harmalysis.chord = tertian_chord
-          return harmalysis
+     # Tertian chords
+     harmalysis_tertian = lambda self, tertian: _harmalysis_tertian(tertian)
+     harmalysis_tertian_with_key = lambda self, key, tertian: _harmalysis_tertian(tertian, key_function=key)
+     harmalysis_tertian_with_tonicization = lambda self, tertian, tonicizations: _harmalysis_tertian(tertian, tonicizations=tonicizations)
+     harmalysis_tertian_with_key_and_tonicization = lambda self, key, tertian, tonicizations: _harmalysis_tertian(tertian, key_function=key, tonicizations=tonicizations)
+     # Special chords
+     harmalysis_special = lambda self, special: _harmalysis_special(special)
+     harmalysis_special_with_key = lambda self, key, special: _harmalysis_special(special, key_function=key)
+     harmalysis_special_with_tonicization = lambda self, special, tonicizations: _harmalysis_special(special, tonicizations=tonicizations)
+     harmalysis_special_with_key_and_tonicization = lambda self, key, special, tonicizations: _harmalysis_special(special, key_function=key, tonicizations=tonicizations)
 
-     def harmalysis_tertian_with_key(self, key, tertian):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key, function = key
-          if function == 'reference':
-               harmalysis.reference_key = key
-          elif function == 'established':
-               harmalysis_classes.Harmalysis.established_key = key
-          tertian_chord, diatonic_intervals = tertian
-          degree = tertian_chord.scale_degree
-          degree_alteration = tertian_chord.scale_degree_alteration
-          root_diatonic_step = common.roman_to_int[degree]
-          tertian_chord.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
-          for diatonic in diatonic_intervals:
-               interval = key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
-               tertian_chord.add_interval(interval)
-          harmalysis.chord = tertian_chord
-          return harmalysis
-
-     def harmalysis_tertian_with_tonicization(self, tertian, tonicizations):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key = harmalysis_classes.Harmalysis.established_key
-          current_key = key
-          tonicized_keys = []
-          for tonicization in reversed(tonicizations):
-               alteration, degree, mode = tonicization
-               tonicized_pc = current_key.scale_degree(common.roman_to_int[degree], alteration)
-               tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
-               tonicized_keys.insert(0, tonicized_key)
-               current_key = tonicized_key
-          tertian_chord, diatonic_intervals = tertian
-          degree = tertian_chord.scale_degree
-          degree_alteration = tertian_chord.scale_degree_alteration
-          root_diatonic_step = common.roman_to_int[degree]
-          tertian_chord.root = current_key.scale_degree(common.roman_to_int[degree], degree_alteration)
-          for diatonic in diatonic_intervals:
-               interval = current_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
-               tertian_chord.add_interval(interval)
-          harmalysis.chord = tertian_chord
-          return harmalysis
-
-     def harmalysis_tertian_with_key_and_tonicization(self, key, tertian, tonicizations):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key, function = key
-          if function == 'reference':
-               harmalysis.reference_key = key
-          elif function == 'established':
-               harmalysis_classes.Harmalysis.established_key = key
-          current_key = key
-          tonicized_keys = []
-          for tonicization in reversed(tonicizations):
-               alteration, degree, mode = tonicization
-               tonicized_pc = current_key.scale_degree(common.roman_to_int[degree], alteration)
-               tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
-               tonicized_keys.insert(0, tonicized_key)
-               current_key = tonicized_key
-          tertian_chord, diatonic_intervals = tertian
-          degree = tertian_chord.scale_degree
-          degree_alteration = tertian_chord.scale_degree_alteration
-          root_diatonic_step = common.roman_to_int[degree]
-          tertian_chord.root = current_key.scale_degree(common.roman_to_int[degree], degree_alteration)
-          for diatonic in diatonic_intervals:
-               interval = current_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
-               tertian_chord.add_interval(interval)
-          harmalysis.chord = tertian_chord
-          return harmalysis
-
-     def harmalysis_special(self, special):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key = harmalysis_classes.Harmalysis.established_key
-          degree = special.scale_degree
-          degree_alteration = special.scale_degree_alteration
-          special.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
-          harmalysis.chord = special
-          return harmalysis
-
-     def harmalysis_special_with_key(self, key, special):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key, function = key
-          if function == 'reference':
-               harmalysis.reference_key = key
-          elif function == 'established':
-               harmalysis.established_key = key
-          degree = special.scale_degree
-          degree_alteration = special.scale_degree_alteration
-          special.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
-          harmalysis.chord = special
-          return harmalysis
 
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
