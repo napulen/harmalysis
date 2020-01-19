@@ -371,17 +371,17 @@ tonicization : by_scale_degree+
 ///////////////////
 // Harmalysis label
 ///////////////////
-harmalysis :     tertian_chord                                -> harmalysis_tertian
-           | key tertian_chord                                -> harmalysis_tertian_with_key
-           |     tertian_chord               tonicization     -> harmalysis_tertian_with_tonicization
-           | key tertian_chord               tonicization     -> harmalysis_tertian_with_key_and_tonicization
-           |     special_chord                                -> harmalysis_special
-           | key special_chord                                -> harmalysis_special_with_key
-           |     special_chord               tonicization     -> harmalysis_special_with_tonicization
-           | key special_chord               tonicization     -> harmalysis_special_with_key_and_tonicization
-           |     descriptive_chord_by_degree                  -> harmalysis_descriptive_by_degree
-           | key descriptive_chord_by_degree                  -> harmalysis_descriptive_by_degree_with_key
-           |     descriptive_chord_by_letter                  -> harmalysis_descriptive_by_letter
+harmalysis :     tertian_chord                            -> harmalysis_tertian
+           | key tertian_chord                            -> harmalysis_tertian_with_key
+           |     tertian_chord               tonicization -> harmalysis_tertian_with_tonicization
+           | key tertian_chord               tonicization -> harmalysis_tertian_with_key_and_tonicization
+           |     special_chord                            -> harmalysis_special
+           | key special_chord                            -> harmalysis_special_with_key
+           |     special_chord               tonicization -> harmalysis_special_with_tonicization
+           | key special_chord               tonicization -> harmalysis_special_with_key_and_tonicization
+           |     descriptive_chord_by_degree              -> harmalysis_descriptive_by_degree
+           | key descriptive_chord_by_degree              -> harmalysis_descriptive_by_degree_with_key
+           |     descriptive_chord_by_letter              -> harmalysis_descriptive_by_letter
 
 /////////////////////
 // Implicit harmonies

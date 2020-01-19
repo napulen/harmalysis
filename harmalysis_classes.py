@@ -52,7 +52,7 @@ class Key(object):
           "x": interval.IntervalSpelling('AA', 1)
      }
 
-     def __init__(self, note_letter, alteration, scale):
+     def __init__(self, note_letter, alteration=None, scale="major"):
           self.tonic = equal_temperament.PitchClassSpelling(note_letter, alteration)
           if not scale in self.scale_mapping:
                raise KeyError("scale '{}' is not supported.".format(scale))
@@ -79,9 +79,9 @@ class Key(object):
 
 
 class Harmalysis(object):
+     established_key = Key("C", scale="major")
      def __init__(self):
           self.reference_key = None
-          self.established_key = None
           self.chord = None
 
 

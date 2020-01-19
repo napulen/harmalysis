@@ -190,16 +190,26 @@ class RomanParser(Transformer):
      ## Parsing a harmalysis entry
      #############################
      def harmalysis_tertian(self, tertian):
-          "print(sys._getframe().f_code.co_name, tertian)"
+          harmalysis = harmalysis_classes.Harmalysis()
+          key = harmalysis_classes.Harmalysis.established_key
+          tertian_chord, diatonic_intervals = tertian
+          degree = tertian_chord.scale_degree
+          degree_alteration = tertian_chord.scale_degree_alteration
+          root_diatonic_step = common.roman_to_int[degree]
+          tertian_chord.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
+          for diatonic in diatonic_intervals:
+               interval = key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
+               tertian_chord.add_interval(interval)
+          harmalysis.chord = tertian_chord
+          return harmalysis
 
      def harmalysis_tertian_with_key(self, key, tertian):
-          "print(sys._getframe().f_code.co_name, key, tertian)"
           harmalysis = harmalysis_classes.Harmalysis()
           key, function = key
           if function == 'reference':
                harmalysis.reference_key = key
           elif function == 'established':
-               harmalysis.established_key = key
+               harmalysis_classes.Harmalysis.established_key = key
           tertian_chord, diatonic_intervals = tertian
           degree = tertian_chord.scale_degree
           degree_alteration = tertian_chord.scale_degree_alteration
@@ -212,10 +222,19 @@ class RomanParser(Transformer):
           return harmalysis
 
      def harmalysis_tertian_with_tonicization(self, tertian, tonicization):
-          "print(sys._getframe().f_code.co_name, tertian, tonicization)"
+          """asd"""
 
      def harmalysis_tertian_with_key_and_tonicization(self, key, tertian, tonicization):
-          "print(sys._getframe().f_code.co_name, key, tertian, tonicization)"
+          """asd"""
+
+     def harmalysis_special(self, special):
+          harmalysis = harmalysis_classes.Harmalysis()
+          key = harmalysis_classes.Harmalysis.established_key
+          degree = special.scale_degree
+          degree_alteration = special.scale_degree_alteration
+          special.root = key.scale_degree(common.roman_to_int[degree], degree_alteration)
+          harmalysis.chord = special
+          return harmalysis
 
      def harmalysis_special_with_key(self, key, special):
           harmalysis = harmalysis_classes.Harmalysis()
