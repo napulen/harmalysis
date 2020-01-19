@@ -67,27 +67,14 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
      return (tertian, diatonic_intervals)
 
 def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
-     print(name)
      if name == "Gn" or name == "Ger":
           special = harmalysis_classes.AugmentedSixthChord('german')
-          special.scale_degree = "iv"
-          special.scale_degree_alteration = '#'
-          special.add_interval(interval.IntervalSpelling("D", 3))
-          special.add_interval(interval.IntervalSpelling("D", 5))
-          special.add_interval(interval.IntervalSpelling("D", 7))
      elif name == 'Fr':
           special = harmalysis_classes.AugmentedSixthChord('french')
-          special.scale_degree = "iv"
-          special.scale_degree_alteration = '#'
-          special.add_interval(interval.IntervalSpelling("D", 3))
-          special.add_interval(interval.IntervalSpelling("D", 5))
-          special.add_interval(interval.IntervalSpelling("m", 6))
      elif name == 'It' or name == "Lt":
           special = harmalysis_classes.AugmentedSixthChord('italian')
-          special.scale_degree = "iv"
-          special.scale_degree_alteration = '#'
-          special.add_interval(interval.IntervalSpelling("D", 3))
-          special.add_interval(interval.IntervalSpelling("D", 5))
+     elif name == "N":
+          special = harmalysis_classes.NeapolitanChord()
      # Handling inversions
      if inversion_by_number:
           special.set_inversion_by_number(inversion_by_number)
@@ -120,7 +107,6 @@ class RomanParser(Transformer):
      key_as_established = lambda self, _: 'established'
      # Key
      key = lambda self, key_definition, key_function: (key_definition, key_function)
-
      ##########################
      ## Parsing a tertian chord
      ##########################
@@ -169,13 +155,33 @@ class RomanParser(Transformer):
      ##########################
      ## Parsing a special chord
      ##########################
+     # Augmented_sixths
      special_chord_name = str
      special_german = lambda self, name: _special_chord(name)
      special_german_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
      special_german_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
-
-
-
+     special_italian = lambda self, name: _special_chord(name)
+     special_italian_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
+     special_italian_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
+     special_french = lambda self, name: _special_chord(name)
+     special_french_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
+     special_french_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
+     # Neapolitan
+     special_neapolitan = lambda self, name: _special_chord(name)
+     special_neapolitan_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
+     special_neapolitan_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
+     # Tristan
+     special_tristan = lambda self, name: _special_chord(name)
+     # Half diminished seventh
+     special_halfdiminished = lambda self, name: _special_chord(name)
+     special_halfdiminished_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
+     special_halfdiminished_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
+     # Cadential six-four
+     special_cadential = lambda self, name: _special_chord(name)
+     # Common-tone diminished
+     special_commontone = lambda self, name: _special_chord(name)
+     special_commontone_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
+     special_commontone_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
      #############################
      ## Parsing a harmalysis entry
      #############################

@@ -298,26 +298,26 @@ half_diminished_seventh : HALF_DIMINISHED_SEVENTH -> special_chord_name
 cadential_six_four :      CADENTIAL_SIX_FOUR      -> special_chord_name
 common_tone_diminished :  COMMON_TONE_DIMINISHED  -> special_chord_name
 
-special_chord : german                                                          -> special_german
-              | german                        seventhchord_inversion_by_letter  -> special_german_with_inversion_by_letter
-              | german                        seventhchord_inversion_by_number  -> special_german_with_inversion_by_number
-              | italian                                                         -> special_italian
-              | italian                       triad_inversion_by_letter         -> special_italian_with_inversion_by_letter
-              | italian                       triad_inversion_by_number         -> special_italian_with_inversion_by_number
-              | french                                                          -> special_french
-              | french                        seventhchord_inversion_by_letter  -> special_french_with_inversion_by_letter
-              | french                        seventhchord_inversion_by_number  -> special_french_with_inversion_by_number
-              | neapolitan                                                      -> special_neapolitan
-              | neapolitan                    triad_inversion_by_letter         -> special_neapolitan_with_inversion_by_letter
-              | neapolitan                    triad_inversion_by_number         -> special_neapolitan_with_inversion_by_number
-              | tristan                                                         -> special_tristan
-              | half_diminished_seventh ["7"]                                   -> special_halfdiminished
-              | half_diminished_seventh ["7"] seventhchord_inversion_by_letter  -> special_halfdiminished_with_inversion_by_letter
-              | half_diminished_seventh       seventhchord_inversion_by_number  -> special_halfdiminished_with_inversion_by_number
-              | cadential_six_four ["64"]                                       -> special_cadential
-              | common_tone_diminished ["7"]                                    -> special_commontone
-              | common_tone_diminished ["7"]  seventhchord_inversion_by_letter  -> special_commontone_with_inversion_by_letter
-              | common_tone_diminished        seventhchord_inversion_by_number  -> special_commontone_with_inversion_by_number
+special_chord : german                                                         -> special_german
+              | german                        seventhchord_inversion_by_letter -> special_german_with_inversion_by_letter
+              | german                        seventhchord_inversion_by_number -> special_german_with_inversion_by_number
+              | italian                                                        -> special_italian
+              | italian                       triad_inversion_by_letter        -> special_italian_with_inversion_by_letter
+              | italian                       triad_inversion_by_number        -> special_italian_with_inversion_by_number
+              | french                                                         -> special_french
+              | french                        seventhchord_inversion_by_letter -> special_french_with_inversion_by_letter
+              | french                        seventhchord_inversion_by_number -> special_french_with_inversion_by_number
+              | neapolitan                                                     -> special_neapolitan
+              | neapolitan                    triad_inversion_by_letter        -> special_neapolitan_with_inversion_by_letter
+              | neapolitan                    triad_inversion_by_number        -> special_neapolitan_with_inversion_by_number
+              | tristan                                                        -> special_tristan
+              | half_diminished_seventh ["7"]                                  -> special_halfdiminished
+              | half_diminished_seventh ["7"] seventhchord_inversion_by_letter -> special_halfdiminished_with_inversion_by_letter
+              | half_diminished_seventh       seventhchord_inversion_by_number -> special_halfdiminished_with_inversion_by_number
+              | cadential_six_four ["64"]                                      -> special_cadential
+              | common_tone_diminished ["7"]                                   -> special_commontone
+              | common_tone_diminished ["7"]  seventhchord_inversion_by_letter -> special_commontone_with_inversion_by_letter
+              | common_tone_diminished        seventhchord_inversion_by_number -> special_commontone_with_inversion_by_number
 
 /////////////////////
 // Descriptive chords

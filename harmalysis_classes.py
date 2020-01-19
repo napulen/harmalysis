@@ -201,4 +201,22 @@ class TertianChord(InvertibleChord):
 class AugmentedSixthChord(InvertibleChord):
      def __init__(self, augmented_sixth_type):
           super().__init__()
+          self.scale_degree = "iv"
+          self.scale_degree_alteration = '#'
+          self.add_interval(interval.IntervalSpelling("D", 3))
+          self.add_interval(interval.IntervalSpelling("D", 5))
           self.augmented_sixth_type = augmented_sixth_type
+          if self.augmented_sixth_type == 'german':
+               self.add_interval(interval.IntervalSpelling("D", 7))
+          elif self.augmented_sixth_type == 'french':
+               self.add_interval(interval.IntervalSpelling("m", 6))
+
+
+class NeapolitanChord(TertianChord):
+     def __init__(self):
+          super().__init__()
+          self.scale_degree = "II"
+          self.scale_degree_alteration = "b"
+          self.triad_quality = "major_triad"
+          self.add_interval(interval.IntervalSpelling('M', 3))
+          self.add_interval(interval.IntervalSpelling('P', 5))
