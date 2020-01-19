@@ -226,7 +226,7 @@ class HalfDiminishedChord(TertianChord):
      def __init__(self):
           super().__init__()
           self.scale_degree = "vii"
-          # TODO: Figure out the alteration (will be complicated)
+          # TODO: Figure out the alteration (vii or #vii; will be complicated)
           self.triad_quality = "diminished_triad"
           self.add_interval(interval.IntervalSpelling("m", 3))
           self.add_interval(interval.IntervalSpelling("D", 5))
