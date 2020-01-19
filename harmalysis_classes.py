@@ -220,3 +220,35 @@ class NeapolitanChord(TertianChord):
           self.triad_quality = "major_triad"
           self.add_interval(interval.IntervalSpelling('M', 3))
           self.add_interval(interval.IntervalSpelling('P', 5))
+
+
+class HalfDiminishedChord(TertianChord):
+     def __init__(self):
+          super().__init__()
+          self.scale_degree = "vii"
+          # TODO: Figure out the alteration (will be complicated)
+          self.triad_quality = "diminished_triad"
+          self.add_interval(interval.IntervalSpelling("m", 3))
+          self.add_interval(interval.IntervalSpelling("D", 5))
+          self.add_interval(interval.IntervalSpelling("m", 7))
+
+
+class CadentialSixFourChord(TertianChord):
+     def __init__(self):
+          super().__init__()
+          self.scale_degree = "I" # or V, HUGE dilemma
+          self.triad_quality = "major_triad"
+          self.add_interval(interval.IntervalSpelling("M", 3))
+          self.add_interval(interval.IntervalSpelling("P", 5))
+          self.set_inversion_by_number(64)
+
+
+class CommonToneDiminishedChord(TertianChord):
+     def __init__(self):
+          super().__init__()
+          self.scale_degree = "I"
+          self.triad_quality = "diminished_triad"
+          self.add_interval(interval.IntervalSpelling("m", 3))
+          self.add_interval(interval.IntervalSpelling("D", 5))
+          self.add_interval(interval.IntervalSpelling("D", 7))
+

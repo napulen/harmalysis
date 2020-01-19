@@ -75,6 +75,10 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
           special = harmalysis_classes.AugmentedSixthChord('italian')
      elif name == "N":
           special = harmalysis_classes.NeapolitanChord()
+     elif name == "Cad" or name == "Cad64":
+          special = harmalysis_classes.CadentialSixFourChord()
+     elif name == "CTo" or name == "CTo7":
+          special = harmalysis_classes.CommonToneDiminishedChord()
      # Handling inversions
      if inversion_by_number:
           special.set_inversion_by_number(inversion_by_number)
