@@ -34,6 +34,7 @@ from lark import Lark, tree, Transformer, v_args
 import common
 import interval
 import harmalysis_classes
+import equal_temperament
 import sys
 
 def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion_by_letter=None, added_interval=None):
@@ -79,6 +80,7 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
           special = harmalysis_classes.CadentialSixFourChord()
      elif name == "CTo" or name == "CTo7":
           special = harmalysis_classes.CommonToneDiminishedChord()
+     # TODO: Tristan chord
      # Handling inversions
      if inversion_by_number:
           special.set_inversion_by_number(inversion_by_number)
@@ -236,6 +238,22 @@ class RomanParser(Transformer):
      special_commontone = lambda self, name: _special_chord(name)
      special_commontone_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
      special_commontone_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
+     #############################
+     ## Parsing descriptive chords
+     #############################
+     pitch_class = lambda self, letter: equal_temperament.PitchClassSpelling(letter)
+     pitch_class_with_alteration = lambda self, letter, alteration: equal_temperament.PitchClassSpelling(letter, alteration)
+     descriptive_intervals = lambda self, *args: list(args)
+
+     def descriptive_chord_by_letter(self, pitch_class, descriptive_intervals):
+          descriptive_chord = harmalysis_classes.DescriptiveChord()
+          descriptive_chord.root = pitch_class
+          for quality, step in zip(descriptive_intervals[::2], descriptive_intervals[1::2]):
+               descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
+          return descriptive_chord
+
+     # def descriptive_chord_by_degree(self, scale_degree, descriptive_intervals):
+
      ########################
      ## Parsing tonicizations
      ########################
@@ -256,6 +274,11 @@ class RomanParser(Transformer):
      harmalysis_special_with_key = lambda self, key, special: _harmalysis_special(special, key_function=key)
      harmalysis_special_with_tonicization = lambda self, special, tonicizations: _harmalysis_special(special, tonicizations=tonicizations)
      harmalysis_special_with_key_and_tonicization = lambda self, key, special, tonicizations: _harmalysis_special(special, key_function=key, tonicizations=tonicizations)
+     # Descriptive chords
+     def harmalysis_descriptive_by_letter(self, descriptive):
+          harmalysis = harmalysis_classes.Harmalysis()
+          harmalysis.chord = descriptive
+          return harmalysis
 
 
 grammarfile = 'harmalysis_roman.lark'

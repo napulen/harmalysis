@@ -89,7 +89,7 @@ class Harmalysis(object):
           self.chord = None
 
 
-class ChordBase(object):
+class DescriptiveChord(object):
      def __init__(self):
           self.scale_degree = None
           self.scale_degree_alteration = None
@@ -130,7 +130,7 @@ class ChordBase(object):
           return ret
 
 
-class InvertibleChord(ChordBase):
+class InvertibleChord(DescriptiveChord):
      inversions_by_number = [
           6, 64, 65, 43, 42, 2
      ]
