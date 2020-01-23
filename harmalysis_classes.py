@@ -36,13 +36,13 @@ import scale
 import equal_temperament
 
 class Key(object):
-     scale_mapping = {
+     _scale_mapping = {
           "major": scale.MajorScale(),
           "natural_minor": scale.NaturalMinorScale(),
           "harmonic_minor": scale.HarmonicMinorScale(), "default_minor": scale.HarmonicMinorScale(),
           "ascending_melodic_minor": scale.AscendingMelodicMinorScale()
      }
-     scale_degree_alterations = {
+     _scale_degree_alterations = {
           '--': interval.IntervalSpelling('DD', 1),
           'bb': interval.IntervalSpelling('DD', 1),
           '-': interval.IntervalSpelling('D', 1),
@@ -55,26 +55,23 @@ class Key(object):
      def __init__(self, note_letter, alteration=None, scale="major"):
           self.tonic = equal_temperament.PitchClassSpelling(note_letter, alteration)
           self.scale = scale
-          if not scale in self.scale_mapping:
+          if not scale in self._scale_mapping:
                raise KeyError("scale '{}' is not supported.".format(scale))
-          self.mode = Key.scale_mapping[scale]
-          self.i = self.I = self.scale_degree(1)
-          self.ii = self.II = self.scale_degree(2)
-          self.iii = self.III = self.scale_degree(3)
-          self.iv = self.IV = self.scale_degree(4)
-          self.v = self.V = self.scale_degree(5)
-          self.vi = self.VI = self.scale_degree(6)
-          self.vii = self.VII = self.scale_degree(7)
+          self.mode = Key._scale_mapping[scale]
 
      def scale_degree(self, scale_degree, alteration=None):
+          if type(scale_degree) == str:
+               if scale_degree not in common.roman_to_int:
+                    raise ValueError("scale degree {} is not supported.".format(scale_degree))
+               scale_degree = common.roman_to_int[scale_degree]
           if 1 > scale_degree or scale_degree > common.DIATONIC_CLASSES:
                raise ValueError("scale degree should be within 1 and 7.")
           interval = self.mode.step_to_interval_spelling(scale_degree)
           pc = self.tonic.to_interval(interval)
           if alteration:
-               if not alteration in self.scale_degree_alterations:
+               if not alteration in self._scale_degree_alterations:
                     raise KeyError("alteration '{}' is not supported.".format(alteration))
-               unison_alteration = self.scale_degree_alterations[alteration]
+               unison_alteration = self._scale_degree_alterations[alteration]
                pc = pc.to_interval(unison_alteration)
           return pc
 
@@ -88,27 +85,34 @@ class Harmalysis(object):
           self.reference_key = None
           self.chord = None
 
+def todict(obj, classkey=None):
+    if isinstance(obj, dict):
+        data = {}
+        for (k, v) in obj.items():
+            data[k] = todict(v, classkey)
+        return data
+    elif hasattr(obj, "_ast"):
+        return todict(obj._ast())
+    elif hasattr(obj, "__iter__") and not isinstance(obj, str):
+        return [todict(v, classkey) for v in obj]
+    elif hasattr(obj, "__dict__"):
+        data = dict([(key, todict(value, classkey)) 
+            for key, value in obj.__dict__.items() 
+            if not callable(value) and not key.startswith('_')])
+        if classkey is not None and hasattr(obj, "__class__"):
+            data[classkey] = obj.__class__.__name__
+        return data
+    else:
+        return obj
+
 
 class DescriptiveChord(object):
      def __init__(self):
           self.scale_degree = None
           self.scale_degree_alteration = None
           self.root = None
-          self._intervals = [None] * 14
+          self.intervals = {interval: None for interval in range(2,16)}
           self.bass = None
-          self.second = self._intervals[0]
-          self.third = self._intervals[1]
-          self.fourth = self._intervals[2]
-          self.fifth = self._intervals[3]
-          self.sixth = self._intervals[4]
-          self.seventh = self._intervals[5]
-          self.ninth = self._intervals[7]
-          self.tenth = self._intervals[8]
-          self.eleventh = self._intervals[9]
-          self.twelfth = self._intervals[10]
-          self.thirteenth = self._intervals[11]
-          self.fourteenth = self._intervals[12]
-          self.fifteenth = self._intervals[13]
           self.default_function = None
           self.contextual_function = None
           self.chord_label = None
@@ -117,14 +121,18 @@ class DescriptiveChord(object):
      def add_interval(self, interval_spelling):
           if not isinstance(interval_spelling, interval.IntervalSpelling):
                raise TypeError('expected type IntervalSpelling instead of {}'.format(type(interval_spelling)))
-          self._intervals[interval_spelling.diatonic_interval - 2] = interval_spelling
+          if interval_spelling.diatonic_interval not in self.intervals:
+               raise ValueError('interval {} is out of bounds'.format(interval_spelling.diatonic_interval))
+          self.intervals[interval_spelling.diatonic_interval] = interval_spelling
 
      def missing_interval(self, diatonic_interval):
-          self._intervals[diatonic_interval - 2] = None
+          if diatonic_interval not in self.intervals:
+               raise ValueError('interval {} is out of bounds'.format(diatonic_interval))
+          self.intervals[diatonic_interval] = None
 
      def __str__(self):
           ret = str(self.root)
-          for interval in self._intervals:
+          for interval in self.intervals.values():
                if interval:
                     ret += str(interval)
           return ret

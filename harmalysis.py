@@ -42,15 +42,6 @@ test_strings = [
 ]
 
 if __name__ == '__main__':
-     # grammar = 'harmalysis_roman.lark'
-     # l = Lark(open(grammar).read())
-     # t = l.parse(sys.argv[1])
-     # print(t)
-     # print(t.pretty())
-     # tree.pydot__tree_to_png(t, 'harmalysis_roman.png')
-     # print("Transformer")
-     # x = HarmalysisParser().transform(t)
-     # print(str(x.chord))
      while True:
           try:
                query = input('> ')
