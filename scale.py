@@ -36,7 +36,7 @@ import interval
 
 class MajorScale(object):
      def __init__(self):
-          self.qualities = [
+          self._qualities = [
                # Starting from I
                ['P', 'M', 'M', 'P', 'P', 'M', 'M'],
                # Starting from II
@@ -53,7 +53,7 @@ class MajorScale(object):
                ['P', 'm', 'm', 'P', 'D', 'm', 'm'],
           ]
 
-          self.semitones = [
+          self._semitones = [
                # Starting from I
                [0, 2, 4, 5, 7, 9, 11],
                # Starting from II
@@ -71,22 +71,22 @@ class MajorScale(object):
           ]
 
      def step_to_interval_spelling(self, step, mode=1):
-          qualities = self.qualities[(mode - 1) % common.DIATONIC_CLASSES]
+          qualities = self._qualities[(mode - 1) % common.DIATONIC_CLASSES]
           quality = qualities[(step - 1) % common.DIATONIC_CLASSES]
           return interval.IntervalSpelling(quality, step)
 
      def step_to_semitones(self, step, mode=1):
-          semitones = self.semitones[(mode - 1) % common.DIATONIC_CLASSES]
+          semitones = self._semitones[(mode - 1) % common.DIATONIC_CLASSES]
           step_semitones = semitones[(step - 1) % common.DIATONIC_CLASSES]
           octaves = (step - 1) // common.DIATONIC_CLASSES
-          self.semitones = (12 * octaves) + step_semitones
-          return self.semitones
+          distance = (12 * octaves) + step_semitones
+          return distance
 
 
 class NaturalMinorScale(MajorScale):
      def __init__(self):
           super().__init__()
-          self.qualities = [
+          self._qualities = [
                ['P', 'M', 'm', 'P', 'P', 'm', 'm'],
                ['P', 'm', 'm', 'P', 'D', 'm', 'm'],
                ['P', 'M', 'M', 'P', 'P', 'M', 'M'],
@@ -96,7 +96,7 @@ class NaturalMinorScale(MajorScale):
                ['P', 'M', 'M', 'P', 'P', 'M', 'm'],
           ]
 
-          self.semitones = [
+          self._semitones = [
                [0, 2, 3, 5, 7, 8, 10],
                [0, 1, 3, 5, 6, 8, 10],
                [0, 2, 4, 5, 7, 9, 11],
@@ -110,7 +110,7 @@ class NaturalMinorScale(MajorScale):
 class HarmonicMinorScale(NaturalMinorScale):
      def __init__(self):
           super().__init__()
-          self.qualities = [
+          self._qualities = [
                ['P', 'M', 'm', 'P', 'P', 'm', 'M'],
                ['P', 'm', 'm', 'P', 'D', 'M', 'm'],
                ['P', 'M', 'M', 'P', 'A', 'M', 'M'],
@@ -120,7 +120,7 @@ class HarmonicMinorScale(NaturalMinorScale):
                ['P', 'm', 'm', 'D', 'D', 'm', 'D'],
           ]
 
-          self.semitones = [
+          self._semitones = [
                [0, 2, 3, 5, 7, 8, 11],
                [0, 1, 3, 5, 6, 9, 10],
                [0, 2, 4, 5, 6, 9, 11],
@@ -134,7 +134,7 @@ class HarmonicMinorScale(NaturalMinorScale):
 class AscendingMelodicMinorScale(HarmonicMinorScale):
      def __init__(self):
           super().__init__()
-          self.qualities = [
+          self._qualities = [
                ['P', 'M', 'm' , 'P', 'P', 'M', 'M'],
                ['P', 'm', 'm' , 'P', 'P', 'M', 'm'],
                ['P', 'M', 'M' , 'A', 'A', 'M', 'M'],
@@ -144,7 +144,7 @@ class AscendingMelodicMinorScale(HarmonicMinorScale):
                ['P', 'm', 'm' , 'D', 'D', 'm', 'm'],
           ]
 
-          self.semitones = [
+          self._semitones = [
                [0, 2, 3, 5, 7, 9, 11],
                [0, 1, 3, 5, 7, 9, 10],
                [0, 2, 4, 6, 8, 9, 11],

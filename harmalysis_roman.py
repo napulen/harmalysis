@@ -114,21 +114,22 @@ def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
                harmalysis_classes.Harmalysis.established_key = key
      else:
           key = harmalysis_classes.Harmalysis.established_key
-     current_key = key
+     applied_key = key
      tonicized_keys = []
      for tonicization in reversed(tonicizations):
           alteration, degree, mode = tonicization
-          tonicized_pc = current_key.scale_degree(degree, alteration)
+          tonicized_pc = applied_key.scale_degree(degree, alteration)
           tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
           tonicized_keys.insert(0, tonicized_key)
-          current_key = tonicized_key
+          applied_key = tonicized_key
+     harmalysis.applied_key = applied_key
      tertian_chord, diatonic_intervals = tertian
      degree = tertian_chord.scale_degree
      degree_alteration = tertian_chord.scale_degree_alteration
      root_diatonic_step = common.roman_to_int[degree]
-     tertian_chord.root = current_key.scale_degree(degree, degree_alteration)
+     tertian_chord.root = harmalysis.applied_key.scale_degree(degree, degree_alteration)
      for diatonic in diatonic_intervals:
-          interval = current_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
+          interval = harmalysis.applied_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
           tertian_chord.add_interval(interval)
      harmalysis.chord = tertian_chord
      return harmalysis
@@ -143,17 +144,18 @@ def _harmalysis_special(special, key_function=None, tonicizations=[]):
                harmalysis.established_key = key
      else:
           key = harmalysis_classes.Harmalysis.established_key
-     current_key = key
+     applied_key = key
      tonicized_keys = []
      for tonicization in reversed(tonicizations):
           alteration, degree, mode = tonicization
-          tonicized_pc = current_key.scale_degree(degree, alteration)
+          tonicized_pc = applied_key.scale_degree(degree, alteration)
           tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
           tonicized_keys.insert(0, tonicized_key)
-          current_key = tonicized_key
+          applied_key = tonicized_key
+     harmalysis.applied_key = applied_key
      degree = special.scale_degree
      degree_alteration = special.scale_degree_alteration
-     special.root = current_key.scale_degree(degree, degree_alteration)
+     special.root = applied_key.scale_degree(degree, degree_alteration)
      harmalysis.chord = special
      return harmalysis
 
