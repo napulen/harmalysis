@@ -88,6 +88,22 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
           special.set_inversion_by_letter(inversion_by_letter)
      return special
 
+def _descriptive_letter(pitch_class, intervals):
+     descriptive_chord = harmalysis_classes.DescriptiveChord()
+     descriptive_chord.root = pitch_class
+     for quality, step in zip(intervals[::2], intervals[1::2]):
+          descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
+     return descriptive_chord
+
+def _descriptive_degree(scale_degree, intervals):
+     descriptive_chord = harmalysis_classes.DescriptiveChord()
+     alteration, degree = scale_degree
+     descriptive_chord.scale_degree = degree
+     descriptive_chord.scale_degree_alteration = alteration
+     for quality, step in zip(intervals[::2], intervals[1::2]):
+          descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
+     return descriptive_chord
+
 def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
      harmalysis = harmalysis_classes.Harmalysis()
      if key_function:
@@ -117,7 +133,6 @@ def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
      harmalysis.chord = tertian_chord
      return harmalysis
 
-
 def _harmalysis_special(special, key_function=None, tonicizations=[]):
      harmalysis = harmalysis_classes.Harmalysis()
      if key_function:
@@ -140,6 +155,27 @@ def _harmalysis_special(special, key_function=None, tonicizations=[]):
      degree_alteration = special.scale_degree_alteration
      special.root = current_key.scale_degree(common.roman_to_int[degree], degree_alteration)
      harmalysis.chord = special
+     return harmalysis
+
+def _harmalysis_descriptive_letter(descriptive):
+     harmalysis = harmalysis_classes.Harmalysis()
+     harmalysis.chord = descriptive
+     return harmalysis
+
+def _harmalysis_descriptive_degree(descriptive, key_function=None):
+     harmalysis = harmalysis_classes.Harmalysis()
+     if key_function:
+          key, function = key_function
+          if function == 'reference':
+               harmalysis.reference_key = key
+          elif function == 'established':
+               harmalysis.established_key = key
+     else:
+          key = harmalysis_classes.Harmalysis.established_key
+     degree = descriptive.scale_degree
+     alteration = descriptive.scale_degree_alteration
+     descriptive.root = key.scale_degree(common.roman_to_int[degree], alteration)
+     harmalysis.chord = descriptive
      return harmalysis
 
 @v_args(inline=True)
@@ -244,26 +280,10 @@ class RomanParser(Transformer):
      pitch_class = lambda self, letter: equal_temperament.PitchClassSpelling(letter)
      pitch_class_with_alteration = lambda self, letter, alteration: equal_temperament.PitchClassSpelling(letter, alteration)
      descriptive_intervals = lambda self, *args: list(args)
-
      scale_degree = lambda self, degree: (None, degree.lower())
      scale_degree_with_alteration = lambda self, alteration, degree: (alteration, degree.lower())
-
-     def descriptive_chord_by_letter(self, pitch_class, descriptive_intervals):
-          descriptive_chord = harmalysis_classes.DescriptiveChord()
-          descriptive_chord.root = pitch_class
-          for quality, step in zip(descriptive_intervals[::2], descriptive_intervals[1::2]):
-               descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
-          return descriptive_chord
-
-     def descriptive_chord_by_degree(self, scale_degree, descriptive_intervals):
-          descriptive_chord = harmalysis_classes.DescriptiveChord()
-          alteration, degree = scale_degree
-          descriptive_chord.scale_degree = degree
-          descriptive_chord.scale_degree_alteration = alteration
-          for quality, step in zip(descriptive_intervals[::2], descriptive_intervals[1::2]):
-               descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
-          return descriptive_chord
-
+     descriptive_chord_by_letter = lambda self, pitch_class, intervals: _descriptive_letter(pitch_class, intervals)
+     descriptive_chord_by_degree = lambda self, scale_degree, intervals: _descriptive_degree(scale_degree, intervals)
      ########################
      ## Parsing tonicizations
      ########################
@@ -285,32 +305,9 @@ class RomanParser(Transformer):
      harmalysis_special_with_tonicization = lambda self, special, tonicizations: _harmalysis_special(special, tonicizations=tonicizations)
      harmalysis_special_with_key_and_tonicization = lambda self, key, special, tonicizations: _harmalysis_special(special, key_function=key, tonicizations=tonicizations)
      # Descriptive chords
-     def harmalysis_descriptive_by_letter(self, descriptive):
-          harmalysis = harmalysis_classes.Harmalysis()
-          harmalysis.chord = descriptive
-          return harmalysis
-
-     def harmalysis_descriptive_by_degree(self, descriptive):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key = harmalysis_classes.Harmalysis.established_key
-          degree = descriptive.scale_degree
-          alteration = descriptive.scale_degree_alteration
-          descriptive.root = key.scale_degree(common.roman_to_int[degree], alteration)
-          harmalysis.chord = descriptive
-          return harmalysis
-
-     def harmalysis_descriptive_by_degree_with_key(self, key_function, descriptive):
-          harmalysis = harmalysis_classes.Harmalysis()
-          key, function = key_function
-          if function == 'reference':
-               harmalysis.reference_key = key
-          elif function == 'established':
-               harmalysis.established_key = key
-          degree = descriptive.scale_degree
-          alteration = descriptive.scale_degree_alteration
-          descriptive.root = key.scale_degree(common.roman_to_int[degree], alteration)
-          harmalysis.chord = descriptive
-          return harmalysis
+     harmalysis_descriptive_by_letter = lambda self, descriptive: _harmalysis_descriptive_letter(descriptive)
+     harmalysis_descriptive_by_degree = lambda self, descriptive: _harmalysis_descriptive_degree(descriptive)
+     harmalysis_descriptive_by_degree_with_key = lambda self, key_function, descriptive: _harmalysis_descriptive_degree(descriptive)
 
 grammarfile = 'harmalysis_roman.lark'
 parser = Lark(open(grammarfile).read())
