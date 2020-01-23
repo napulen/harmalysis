@@ -84,6 +84,7 @@ class Harmalysis(object):
      def __init__(self):
           self.reference_key = None
           self.chord = None
+          self.tonicized_keys = []
 
 def todict(obj, classkey=None):
     if isinstance(obj, dict):

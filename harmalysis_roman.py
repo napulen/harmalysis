@@ -122,6 +122,7 @@ def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
           tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
           tonicized_keys.insert(0, tonicized_key)
           applied_key = tonicized_key
+     harmalysis.tonicized_keys = tonicized_keys
      harmalysis.applied_key = applied_key
      tertian_chord, diatonic_intervals = tertian
      degree = tertian_chord.scale_degree
@@ -152,6 +153,7 @@ def _harmalysis_special(special, key_function=None, tonicizations=[]):
           tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
           tonicized_keys.insert(0, tonicized_key)
           applied_key = tonicized_key
+     harmalysis.tonicized_keys = tonicized_keys
      harmalysis.applied_key = applied_key
      degree = special.scale_degree
      degree_alteration = special.scale_degree_alteration
