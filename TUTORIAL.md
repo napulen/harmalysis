@@ -30,7 +30,7 @@ V6          # C Major triad, first inversion
 V7          # C Dominant seventh chord
 i           # F Minor triad
 V6/N        # Db Major triad, first inversion (Dominant of the Neapolitan)
-N           # Neapolitan of F Minor, root position
+N           # Gb Major triad (Neapolitan of F Minor, root position)
 i           # F Minor triad
 ```
 
