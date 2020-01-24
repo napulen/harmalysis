@@ -34,6 +34,8 @@ N           # Gb Major triad (Neapolitan of F Minor, root position)
 i           # F Minor triad
 ```
 
+# Guideline
+
 A notation for roman numerals could be divided in three types of chords
 - Tertian chords (e.g., `I`, `ii`, `V7`, etc.)
 - Special chords (e.g., `Neapolitan`, `German augmented sixth`, etc.)
