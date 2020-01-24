@@ -102,3 +102,5 @@ ENV/
 
 # ignore auto-generated pngs
 ast_pngs/*.png
+
+.vscode/
