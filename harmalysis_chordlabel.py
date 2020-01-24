@@ -49,6 +49,9 @@ class ChordLabelParser(Transformer):
      minor_major_seventh_chord = lambda self: 'minor major seventh'
      half_diminished_seventh_chord = lambda self: 'half-diminished seventh'
      fully_diminished_seventh_chord = lambda self: 'fully-diminished seventh'
+     italian_augmented_sixth = lambda self: 'italian augmented sixth'
+     french_augmented_sixth = lambda self: 'french augmented sixth'
+     german_augmented_sixth = lambda self: 'german augmented sixth'
      chordlabel = lambda self, root, chord: "{} {}".format(root, chord)
 
 

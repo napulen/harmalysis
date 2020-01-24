@@ -84,9 +84,11 @@ _DOUBLE_DIMINISHED_INTERVAL : "DD"
 
 _major_third : _MAJOR_INTERVAL _INTERVAL_THIRD
 _minor_third : _MINOR_INTERVAL _INTERVAL_THIRD
+_diminished_third : _DIMINISHED_INTERVAL _INTERVAL_THIRD
 _perfect_fifth : _PERFECT_INTERVAL _INTERVAL_FIFTH
 _diminished_fifth : _DIMINISHED_INTERVAL _INTERVAL_FIFTH
 _augmented_fifth : _AUGMENTED_INTERVAL _INTERVAL_FIFTH
+_minor_sixth : _MINOR_INTERVAL _INTERVAL_SIXTH
 _minor_seventh : _MINOR_INTERVAL _INTERVAL_SEVENTH
 _major_seventh : _MAJOR_INTERVAL _INTERVAL_SEVENTH
 _diminished_seventh : _DIMINISHED_INTERVAL _INTERVAL_SEVENTH
@@ -95,6 +97,7 @@ _major_triad : _major_third _perfect_fifth
 _minor_triad : _minor_third _perfect_fifth
 _augmented_triad : _major_third _augmented_fifth
 _diminished_triad : _minor_third _diminished_fifth
+
 
 _major_seventhchord : _major_triad _major_seventh
 _dominant_seventhchord : _major_triad _minor_seventh
@@ -106,6 +109,10 @@ _minor_major_seventhchord : _minor_triad _major_seventh
 
 _half_diminished_seventhchord : _diminished_triad _minor_seventh
 _fully_diminished_seventhchord : _diminished_triad _diminished_seventh
+
+_italian_asixth : _diminished_third _diminished_fifth
+_french_asixth : _italian_asixth _minor_sixth
+_german_asixth : _italian_asixth _diminished_seventh
 
 //////////////
 // Chord label
@@ -121,6 +128,9 @@ chord : _major_triad                   -> major_triad_chord
       | _minor_major_seventhchord      -> minor_major_seventh_chord
       | _half_diminished_seventhchord  -> half_diminished_seventh_chord
       | _fully_diminished_seventhchord -> fully_diminished_seventh_chord
+      | _italian_asixth                -> italian_augmented_sixth
+      | _french_asixth                 -> french_augmented_sixth
+      | _german_asixth                 -> german_augmented_sixth
 
 chordlabel : root chord
 
