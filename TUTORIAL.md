@@ -69,7 +69,16 @@ IV
 
 A first degree major triad, `I`, in the context of `F Major`. The second annotation corresponds to a `IV` degree in `F Major`, namely, `Bb Major`.
 
+- Applied key: The applied key is the key from which the roman numeral is interpreted
 
+Example:
+```python
+C=>:V/V     # G Major is the applied key, 
+            # roman numeral is V of G Major (D Major triad)
+
+V/V/V       # D Major is the applied key, 
+            # roman numeral is V of D Major (A Major triad)
+```
 
 ### Scale degrees (or roman numerals)
 - Scale degrees consist of the symbols `I-VII` and `i-vii`
