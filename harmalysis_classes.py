@@ -83,6 +83,7 @@ class Harmalysis(object):
      established_key = Key("C", scale="major")
      def __init__(self):
           self.reference_key = None
+          self.applied_key = None
           self.chord = None
           self.tonicized_keys = []
 
@@ -148,7 +149,7 @@ class InvertibleChord(DescriptiveChord):
      ]
      def __init__(self):
           super().__init__()
-          self.inversion = None
+          self.inversion = 0
 
      def set_inversion_by_number(self, inversion_by_number):
           if not inversion_by_number in self.inversions_by_number:

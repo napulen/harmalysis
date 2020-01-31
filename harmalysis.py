@@ -49,6 +49,9 @@ if __name__ == '__main__':
                break
           roman = harmalysis_roman.parse(query, create_png=True)
           chordlabel = harmalysis_chordlabel.parse(str(roman.chord))
-          print(chordlabel)
+          print('\tApplied key: ' + str(roman.applied_key))
+          print('\tIntervallic construction: ' + str(roman.chord))
+          print('\tInversion: ' + str(roman.chord.inversion))
+          print('\tChord label: ' + chordlabel)
 
 
