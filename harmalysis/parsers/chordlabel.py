@@ -48,7 +48,7 @@ grammarfile = os.path.join(current_dir, 'chordlabel.lark')
 parser = Lark(open(grammarfile).read())
 pngs_folder = os.path.join(current_dir, 'ast_pngs/')
 
-def parse(query, full_tree=False, create_png=True):
+def parse(query, full_tree=False, create_png=False):
      ast = parser.parse(query)
      if create_png:
           tree.pydot__tree_to_png(ast, '{}{}.png'.format(pngs_folder, query))
