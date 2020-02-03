@@ -36,7 +36,7 @@ URL = 'https://github.com/napulen/harmalysis'
 EMAIL = 'napulen@gmail.com'
 AUTHOR = 'Nestor Napoles Lopez'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.2.0'
+VERSION = ''
 
 PACKAGE_DATA = {
     '': ["*.lark"],
