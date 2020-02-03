@@ -323,7 +323,7 @@ def create_filename(query):
      f = f.replace("]", "_bracketr_")
      return pngs_folder + f + ".png"
 
-def parse(query, full_tree=False, create_png=True):
+def parse(query, full_tree=False, create_png=False):
      ast = parser.parse(query)
      if create_png:
           filename = create_filename(query)

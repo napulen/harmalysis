@@ -29,7 +29,7 @@ test_strings = [
 
 def parse(query, syntax='roman'):
     if syntax == 'roman':
-        roman = harmalysis.parsers.roman.parse(query, create_png=True)
+        roman = harmalysis.parsers.roman.parse(query)
         return roman
 
 if __name__ == '__main__':
@@ -38,7 +38,7 @@ if __name__ == '__main__':
                query = input('> ')
           except EOFError:
                break
-          roman = harmalysis.parsers.roman.parse(query, create_png=True)
+          roman = harmalysis.parsers.roman.parse(query)
           chordlabel = harmalysis.parsers.chordlabel.parse(str(roman.chord))
           print('\tApplied key: ' + str(roman.applied_key))
           print('\tIntervallic construction: ' + str(roman.chord))
