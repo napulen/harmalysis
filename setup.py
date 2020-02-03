@@ -23,7 +23,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="harmalysis", # Replace with your own username
-    version="0.1.0",
+    version="0.1.1",
     author="Nestor Napoles Lopez",
     author_email="napulen@gmail.com",
     description="A language for harmonic analysis and roman numerals",
