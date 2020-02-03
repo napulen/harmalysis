@@ -27,11 +27,6 @@ test_strings = [
      'f#_nat:#viiom7bx5[f#_nat=>:vii065]',
 ]
 
-def parse(query, syntax='roman'):
-    if syntax == 'roman':
-        roman = harmalysis.parsers.roman.parse(query)
-        return roman
-
 if __name__ == '__main__':
      while True:
           try:
