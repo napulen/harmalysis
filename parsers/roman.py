@@ -31,14 +31,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
 from lark import Lark, tree, Transformer, v_args
-import common
-import interval
-import harmalysis_classes
-import equal_temperament
+import harmalysis.common as common
+from harmalysis.classes.interval import IntervalSpelling
+from harmalysis.classes.chord import DescriptiveChord, InvertibleChord, TertianChord, AugmentedSixthChord, NeapolitanChord, HalfDiminishedChord, CadentialSixFourChord, CommonToneDiminishedChord
+from harmalysis.classes.harmalysis import Harmalysis
+from harmalysis.classes.key import Key
+from harmalysis.classes.pitch_class import PitchClassSpelling
+import pathlib
 import sys
+import os
 
 def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion_by_letter=None, added_interval=None):
-     tertian = harmalysis_classes.TertianChord()
+     tertian = TertianChord()
      triad_quality, scale_degree, alteration = triad
      tertian.scale_degree = scale_degree
      tertian.scale_degree_alteration = alteration
@@ -51,7 +55,7 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
      # Handling added intervals
      diatonic_intervals = []
      if added_interval:
-          if isinstance(added_interval, interval.IntervalSpelling):
+          if isinstance(added_interval, IntervalSpelling):
                tertian.add_interval(added_interval)
           else:
                if added_interval == 7:
@@ -69,17 +73,17 @@ def _tertian_chord(triad, missing_intervals, inversion_by_number=None, inversion
 
 def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
      if name == "Gn" or name == "Ger":
-          special = harmalysis_classes.AugmentedSixthChord('german')
+          special = AugmentedSixthChord('german')
      elif name == 'Fr':
-          special = harmalysis_classes.AugmentedSixthChord('french')
+          special = AugmentedSixthChord('french')
      elif name == 'It' or name == "Lt":
-          special = harmalysis_classes.AugmentedSixthChord('italian')
+          special = AugmentedSixthChord('italian')
      elif name == "N":
-          special = harmalysis_classes.NeapolitanChord()
+          special = NeapolitanChord()
      elif name == "Cad" or name == "Cad64":
-          special = harmalysis_classes.CadentialSixFourChord()
+          special = CadentialSixFourChord()
      elif name == "CTo" or name == "CTo7":
-          special = harmalysis_classes.CommonToneDiminishedChord()
+          special = CommonToneDiminishedChord()
      # TODO: Tristan chord
      # Handling inversions
      if inversion_by_number:
@@ -89,37 +93,37 @@ def _special_chord(name, inversion_by_number=None, inversion_by_letter=None):
      return special
 
 def _descriptive_letter(pitch_class, intervals):
-     descriptive_chord = harmalysis_classes.DescriptiveChord()
+     descriptive_chord = DescriptiveChord()
      descriptive_chord.root = pitch_class
      for quality, step in zip(intervals[::2], intervals[1::2]):
-          descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
+          descriptive_chord.add_interval(IntervalSpelling(str(quality), int(step)))
      return descriptive_chord
 
 def _descriptive_degree(scale_degree, intervals):
-     descriptive_chord = harmalysis_classes.DescriptiveChord()
+     descriptive_chord = DescriptiveChord()
      alteration, degree = scale_degree
      descriptive_chord.scale_degree = degree
      descriptive_chord.scale_degree_alteration = alteration
      for quality, step in zip(intervals[::2], intervals[1::2]):
-          descriptive_chord.add_interval(interval.IntervalSpelling(str(quality), int(step)))
+          descriptive_chord.add_interval(IntervalSpelling(str(quality), int(step)))
      return descriptive_chord
 
 def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
-     harmalysis = harmalysis_classes.Harmalysis()
+     harmalysis = Harmalysis()
      if key_function:
           key, function = key_function
           if function == 'reference':
                harmalysis.reference_key = key
           elif function == 'established':
-               harmalysis_classes.Harmalysis.established_key = key
+               Harmalysis.established_key = key
      else:
-          key = harmalysis_classes.Harmalysis.established_key
+          key = Harmalysis.established_key
      applied_key = key
      tonicized_keys = []
      for tonicization in reversed(tonicizations):
           alteration, degree, mode = tonicization
           tonicized_pc = applied_key.scale_degree(degree, alteration)
-          tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
+          tonicized_key = Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
           tonicized_keys.insert(0, tonicized_key)
           applied_key = tonicized_key
      harmalysis.tonicized_keys = tonicized_keys
@@ -136,7 +140,7 @@ def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
      return harmalysis
 
 def _harmalysis_special(special, key_function=None, tonicizations=[]):
-     harmalysis = harmalysis_classes.Harmalysis()
+     harmalysis = Harmalysis()
      if key_function:
           key, function = key_function
           if function == 'reference':
@@ -144,13 +148,13 @@ def _harmalysis_special(special, key_function=None, tonicizations=[]):
           elif function == 'established':
                harmalysis.established_key = key
      else:
-          key = harmalysis_classes.Harmalysis.established_key
+          key = Harmalysis.established_key
      applied_key = key
      tonicized_keys = []
      for tonicization in reversed(tonicizations):
           alteration, degree, mode = tonicization
           tonicized_pc = applied_key.scale_degree(degree, alteration)
-          tonicized_key = harmalysis_classes.Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
+          tonicized_key = Key(tonicized_pc.note_letter, tonicized_pc.alteration, mode)
           tonicized_keys.insert(0, tonicized_key)
           applied_key = tonicized_key
      harmalysis.tonicized_keys = tonicized_keys
@@ -162,12 +166,12 @@ def _harmalysis_special(special, key_function=None, tonicizations=[]):
      return harmalysis
 
 def _harmalysis_descriptive_letter(descriptive):
-     harmalysis = harmalysis_classes.Harmalysis()
+     harmalysis = Harmalysis()
      harmalysis.chord = descriptive
      return harmalysis
 
 def _harmalysis_descriptive_degree(descriptive, key_function=None):
-     harmalysis = harmalysis_classes.Harmalysis()
+     harmalysis = Harmalysis()
      if key_function:
           key, function = key_function
           if function == 'reference':
@@ -175,7 +179,7 @@ def _harmalysis_descriptive_degree(descriptive, key_function=None):
           elif function == 'established':
                harmalysis.established_key = key
      else:
-          key = harmalysis_classes.Harmalysis.established_key
+          key = Harmalysis.established_key
      degree = descriptive.scale_degree
      alteration = descriptive.scale_degree_alteration
      descriptive.root = key.scale_degree(degree, alteration)
@@ -188,16 +192,16 @@ class RomanParser(Transformer):
      ## Parsing the key
      ##################
      # Key scales
-     major_key = lambda self, letter: harmalysis_classes.Key(letter, None, 'major')
-     major_key_with_alteration = lambda self, letter, alteration: harmalysis_classes.Key(letter, alteration, 'major')
-     default_minor_key = lambda self, letter: harmalysis_classes.Key(letter, None, 'default_minor')
-     default_minor_key_with_alteration = lambda self, letter, alteration: harmalysis_classes.Key(letter, alteration, 'default_minor')
-     natural_minor_key = lambda self, letter: harmalysis_classes.Key(letter, None, 'natural_minor')
-     natural_minor_key_with_alteration = lambda self, letter, alteration: harmalysis_classes.Key(letter, alteration, 'natural_minor')
-     harmonic_minor_key = lambda self, letter: harmalysis_classes.Key(letter, None, 'harmonic_minor')
-     harmonic_minor_key_with_alteration = lambda self, letter, alteration: harmalysis_classes.Key(letter, alteration, 'harmonic_minor')
-     melodic_minor_key = lambda self, letter: harmalysis_classes.Key(letter, None, 'ascending_melodic_minor')
-     melodic_minor_key_with_alteration = lambda self, letter, alteration: harmalysis_classes.Key(letter, alteration, 'ascending_melodic_minor')
+     major_key = lambda self, letter: Key(letter, None, 'major')
+     major_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'major')
+     default_minor_key = lambda self, letter: Key(letter, None, 'default_minor')
+     default_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'default_minor')
+     natural_minor_key = lambda self, letter: Key(letter, None, 'natural_minor')
+     natural_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'natural_minor')
+     harmonic_minor_key = lambda self, letter: Key(letter, None, 'harmonic_minor')
+     harmonic_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'harmonic_minor')
+     melodic_minor_key = lambda self, letter: Key(letter, None, 'ascending_melodic_minor')
+     melodic_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'ascending_melodic_minor')
      # Key types
      key_as_reference = lambda self, _: 'reference'
      key_as_established = lambda self, _: 'established'
@@ -222,13 +226,13 @@ class RomanParser(Transformer):
      inversion_by_letter = str
      # Added intervals
      added_seventh_diatonic = int
-     added_seventh_with_quality = lambda self, quality, interval: interval.IntervalSpelling(str(quality), int(interval))
+     added_seventh_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
      added_ninth_diatonic = int
-     added_ninth_with_quality = lambda self, quality, interval: interval.IntervalSpelling(str(quality), int(interval))
+     added_ninth_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
      added_eleventh_diatonic = int
-     added_eleventh_with_quality = lambda self, quality, interval: interval.IntervalSpelling(str(quality), int(interval))
+     added_eleventh_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
      added_thirteenth_diatonic = int
-     added_thirteenth_with_quality = lambda self, quality, interval: interval.IntervalSpelling(str(quality), int(interval))
+     added_thirteenth_with_quality = lambda self, quality, interval: IntervalSpelling(str(quality), int(interval))
      # Missing intervals
      missing_intervals_triad = list
      missing_intervals_seventhchord = list
@@ -281,8 +285,8 @@ class RomanParser(Transformer):
      #############################
      ## Parsing descriptive chords
      #############################
-     pitch_class = lambda self, letter: equal_temperament.PitchClassSpelling(letter)
-     pitch_class_with_alteration = lambda self, letter, alteration: equal_temperament.PitchClassSpelling(letter, alteration)
+     pitch_class = lambda self, letter: PitchClassSpelling(letter)
+     pitch_class_with_alteration = lambda self, letter, alteration: PitchClassSpelling(letter, alteration)
      descriptive_intervals = lambda self, *args: list(args)
      scale_degree = lambda self, degree: (None, degree.lower())
      scale_degree_with_alteration = lambda self, alteration, degree: (alteration, degree.lower())
@@ -313,9 +317,10 @@ class RomanParser(Transformer):
      harmalysis_descriptive_by_degree = lambda self, descriptive: _harmalysis_descriptive_degree(descriptive)
      harmalysis_descriptive_by_degree_with_key = lambda self, key_function, descriptive: _harmalysis_descriptive_degree(descriptive)
 
-grammarfile = 'harmalysis_roman.lark'
+current_dir = pathlib.Path(__file__).parent.absolute()
+grammarfile = os.path.join(current_dir, 'roman.lark')
 parser = Lark(open(grammarfile).read())
-pngs_folder = 'ast_pngs/'
+pngs_folder = os.path.join(current_dir, 'ast_pngs/')
 
 def create_filename(query):
      f = query.replace(":", "_colon_")

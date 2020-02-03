@@ -30,10 +30,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-import common
-import equal_temperament
-import interval
-import scale
+import harmalysis.common
+from harmalysis.classes import pitch_class
+from harmalysis.classes import scale
 
 class IntervalSpelling(object):
      interval_qualities = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
@@ -49,8 +48,8 @@ class IntervalSpelling(object):
           # The diatonic classes that have a perfect interval:
           # Unison, Subdominant, Dominant, and compound
           # intervals of the same classes (8ve, 11th, 12th, 15th, etc.)
-          diatonic_classes_with_perfect_intervals = [common.TONIC, common.SUBDOMINANT, common.DOMINANT]
-          diatonic_class = (diatonic_interval - 1) % common.DIATONIC_CLASSES
+          diatonic_classes_with_perfect_intervals = [harmalysis.common.TONIC, harmalysis.common.SUBDOMINANT, harmalysis.common.DOMINANT]
+          diatonic_class = (diatonic_interval - 1) % harmalysis.common.DIATONIC_CLASSES
           is_perfect_interval = diatonic_class in diatonic_classes_with_perfect_intervals
           if is_perfect_interval:
                alteration_effects = IntervalSpelling.perfect_interval_alterations
@@ -68,7 +67,7 @@ class IntervalSpelling(object):
 
 
 def test_intervals():
-     orig = equal_temperament.PitchClassSpelling('C')
+     orig = pitch_class.PitchClassSpelling('C')
      M6 = IntervalSpelling('P', 1)
      target = orig.to_interval(M6)
      print(target)

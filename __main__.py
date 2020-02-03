@@ -30,9 +30,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-import harmalysis_roman
-import harmalysis_chordlabel
-import equal_temperament
+import harmalysis.parsers.roman
+import harmalysis.parsers.chordlabel
+import harmalysis.classes.pitch_class
 import sys
 
 test_strings = [
@@ -41,14 +41,19 @@ test_strings = [
      'f#_nat:#viiom7bx5[f#_nat=>:vii065]',
 ]
 
+def parse(query, syntax='roman'):
+    if syntax == 'roman':
+        roman = harmalysis.parsers.roman.parse(query, create_png=True)
+        return roman
+
 if __name__ == '__main__':
      while True:
           try:
                query = input('> ')
           except EOFError:
                break
-          roman = harmalysis_roman.parse(query, create_png=True)
-          chordlabel = harmalysis_chordlabel.parse(str(roman.chord))
+          roman = harmalysis.parsers.roman.parse(query, create_png=True)
+          chordlabel = harmalysis.parsers.chordlabel.parse(str(roman.chord))
           print('\tApplied key: ' + str(roman.applied_key))
           print('\tIntervallic construction: ' + str(roman.chord))
           print('\tInversion: ' + str(roman.chord.inversion))

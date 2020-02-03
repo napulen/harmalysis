@@ -30,9 +30,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-import common
-import interval
-
+import harmalysis.common
+from harmalysis.classes import interval
 
 class MajorScale(object):
      def __init__(self):
@@ -71,14 +70,14 @@ class MajorScale(object):
           ]
 
      def step_to_interval_spelling(self, step, mode=1):
-          qualities = self._qualities[(mode - 1) % common.DIATONIC_CLASSES]
-          quality = qualities[(step - 1) % common.DIATONIC_CLASSES]
+          qualities = self._qualities[(mode - 1) % harmalysis.common.DIATONIC_CLASSES]
+          quality = qualities[(step - 1) % harmalysis.common.DIATONIC_CLASSES]
           return interval.IntervalSpelling(quality, step)
 
      def step_to_semitones(self, step, mode=1):
-          semitones = self._semitones[(mode - 1) % common.DIATONIC_CLASSES]
-          step_semitones = semitones[(step - 1) % common.DIATONIC_CLASSES]
-          octaves = (step - 1) // common.DIATONIC_CLASSES
+          semitones = self._semitones[(mode - 1) % harmalysis.common.DIATONIC_CLASSES]
+          step_semitones = semitones[(step - 1) % harmalysis.common.DIATONIC_CLASSES]
+          octaves = (step - 1) // harmalysis.common.DIATONIC_CLASSES
           distance = (12 * octaves) + step_semitones
           return distance
 

@@ -30,8 +30,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-import common
-import interval
+import harmalysis.common
+from harmalysis.classes import interval
 
 class PitchClassSpelling(object):
      diatonic_classes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -68,7 +68,7 @@ class PitchClassSpelling(object):
 
      @classmethod
      def from_diatonic_chromatic_classes(cls, diatonic_class, chromatic_class):
-          if  0 > diatonic_class or diatonic_class >= common.DIATONIC_CLASSES:
+          if  0 > diatonic_class or diatonic_class >= harmalysis.common.DIATONIC_CLASSES:
                raise ValueError("diatonic class {} is out of bounds.".format(diatonic_class))
           if  0 > diatonic_class or diatonic_class >= 12:
                raise ValueError("chromatic class {} is out of bounds.".format(chromatic_class))
@@ -93,7 +93,7 @@ class PitchClassSpelling(object):
           diatonic_steps = interval_spelling.diatonic_interval - 1
           semitones = interval_spelling.semitones
 
-          new_diatonic_class = (diatonic_steps + self.diatonic_class) % common.DIATONIC_CLASSES
+          new_diatonic_class = (diatonic_steps + self.diatonic_class) % harmalysis.common.DIATONIC_CLASSES
           new_chromatic_class = (semitones + self.chromatic_class) % 12
           return PitchClassSpelling.from_diatonic_chromatic_classes(new_diatonic_class, new_chromatic_class)
 

@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from lark import Lark, tree, Transformer, v_args
 import sys
+import pathlib
+import os
 
 
 @v_args(inline=True)
@@ -55,9 +57,10 @@ class ChordLabelParser(Transformer):
      chordlabel = lambda self, root, chord: "{} {}".format(root, chord)
 
 
-grammarfile = 'harmalysis_chordlabel.lark'
+current_dir = pathlib.Path(__file__).parent.absolute()
+grammarfile = os.path.join(current_dir, 'chordlabel.lark')
 parser = Lark(open(grammarfile).read())
-pngs_folder = 'ast_pngs/'
+pngs_folder = os.path.join(current_dir, 'ast_pngs/')
 
 def parse(query, full_tree=False, create_png=True):
      ast = parser.parse(query)
