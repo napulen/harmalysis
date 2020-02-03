@@ -23,7 +23,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="harmalysis", # Replace with your own username
-    version="0.1.1",
+    version="0.1.2",
     author="Nestor Napoles Lopez",
     author_email="napulen@gmail.com",
     description="A language for harmonic analysis and roman numerals",
@@ -36,6 +36,7 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
+    package_data={'': ["*.lark"]},
     install_requires=[
           'lark-parser',
     ],
