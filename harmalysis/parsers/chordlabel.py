@@ -44,9 +44,9 @@ class ChordLabelParser(Transformer):
 
 
 current_dir = pathlib.Path(__file__).parent.absolute()
-grammarfile = os.path.join(current_dir, 'chordlabel.lark')
+grammarfile = os.path.join(str(current_dir), 'chordlabel.lark')
 parser = Lark(open(grammarfile).read())
-pngs_folder = os.path.join(current_dir, 'ast_pngs/')
+pngs_folder = os.path.join(str(current_dir), 'ast_pngs/')
 
 def parse(query, full_tree=False, create_png=False):
      ast = parser.parse(query)

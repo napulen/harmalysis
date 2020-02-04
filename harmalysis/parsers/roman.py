@@ -318,9 +318,9 @@ class RomanParser(Transformer):
      harmalysis_descriptive_by_degree_with_key = lambda self, key_function, descriptive: _harmalysis_descriptive_degree(descriptive)
 
 current_dir = pathlib.Path(__file__).parent.absolute()
-grammarfile = os.path.join(current_dir, 'roman.lark')
+grammarfile = os.path.join(str(current_dir), 'roman.lark')
 parser = Lark(open(grammarfile).read())
-pngs_folder = os.path.join(current_dir, 'ast_pngs/')
+pngs_folder = os.path.join(str(current_dir), 'ast_pngs/')
 
 def create_filename(query):
      f = query.replace(":", "_colon_")
