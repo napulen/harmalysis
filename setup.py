@@ -35,7 +35,7 @@ DESCRIPTION = 'A language for harmonic analysis and roman numerals.'
 URL = 'https://github.com/napulen/harmalysis'
 EMAIL = 'napulen@gmail.com'
 AUTHOR = 'Nestor Napoles Lopez'
-REQUIRES_PYTHON = '>=3.6.0'
+REQUIRES_PYTHON = '>=3.5.0'
 VERSION = ''
 
 PACKAGE_DATA = {
@@ -142,6 +142,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
