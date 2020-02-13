@@ -296,7 +296,9 @@ class RomanParser(Transformer):
      ## Parsing tonicizations
      ########################
      by_scale_degree_major = lambda self, degree: (None, str(degree).lower(), "major")
+     by_scale_degree_major_with_alteration = lambda self, alteration, degree: (str(alteration), str(degree), "major")
      by_scale_degree_minor = lambda self, degree: (None, str(degree), "default_minor")
+     by_scale_degree_minor_with_alteration = lambda self, alteration, degree: (str(alteration), str(degree), "default_minor")
      by_scale_degree_neapolitan = lambda self, degree: ('b', "ii", "major")
      tonicization = lambda self, *args: list(args)
      #############################

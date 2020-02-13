@@ -343,9 +343,11 @@ descriptive_chord_by_degree : "?" scale_degree_root descriptive_intervals
 ////////////////
 // Tonicizations
 ////////////////
-by_scale_degree : "/" _scale_degree_major -> by_scale_degree_major
-                | "/" _scale_degree_minor -> by_scale_degree_minor
-                | "/" NEAPOLITAN          -> by_scale_degree_neapolitan
+by_scale_degree : "/" _scale_degree_major             -> by_scale_degree_major
+                | "/" _alteration _scale_degree_major -> by_scale_degree_major_with_alteration
+                | "/" _scale_degree_minor             -> by_scale_degree_minor
+                | "/" _alteration _scale_degree_minor -> by_scale_degree_minor_with_alteration
+                | "/" NEAPOLITAN                      -> by_scale_degree_neapolitan
 
 tonicization : by_scale_degree+
 
