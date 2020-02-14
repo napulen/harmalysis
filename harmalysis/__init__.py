@@ -17,6 +17,7 @@
 '''
 
 import harmalysis.parsers.roman
+import harmalysis.parsers.chordlabel
 
 def parse(query, syntax='roman'):
     if syntax == 'roman':
