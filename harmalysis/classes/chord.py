@@ -160,11 +160,19 @@ class HalfDiminishedChord(TertianChord):
 class CadentialSixFourChord(TertianChord):
      def __init__(self):
           super().__init__()
+          self.set_inversion_by_number(64)
+
+     def set_as_major(self):
           self.scale_degree = "I" # or V, HUGE dilemma
           self.triad_quality = "major_triad"
           self.add_interval(interval.IntervalSpelling("M", 3))
           self.add_interval(interval.IntervalSpelling("P", 5))
-          self.set_inversion_by_number(64)
+
+     def set_as_minor(self):
+          self.scale_degree = "i"
+          self.triad_quality = "minor_triad"
+          self.add_interval(interval.IntervalSpelling("m", 3))
+          self.add_interval(interval.IntervalSpelling("P", 5))
 
 
 class CommonToneDiminishedChord(TertianChord):

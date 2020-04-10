@@ -158,9 +158,23 @@ def _harmalysis_special(special, key_function=None, tonicizations=[]):
      degree = special.scale_degree
      degree_alteration = special.scale_degree_alteration
      if harmalysis.secondary_key:
+          if type(special) == CadentialSixFourChord:
+               if harmalysis.secondary_key.scale == 'major':
+                    special.set_as_major()
+               else:
+                    special.set_as_minor()
+               degree = special.scale_degree
           special.root = harmalysis.secondary_key.scale_degree(degree, degree_alteration)
+
      else:
+          if type(special) == CadentialSixFourChord:
+               if harmalysis.main_key.scale == 'major':
+                    special.set_as_major()
+               else:
+                    special.set_as_minor()
+               degree = special.scale_degree
           special.root = harmalysis.main_key.scale_degree(degree, degree_alteration)
+
      harmalysis.chord = special
      return harmalysis
 

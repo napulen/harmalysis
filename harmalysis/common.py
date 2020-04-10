@@ -25,6 +25,7 @@ SUBMEDIANT = 5
 SEVENTH_DEGREE = 6
 DIATONIC_CLASSES = 7
 
+# Lighter than loading an entire module just for this
 roman_to_int = {
      'I':   1, 'i':   1,
      'II':  2, 'ii':  2,
