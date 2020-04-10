@@ -19,9 +19,9 @@
 from harmalysis.classes.key import Key
 
 class Harmalysis(object):
-     established_key = Key("C", scale="major")
-     def __init__(self):
-          self.main_key = None
-          self.secondary_key = None
-          self.chord = None
-          self.tonicized_keys = []
+    established_key = Key("C", scale="major")
+    def __init__(self):
+        self.main_key = None
+        self.secondary_key = None
+        self.chord = None
+        self.tonicized_keys = []

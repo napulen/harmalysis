@@ -24,23 +24,23 @@ import os
 
 @v_args(inline=True)
 class ChordLabelParser(Transformer):
-     root = str
-     root_with_alteration = lambda self, letter, alteration: "{}{}".format(letter, alteration)
-     major_triad_chord = lambda self: 'major'
-     minor_triad_chord = lambda self: 'minor'
-     augmented_triad_chord = lambda self: 'augmented'
-     diminished_triad_chord = lambda self: 'diminished'
-     major_seventh_chord = lambda self: 'major seventh'
-     dominant_seventh_chord = lambda self: 'dominant seventh'
-     augmented_major_seventh_chord = lambda self: 'augmented major seventh'
-     minor_seventh_chord = lambda self: 'minor seventh'
-     minor_major_seventh_chord = lambda self: 'minor major seventh'
-     half_diminished_seventh_chord = lambda self: 'half-diminished seventh'
-     fully_diminished_seventh_chord = lambda self: 'fully-diminished seventh'
-     italian_augmented_sixth = lambda self: 'italian augmented sixth'
-     french_augmented_sixth = lambda self: 'french augmented sixth'
-     german_augmented_sixth = lambda self: 'german augmented sixth'
-     chordlabel = lambda self, root, chord: "{} {}".format(root, chord)
+    root = str
+    root_with_alteration = lambda self, letter, alteration: "{}{}".format(letter, alteration)
+    major_triad_chord = lambda self: 'major'
+    minor_triad_chord = lambda self: 'minor'
+    augmented_triad_chord = lambda self: 'augmented'
+    diminished_triad_chord = lambda self: 'diminished'
+    major_seventh_chord = lambda self: 'major seventh'
+    dominant_seventh_chord = lambda self: 'dominant seventh'
+    augmented_major_seventh_chord = lambda self: 'augmented major seventh'
+    minor_seventh_chord = lambda self: 'minor seventh'
+    minor_major_seventh_chord = lambda self: 'minor major seventh'
+    half_diminished_seventh_chord = lambda self: 'half-diminished seventh'
+    fully_diminished_seventh_chord = lambda self: 'fully-diminished seventh'
+    italian_augmented_sixth = lambda self: 'italian augmented sixth'
+    french_augmented_sixth = lambda self: 'french augmented sixth'
+    german_augmented_sixth = lambda self: 'german augmented sixth'
+    chordlabel = lambda self, root, chord: "{} {}".format(root, chord)
 
 
 current_dir = pathlib.Path(__file__).parent.absolute()
@@ -49,14 +49,14 @@ parser = Lark(open(grammarfile).read())
 pngs_folder = os.path.join(str(current_dir), 'ast_pngs/')
 
 def parse(query, full_tree=False, create_png=False):
-     ast = parser.parse(query)
-     if create_png:
-          tree.pydot__tree_to_png(ast, '{}{}.png'.format(pngs_folder, query))
-     if full_tree:
-          return ast
-     return ChordLabelParser().transform(ast)
+    ast = parser.parse(query)
+    if create_png:
+        tree.pydot__tree_to_png(ast, '{}{}.png'.format(pngs_folder, query))
+    if full_tree:
+        return ast
+    return ChordLabelParser().transform(ast)
 
 if __name__ == '__main__':
-     ast = parse(sys.argv[1], full_tree=True)
-     print(ChordLabelParser().transform(ast))
-     tree.pydot__tree_to_png(ast, 'ast_pngs/harmalysis_chordlabel.png')
+    ast = parse(sys.argv[1], full_tree=True)
+    print(ChordLabelParser().transform(ast))
+    tree.pydot__tree_to_png(ast, 'ast_pngs/harmalysis_chordlabel.png')

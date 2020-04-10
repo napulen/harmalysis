@@ -20,69 +20,69 @@ import harmalysis.common
 from harmalysis.classes import interval
 
 class PitchClassSpelling(object):
-     diatonic_classes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-     pitch_classes = [0, 2, 4, 5, 7, 9, 11]
-     alterations = {
-          '--': -2, 'bb': -2,
-          '-':  -1, 'b':  -1,
-          '#':   1,
-          '##':  2, 'x':   2
-     }
-     alterations_r = {
-          -2: 'bb',
-          -1: 'b',
-          1: '#',
-          2: 'x'
-     }
+    diatonic_classes = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+    pitch_classes = [0, 2, 4, 5, 7, 9, 11]
+    alterations = {
+        '--': -2, 'bb': -2,
+        '-':  -1, 'b':  -1,
+        '#':   1,
+        '##':  2, 'x':   2
+    }
+    alterations_r = {
+        -2: 'bb',
+        -1: 'b',
+        1: '#',
+        2: 'x'
+    }
 
-     def __init__(self, note_letter, alteration=None):
-          note_letter = note_letter.upper()
-          if not note_letter in self.diatonic_classes:
-               raise ValueError("note letter '{}' is not supported.".format(note_letter))
-          self.note_letter = note_letter
-          self.diatonic_class = self.diatonic_classes.index(note_letter)
-          if alteration:
-               if not alteration in self.alterations:
-                    raise ValueError("alteration '{}' is not supported.".format(alteration))
-               self.alteration = alteration
-               alteration_value = self.alterations[alteration]
-          else:
-               self.alteration = ''
-               alteration_value = 0
-          default_chromatic_class = self.pitch_classes[self.diatonic_class]
-          self.chromatic_class = (12 + default_chromatic_class + alteration_value) % 12
+    def __init__(self, note_letter, alteration=None):
+        note_letter = note_letter.upper()
+        if not note_letter in self.diatonic_classes:
+            raise ValueError("note letter '{}' is not supported.".format(note_letter))
+        self.note_letter = note_letter
+        self.diatonic_class = self.diatonic_classes.index(note_letter)
+        if alteration:
+            if not alteration in self.alterations:
+                raise ValueError("alteration '{}' is not supported.".format(alteration))
+            self.alteration = alteration
+            alteration_value = self.alterations[alteration]
+        else:
+            self.alteration = ''
+            alteration_value = 0
+        default_chromatic_class = self.pitch_classes[self.diatonic_class]
+        self.chromatic_class = (12 + default_chromatic_class + alteration_value) % 12
 
-     @classmethod
-     def from_diatonic_chromatic_classes(cls, diatonic_class, chromatic_class):
-          if  0 > diatonic_class or diatonic_class >= harmalysis.common.DIATONIC_CLASSES:
-               raise ValueError("diatonic class {} is out of bounds.".format(diatonic_class))
-          if  0 > diatonic_class or diatonic_class >= 12:
-               raise ValueError("chromatic class {} is out of bounds.".format(chromatic_class))
-          note_letter = cls.diatonic_classes[diatonic_class]
-          default_pitch_class = cls.pitch_classes[diatonic_class]
-          if default_pitch_class == chromatic_class:
-               alteration = None
-          else:
-               alteration_found = False
-               for alteration_effect, alteration in cls.alterations_r.items():
-                    test_chromatic_class = (12 + chromatic_class - alteration_effect) % 12
-                    if test_chromatic_class == default_pitch_class:
-                         alteration_found = True
-                         break
-               if not alteration_found:
-                    raise ValueError("chromatic class {} is unreachable by this diatonic class.".format(chromatic_class))
-          return PitchClassSpelling(note_letter, alteration)
+    @classmethod
+    def from_diatonic_chromatic_classes(cls, diatonic_class, chromatic_class):
+        if  0 > diatonic_class or diatonic_class >= harmalysis.common.DIATONIC_CLASSES:
+            raise ValueError("diatonic class {} is out of bounds.".format(diatonic_class))
+        if  0 > diatonic_class or diatonic_class >= 12:
+            raise ValueError("chromatic class {} is out of bounds.".format(chromatic_class))
+        note_letter = cls.diatonic_classes[diatonic_class]
+        default_pitch_class = cls.pitch_classes[diatonic_class]
+        if default_pitch_class == chromatic_class:
+            alteration = None
+        else:
+            alteration_found = False
+            for alteration_effect, alteration in cls.alterations_r.items():
+                test_chromatic_class = (12 + chromatic_class - alteration_effect) % 12
+                if test_chromatic_class == default_pitch_class:
+                        alteration_found = True
+                        break
+            if not alteration_found:
+                raise ValueError("chromatic class {} is unreachable by this diatonic class.".format(chromatic_class))
+        return PitchClassSpelling(note_letter, alteration)
 
-     def to_interval(self, interval_spelling):
-          if not isinstance(interval_spelling, interval.IntervalSpelling):
-               raise TypeError('expecting IntervalSpelling instead of {}.'.format(type(interval_spelling)))
-          diatonic_steps = interval_spelling.diatonic_interval - 1
-          semitones = interval_spelling.semitones
+    def to_interval(self, interval_spelling):
+        if not isinstance(interval_spelling, interval.IntervalSpelling):
+            raise TypeError('expecting IntervalSpelling instead of {}.'.format(type(interval_spelling)))
+        diatonic_steps = interval_spelling.diatonic_interval - 1
+        semitones = interval_spelling.semitones
 
-          new_diatonic_class = (diatonic_steps + self.diatonic_class) % harmalysis.common.DIATONIC_CLASSES
-          new_chromatic_class = (semitones + self.chromatic_class) % 12
-          return PitchClassSpelling.from_diatonic_chromatic_classes(new_diatonic_class, new_chromatic_class)
+        new_diatonic_class = (diatonic_steps + self.diatonic_class) % harmalysis.common.DIATONIC_CLASSES
+        new_chromatic_class = (semitones + self.chromatic_class) % 12
+        return PitchClassSpelling.from_diatonic_chromatic_classes(new_diatonic_class, new_chromatic_class)
 
-     def __str__(self):
-          return '{}{}'.format(self.note_letter, self.alteration)
+    def __str__(self):
+        return '{}{}'.format(self.note_letter, self.alteration)
 
