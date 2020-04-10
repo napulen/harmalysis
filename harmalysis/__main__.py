@@ -33,8 +33,12 @@ if __name__ == '__main__':
                query = input('> ')
           except EOFError:
                break
-          roman = harmalysis.parsers.roman.parse(query)
-          chordlabel = harmalysis.parsers.chordlabel.parse(str(roman.chord))
+          try:
+               roman = harmalysis.parsers.roman.parse(query)
+               chordlabel = harmalysis.parsers.chordlabel.parse(str(roman.chord))
+          except:
+               print('Invalid entry. Try again.')
+               continue
           print('\tMain key: ' + str(roman.main_key))
           print('\tSecondary key: ' + str(roman.secondary_key))
           print('\tIntervallic construction: ' + str(roman.chord))
