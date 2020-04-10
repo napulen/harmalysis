@@ -120,13 +120,13 @@ class AscendingMelodicMinorScale(HarmonicMinorScale):
     def __init__(self):
         super().__init__()
         self._qualities = [
-            ['P', 'M', 'm' , 'P', 'P', 'M', 'M'],
-            ['P', 'm', 'm' , 'P', 'P', 'M', 'm'],
-            ['P', 'M', 'M' , 'A', 'A', 'M', 'M'],
-            ['P', 'M', 'M' , 'A', 'P', 'M', 'm'],
-            ['P', 'M', 'M' , 'P', 'P', 'm', 'm'],
-            ['P', 'M', 'm' , 'P', 'D', 'm', 'm'],
-            ['P', 'm', 'm' , 'D', 'D', 'm', 'm'],
+            ['P', 'M', 'm', 'P', 'P', 'M', 'M'],
+            ['P', 'm', 'm', 'P', 'P', 'M', 'm'],
+            ['P', 'M', 'M', 'A', 'A', 'M', 'M'],
+            ['P', 'M', 'M', 'A', 'P', 'M', 'm'],
+            ['P', 'M', 'M', 'P', 'P', 'm', 'm'],
+            ['P', 'M', 'm', 'P', 'D', 'm', 'm'],
+            ['P', 'm', 'm', 'D', 'D', 'm', 'm'],
         ]
 
         self._semitones = [
