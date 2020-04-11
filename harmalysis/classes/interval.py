@@ -20,6 +20,7 @@ import harmalysis.common
 from harmalysis.classes import pitch_class
 from harmalysis.classes import scale
 
+
 class IntervalSpelling(object):
     interval_qualities = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
     # Perfect intervals (1, 4, 5, 8, 11, etc.)
@@ -30,6 +31,7 @@ class IntervalSpelling(object):
     nonperfect_interval_alterations = {
         "DD": -3, "D": -2, "m": -1, "M": 0, "A": 1, "AA": 2
     }
+
     def __init__(self, interval_quality, diatonic_interval):
         # The diatonic classes that have a perfect interval:
         # Unison, Subdominant, Dominant, and compound

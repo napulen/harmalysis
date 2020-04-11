@@ -19,30 +19,33 @@
 import harmalysis.parsers.roman
 import harmalysis.parsers.chordlabel
 import harmalysis.classes.pitch_class
+import lark.exceptions
 import sys
 
 test_strings = [
-     'C:viio65',
-     'f#_nat:#viiom7b|f#_nat:vii065|?e#m3D5m7',
-     'f#_nat:#viiom7bx5[f#_nat=>:vii065]',
+    'C:viio65',
+    'f#_nat:#viiom7b|f#_nat:vii065|?e#m3D5m7',
+    'f#_nat:#viiom7bx5[f#_nat=>:vii065]',
 ]
 
 if __name__ == '__main__':
-     while True:
-          try:
-               query = input('> ')
-          except EOFError:
-               break
-          try:
-               roman = harmalysis.parsers.roman.parse(query)
-               chordlabel = harmalysis.parsers.chordlabel.parse(str(roman.chord))
-          except:
-               print('Invalid entry. Try again.')
-               continue
-          print('\tMain key: ' + str(roman.main_key))
-          print('\tSecondary key: ' + str(roman.secondary_key))
-          print('\tIntervallic construction: ' + str(roman.chord))
-          print('\tInversion: ' + str(roman.chord.inversion))
-          print('\tChord label: ' + chordlabel)
+    while True:
+        try:
+            query = input('> ')
+        except EOFError:
+            break
+        try:
+            roman = harmalysis.parsers.roman.parse(query)
+            chordlabel = harmalysis.parsers.chordlabel.parse(str(roman.chord))
+        except lark.exceptions.UnexpectedCharacters:
+            print('Invalid entry. Try again.')
+            continue
+        print('\tMain key: ' + str(roman.main_key))
+        print('\tSecondary key: ' + str(roman.secondary_key))
+        print('\tIntervallic construction: ' + str(roman.chord))
+        print('\tInversion: ' + str(roman.chord.inversion))
+        print('\tChord label: ' + chordlabel)
+        print('\tDefault function: ' + roman.chord.default_function)
+        print('\tContextual function: ' + roman.chord.contextual_function)
 
 

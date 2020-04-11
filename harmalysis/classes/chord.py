@@ -20,6 +20,24 @@ from harmalysis.classes import interval
 
 
 class DescriptiveChord(object):
+    # Assumptions about the default context where a degree appears
+    degree_default_function = {
+        'I':   'tonic',
+        'i':   'tonic',
+        'II':  'subdominant',  # bII as a Neapolitan
+        'ii':  'subdominant',
+        'III': 'tonic',        # relative major in a minor key
+        'iii': 'dominant',     # diatonic substitution of the dominant in major
+        'IV':  'subdominant',
+        'iv':  'subdominant',
+        'V':   'dominant',
+        'v':   'tonic',        # modulation towards dominant in minor
+        'VI':  'subdominant',
+        'vi':  'subdominant',
+        'VII': 'subdominant',  # bVII of minor
+        'vii': 'dominant'
+    }
+
     def __init__(self):
         self.scale_degree = None
         self.scale_degree_alteration = None
@@ -43,11 +61,20 @@ class DescriptiveChord(object):
             raise ValueError('interval {} is out of bounds'.format(diatonic_interval))
         self.intervals[diatonic_interval] = None
 
+    def set_scale_degree(self, scale_degree, alteration=None, function=None):
+        valid_degrees = list(self.degree_default_function.keys())
+        if scale_degree not in valid_degrees:
+            raise ValueError('scale degree {} is not supported'.format(scale_degree))
+        self.scale_degree = scale_degree
+        self.scale_degree_alteration = alteration
+        self.default_function = self.degree_default_function[scale_degree]
+        self.contextual_function = function if function else 'unknown'
+
     def __str__(self):
         ret = str(self.root)
         for interv in self.intervals.values():
             if interv:
-                ret += str(interval)
+                ret += str(interv)
         return ret
 
 
@@ -116,8 +143,7 @@ class TertianChord(InvertibleChord):
 class AugmentedSixthChord(InvertibleChord):
     def __init__(self, augmented_sixth_type):
         super().__init__()
-        self.scale_degree = "iv"
-        self.scale_degree_alteration = '#'
+        self.set_scale_degree('iv', '#')
         self.add_interval(interval.IntervalSpelling("D", 3))
         self.add_interval(interval.IntervalSpelling("D", 5))
         self.augmented_sixth_type = augmented_sixth_type
@@ -130,17 +156,19 @@ class AugmentedSixthChord(InvertibleChord):
 class NeapolitanChord(TertianChord):
     def __init__(self):
         super().__init__()
-        self.scale_degree = "II"
-        self.scale_degree_alteration = "b"
+        self.set_scale_degree('II', 'b')
         self.triad_quality = "major_triad"
         self.add_interval(interval.IntervalSpelling('M', 3))
         self.add_interval(interval.IntervalSpelling('P', 5))
 
 
 class HalfDiminishedChord(TertianChord):
-    def __init__(self):
+    def __init__(self, scale_degree='vii'):
         super().__init__()
-        self.scale_degree = "vii"
+        valid_degrees = ['vii', 'ii']
+        if scale_degree not in valid_degrees:
+            raise ValueError('invalid scale degree {} for half diminished seventh chord'.format(scale_degree))
+        self.set_scale_degree(scale_degree)
         # TODO: Figure out the alteration (vii or #vii; will be complicated)
         self.triad_quality = "diminished_triad"
         self.add_interval(interval.IntervalSpelling("m", 3))
@@ -154,13 +182,13 @@ class CadentialSixFourChord(TertianChord):
         self.set_inversion_by_number(64)
 
     def set_as_major(self):
-        self.scale_degree = "I" # or V, HUGE dilemma
+        self.set_scale_degree('I', function='dominant')
         self.triad_quality = "major_triad"
         self.add_interval(interval.IntervalSpelling("M", 3))
         self.add_interval(interval.IntervalSpelling("P", 5))
 
     def set_as_minor(self):
-        self.scale_degree = "i"
+        self.set_scale_degree('i', function='dominant')
         self.triad_quality = "minor_triad"
         self.add_interval(interval.IntervalSpelling("m", 3))
         self.add_interval(interval.IntervalSpelling("P", 5))
@@ -169,7 +197,8 @@ class CadentialSixFourChord(TertianChord):
 class CommonToneDiminishedChord(TertianChord):
     def __init__(self):
         super().__init__()
-        self.scale_degree = "I"
+        # TODO: Figure out this one more in depth
+        self.set_scale_degree('I', function='subdominant')
         self.triad_quality = "diminished_triad"
         self.add_interval(interval.IntervalSpelling("m", 3))
         self.add_interval(interval.IntervalSpelling("D", 5))
