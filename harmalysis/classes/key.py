@@ -24,7 +24,7 @@ class Key(object):
     _scale_mapping = {
         "major": scale.MajorScale(),
         "natural_minor": scale.NaturalMinorScale(),
-        "harmonic_minor": scale.HarmonicMinorScale(), "default_minor": scale.HarmonicMinorScale(),
+        "harmonic_minor": scale.HarmonicMinorScale(), "minor": scale.HarmonicMinorScale(),
         "ascending_melodic_minor": scale.AscendingMelodicMinorScale()
     }
     _scale_degree_alterations = {

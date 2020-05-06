@@ -217,8 +217,8 @@ class RomanParser(Transformer):
     # Key scales
     major_key = lambda self, letter: Key(letter, None, 'major')
     major_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'major')
-    default_minor_key = lambda self, letter: Key(letter, None, 'default_minor')
-    default_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'default_minor')
+    default_minor_key = lambda self, letter: Key(letter, None, 'minor')
+    default_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'minor')
     natural_minor_key = lambda self, letter: Key(letter, None, 'natural_minor')
     natural_minor_key_with_alteration = lambda self, letter, alteration: Key(letter, alteration, 'natural_minor')
     harmonic_minor_key = lambda self, letter: Key(letter, None, 'harmonic_minor')
@@ -320,8 +320,8 @@ class RomanParser(Transformer):
     ########################
     by_scale_degree_major = lambda self, degree: (None, str(degree).lower(), "major")
     by_scale_degree_major_with_alteration = lambda self, alteration, degree: (str(alteration), str(degree), "major")
-    by_scale_degree_minor = lambda self, degree: (None, str(degree), "default_minor")
-    by_scale_degree_minor_with_alteration = lambda self, alteration, degree: (str(alteration), str(degree), "default_minor")
+    by_scale_degree_minor = lambda self, degree: (None, str(degree), "minor")
+    by_scale_degree_minor_with_alteration = lambda self, alteration, degree: (str(alteration), str(degree), "minor")
     by_scale_degree_neapolitan = lambda self, degree: ('b', "ii", "major")
     tonicization = lambda self, *args: list(args)
     #############################
