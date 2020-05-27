@@ -20,7 +20,6 @@ import harmalysis.parsers.roman
 import harmalysis.parsers.chordlabel
 import harmalysis.classes.pitch_class
 import lark.exceptions
-import sys
 
 test_strings = [
     'C:viio65',
@@ -29,9 +28,10 @@ test_strings = [
 ]
 
 if __name__ == '__main__':
+    main_key = 'C major'
     while True:
         try:
-            query = input('> ')
+            query = input(f'({main_key})  > ')
         except EOFError:
             break
         try:
@@ -40,12 +40,12 @@ if __name__ == '__main__':
         except lark.exceptions.UnexpectedCharacters:
             print('Invalid entry. Try again.')
             continue
-        print('\tMain key: ' + str(roman.main_key))
-        print('\tSecondary key: ' + str(roman.secondary_key))
+        print('\tCurrent key: ' + str(roman.main_key))
+        print('\tTonicized key: ' + str(roman.secondary_key))
         print('\tIntervallic construction: ' + str(roman.chord))
         print('\tInversion: ' + str(roman.chord.inversion))
         print('\tChord label: ' + chordlabel)
         print('\tDefault function: ' + roman.chord.default_function)
-        print('\tContextual function: ' + roman.chord.contextual_function)
-
+        # print('\tContextual function: ' + roman.chord.contextual_function)
+        main_key = roman.main_key
 
