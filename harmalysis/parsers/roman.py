@@ -210,8 +210,8 @@ def _harmalysis_descriptive_degree(descriptive, key_function=None):
 
 
 def _alternate(harm1, harm2):
-    harm2.alternative = True
-    return [harm1, harm2]
+    harm1.alternative = harm2
+    return harm1
 
 
 def _implicit(harmalysis):

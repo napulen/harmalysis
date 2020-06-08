@@ -28,4 +28,4 @@ class Harmalysis(object):
         self.chord = None
         self.tonicized_keys = []
         self.implicit = False
-        self.alternative = False
+        self.alternative = None
