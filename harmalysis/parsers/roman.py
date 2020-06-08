@@ -209,6 +209,16 @@ def _harmalysis_descriptive_degree(descriptive, key_function=None):
     return harmalysis
 
 
+def _alternate(harm1, harm2):
+    harm2.alternative = True
+    return [harm1, harm2]
+
+
+def _implicit(harmalysis):
+    harmalysis.implicit = True
+    return harmalysis
+
+
 @v_args(inline=True)
 class RomanParser(Transformer):
     ##################
@@ -341,6 +351,16 @@ class RomanParser(Transformer):
     harmalysis_descriptive_by_letter = lambda self, descriptive: _harmalysis_descriptive_letter(descriptive)
     harmalysis_descriptive_by_degree = lambda self, descriptive: _harmalysis_descriptive_degree(descriptive)
     harmalysis_descriptive_by_degree_with_key = lambda self, key_function, descriptive: _harmalysis_descriptive_degree(descriptive)
+    #############################
+    ## Parsing alternate entries
+    #############################
+    alternate = lambda self, harm1, harm2: _alternate(harm1, harm2)
+
+    #############################
+    ## Parsing implicit harmony
+    #############################
+    implicit = lambda self, harmalysis: _implicit(harmalysis)
+
 
 current_dir = pathlib.Path(__file__).parent.absolute()
 grammarfile = os.path.join(str(current_dir), 'roman.lark')
