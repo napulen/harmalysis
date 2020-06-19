@@ -16,6 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-VERSION = (0, 7, 1)
+VERSION = (0, 8, 0)
 
 __version__ = '.'.join(map(str, VERSION))

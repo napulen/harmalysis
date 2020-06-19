@@ -18,7 +18,7 @@
 
 from lark import Lark, tree, Transformer, v_args
 import harmalysis.common as common
-from harmalysis.classes.interval import IntervalSpelling
+from harmalysis.classes.interval import IntervalSpelling, pitch_class_to_pitch_class
 from harmalysis.classes.chord import DescriptiveChord, InvertibleChord, TertianChord, AugmentedSixthChord, NeapolitanChord, HalfDiminishedChord, CadentialSixFourChord, CommonToneDiminishedChord
 from harmalysis.classes.harmalysis import Harmalysis
 from harmalysis.classes.key import Key
@@ -127,14 +127,20 @@ def _harmalysis_tertian(tertian, key_function=None, tonicizations=[]):
     root_diatonic_step = common.roman_to_int[degree]
     if harmalysis.secondary_key:
         tertian_chord.root = harmalysis.secondary_key.scale_degree(degree, degree_alteration)
+        unaltered_root = harmalysis.secondary_key.scale_degree(degree)
         for diatonic in diatonic_intervals:
-            interval = harmalysis.secondary_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
-            tertian_chord.add_interval(interval)
+            unaltered_interval = harmalysis.secondary_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
+            destination_pc = unaltered_root.to_interval(unaltered_interval)
+            altered_interval = pitch_class_to_pitch_class(tertian_chord.root, destination_pc)
+            tertian_chord.add_interval(altered_interval)
     else:
         tertian_chord.root = harmalysis.main_key.scale_degree(degree, degree_alteration)
+        unaltered_root = harmalysis.main_key.scale_degree(degree)
         for diatonic in diatonic_intervals:
-            interval = harmalysis.main_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
-            tertian_chord.add_interval(interval)
+            unaltered_interval = harmalysis.main_key.mode.step_to_interval_spelling(diatonic, mode=root_diatonic_step)
+            destination_pc = unaltered_root.to_interval(unaltered_interval)
+            altered_interval = pitch_class_to_pitch_class(tertian_chord.root, destination_pc)
+            tertian_chord.add_interval(altered_interval)
     harmalysis.chord = tertian_chord
     return harmalysis
 
@@ -222,7 +228,7 @@ def _implicit(harmalysis):
 @v_args(inline=True)
 class RomanParser(Transformer):
     ##################
-    ## Parsing the key
+    # Parsing the key
     ##################
     # Key scales
     major_key = lambda self, letter: Key(letter, None, 'major')
@@ -241,7 +247,7 @@ class RomanParser(Transformer):
     # Key
     key = lambda self, key_definition, key_function: (key_definition, key_function)
     ##########################
-    ## Parsing a tertian chord
+    # Parsing a tertian chord
     ##########################
     # Triad
     major_triad = lambda self, scale_degree: ('major_triad', str(scale_degree), None)
@@ -286,7 +292,7 @@ class RomanParser(Transformer):
     tertian_thirteenth = lambda self, triad, added_thirteenth, missing_intervals: _tertian_chord(triad, missing_intervals, added_interval=added_thirteenth)
     tertian_thirteenth_with_inversion_by_letter = lambda self, triad, added_thirteenth, inversion_by_letter, missing_intervals: _tertian_chord(triad, missing_intervals, inversion_by_letter=inversion_by_letter, added_interval=added_thirteenth)
     ##########################
-    ## Parsing a special chord
+    # Parsing a special chord
     ##########################
     # Augmented_sixths
     special_chord_name = str
@@ -316,7 +322,7 @@ class RomanParser(Transformer):
     special_commontone_with_inversion_by_letter = lambda self, name, inversion: _special_chord(name, inversion_by_letter=inversion)
     special_commontone_with_inversion_by_number = lambda self, name, inversion: _special_chord(name, inversion_by_number=inversion)
     #############################
-    ## Parsing descriptive chords
+    # Parsing descriptive chords
     #############################
     pitch_class = lambda self, letter: PitchClassSpelling(letter)
     pitch_class_with_alteration = lambda self, letter, alteration: PitchClassSpelling(letter, alteration)
@@ -326,7 +332,7 @@ class RomanParser(Transformer):
     descriptive_chord_by_letter = lambda self, pitch_class, intervals: _descriptive_letter(pitch_class, intervals)
     descriptive_chord_by_degree = lambda self, scale_degree, intervals: _descriptive_degree(scale_degree, intervals)
     ########################
-    ## Parsing tonicizations
+    # Parsing tonicizations
     ########################
     by_scale_degree_major = lambda self, degree: (None, str(degree).lower(), "major")
     by_scale_degree_major_with_alteration = lambda self, alteration, degree: (str(alteration), str(degree), "major")
@@ -335,7 +341,7 @@ class RomanParser(Transformer):
     by_scale_degree_neapolitan = lambda self, degree: ('b', "ii", "major")
     tonicization = lambda self, *args: list(args)
     #############################
-    ## Parsing a harmalysis entry
+    # Parsing a harmalysis entry
     #############################
     # Tertian chords
     harmalysis_tertian = lambda self, tertian: _harmalysis_tertian(tertian)
@@ -352,12 +358,12 @@ class RomanParser(Transformer):
     harmalysis_descriptive_by_degree = lambda self, descriptive: _harmalysis_descriptive_degree(descriptive)
     harmalysis_descriptive_by_degree_with_key = lambda self, key_function, descriptive: _harmalysis_descriptive_degree(descriptive)
     #############################
-    ## Parsing alternate entries
+    # Parsing alternate entries
     #############################
     alternate = lambda self, harm1, harm2: _alternate(harm1, harm2)
 
     #############################
-    ## Parsing implicit harmony
+    # Parsing implicit harmony
     #############################
     implicit = lambda self, harmalysis: _implicit(harmalysis)
 

@@ -24,8 +24,8 @@ class PitchClassSpelling(object):
     pitch_classes = [0, 2, 4, 5, 7, 9, 11]
     alterations = {
         '--': -2, 'bb': -2,
-        '-':  -1, 'b':  -1,
-        '#':   1,
+        '-': -1, 'b': -1,
+        '#': 1,
         '##':  2, 'x':   2
     }
     alterations_r = {
@@ -72,6 +72,7 @@ class PitchClassSpelling(object):
             if not alteration_found:
                 raise ValueError("chromatic class {} is unreachable by this diatonic class.".format(chromatic_class))
         return PitchClassSpelling(note_letter, alteration)
+
 
     def to_interval(self, interval_spelling):
         if not isinstance(interval_spelling, interval.IntervalSpelling):

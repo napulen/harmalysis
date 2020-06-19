@@ -20,6 +20,11 @@ import harmalysis.common
 from harmalysis.classes import pitch_class
 from harmalysis.classes import scale
 
+def is_perfect_interval(diatonic_interval):
+    diatonic_classes_with_perfect_intervals = [harmalysis.common.TONIC, harmalysis.common.SUBDOMINANT, harmalysis.common.DOMINANT]
+    diatonic_class = (diatonic_interval - 1) % harmalysis.common.DIATONIC_CLASSES
+    is_perfect_interval = diatonic_class in diatonic_classes_with_perfect_intervals
+    return is_perfect_interval
 
 class IntervalSpelling(object):
     interval_qualities = ['DD', 'D', 'm', 'M', 'P', 'A', 'AA']
@@ -59,3 +64,29 @@ def test_intervals():
     M6 = IntervalSpelling('P', 1)
     target = orig.to_interval(M6)
     print(target)
+
+
+def pitch_class_to_pitch_class(pc1, pc2, ascending=True):
+    if not isinstance(pc1, pitch_class.PitchClassSpelling):
+        raise TypeError('expecting PitchClassSpelling instead of {}.'.format(type(pc1)))
+    if not isinstance(pc2, pitch_class.PitchClassSpelling):
+        raise TypeError('expecting PitchClassSpelling instead of {}.'.format(type(pc2)))
+    diatonic_distance = ((harmalysis.common.DIATONIC_CLASSES + pc2.diatonic_class) - pc1.diatonic_class) % harmalysis.common.DIATONIC_CLASSES
+    chromatic_distance = ((harmalysis.common.PITCH_CLASSES + pc2.chromatic_class) - pc1.chromatic_class) % harmalysis.common.PITCH_CLASSES
+
+    diatonic_interval = diatonic_distance + 1
+    diatonic_semitones = scale.MajorScale().step_to_semitones(diatonic_interval)
+
+    is_perfect = is_perfect_interval(diatonic_interval)
+    if is_perfect:
+        for quality, value in IntervalSpelling.perfect_interval_alterations.items():
+            tmp = diatonic_semitones + value
+            if tmp == chromatic_distance:
+                break
+    else:
+        for quality, value in IntervalSpelling.nonperfect_interval_alterations.items():
+            tmp = diatonic_semitones + value
+            if tmp == chromatic_distance:
+                break
+    return IntervalSpelling(quality, diatonic_interval)
+

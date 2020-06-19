@@ -24,6 +24,7 @@ DOMINANT = 4
 SUBMEDIANT = 5
 SEVENTH_DEGREE = 6
 DIATONIC_CLASSES = 7
+PITCH_CLASSES = 12
 
 # Lighter than loading an entire module just for this
 roman_to_int = {
