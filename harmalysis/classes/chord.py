@@ -42,11 +42,12 @@ class DescriptiveChord(object):
         self.scale_degree = None
         self.scale_degree_alteration = None
         self.root = None
-        self.intervals = {interval: None for interval in range(2,16)}
+        self.intervals = {interval: None for interval in range(2, 16)}
         self.bass = None
         self.default_function = None
         self.contextual_function = None
         self.chord_label = None
+        self.pitch_spellings = None
         self.pcset = None
 
     def add_interval(self, interval_spelling):
@@ -69,6 +70,21 @@ class DescriptiveChord(object):
         self.scale_degree_alteration = alteration
         self.default_function = self.degree_default_function[scale_degree]
         self.contextual_function = function if function else 'unknown'
+
+    def get_pitch_spellings(self):
+        if self.pitch_spellings:
+            return tuple([str(x) for x in self.pitch_spellings])
+        self.pitch_spellings = [self.root]
+        for interv in self.intervals.values():
+            if interv:
+                pitch_class = self.root.to_interval(interv)
+                self.pitch_spellings.append(pitch_class)
+        return tuple([str(x) for x in self.pitch_spellings])
+
+    def get_pitch_classes(self):
+        if not self.pitch_spellings:
+            self.get_pitch_spellings()
+        return tuple([x.chromatic_class for x in self.pitch_spellings])
 
     def __str__(self):
         ret = str(self.root)
