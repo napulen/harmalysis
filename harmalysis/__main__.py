@@ -46,6 +46,8 @@ if __name__ == '__main__':
         print('\tInversion: ' + str(roman.chord.inversion))
         print('\tChord label: ' + chordlabel)
         print('\tDefault function: ' + roman.chord.default_function)
+        print('\tChord pitches: ' + str(roman.chord.get_pitch_spellings()))
+        print('\tChord pitch classes: ' + str(roman.chord.get_pitch_classes()))
         # print('\tContextual function: ' + roman.chord.contextual_function)
         main_key = roman.main_key
 
